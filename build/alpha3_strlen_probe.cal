@@ -1,0 +1,7 @@
+int32 print = manual(string msg) -> {
+    int32 n = msg.length;
+    _ = n;
+    return 0;
+};
+
+boot() -> print("hi");

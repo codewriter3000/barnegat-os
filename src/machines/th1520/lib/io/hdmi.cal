@@ -1,0 +1,15 @@
+package app;
+
+// BeagleV-Ahead (TH1520): call the bare-metal C helper that clears the
+// DC8200 framebuffer and renders text at physical address 0x100970000.
+// We must save/restore ra manually: the Calynda asm() block has no
+// prologue, so "call" would overwrite ra and "ret" would loop forever.
+int32 hdmi_hello_world = asm() -> {
+    addi sp, sp, -16
+    sd   ra, 0(sp)
+    call hdmi_hello_world
+    ld   ra, 0(sp)
+    addi sp, sp, 16
+    li   a0, 0
+    ret
+};

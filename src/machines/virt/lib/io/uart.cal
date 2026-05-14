@@ -1,0 +1,10 @@
+package app;
+
+// QEMU virt: 16550-compatible UART at 0x10000000, byte writes
+// a0 = char value; no status polling needed in QEMU
+int32 uart_putc = asm(int32 ch) -> {
+    li   t0, 0x10000000
+    sb   a0, 0(t0)
+    li   a0, 0
+    ret
+};

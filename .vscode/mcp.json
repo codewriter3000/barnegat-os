@@ -1,0 +1,8 @@
+{
+    "servers": {
+        "calynda": {
+            "command": "node",
+            "args": ["/home/codewriter3000/Coding/calynda-lang/mcp-server/dist/index.js"]
+        }
+    }
+}

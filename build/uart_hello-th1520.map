@@ -1,0 +1,93 @@
+
+Discarded input sections
+
+ .comment       0x0000000000000000       0x20 build/runtime_boot-th1520.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 build/runtime_boot-th1520.o
+ .comment       0x0000000000000000       0x20 build/hdmi_fb-th1520.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 build/hdmi_fb-th1520.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 build/uart_hello-th1520.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+ram              0x0000000004000000 0x0000000008000000 xrw
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+                0x0000000004000000                . = ORIGIN (ram)
+
+.text           0x0000000004000000     0x27c6
+ *(.text.start)
+ .text.start    0x0000000004000000       0xb8 build/start-th1520.o
+                0x0000000004000000                _start_baremetal
+ *(.text .text.*)
+ .text          0x00000000040000b8        0x0 build/start-th1520.o
+ .text          0x00000000040000b8      0x6ba build/runtime_boot-th1520.o
+                0x0000000004000448                __calynda_rt_member_load
+                0x000000000400053a                __calynda_rt_index_load
+                0x0000000004000600                __calynda_rt_array_literal
+                0x0000000004000628                __calynda_rt_array_car
+                0x000000000400065e                __calynda_rt_array_cdr
+                0x00000000040006b8                __calynda_rt_string_cdr
+                0x0000000004000702                __calynda_rt_store_index
+ .text          0x0000000004000772     0x1fd0 build/hdmi_fb-th1520.o
+                0x0000000004000f8e                hdmi_fb_demo
+                0x000000000400248e                hdmi_hello_world
+ .text          0x0000000004002742       0x84 build/uart_hello-th1520.o
+                0x0000000004002742                calynda_unit_hdmi_hello_world
+                0x0000000004002752                calynda_unit_run
+                0x0000000004002786                calynda_unit_boot
+                0x00000000040027ba                _start
+
+.rodata         0x00000000040027d0      0x374
+ *(.rodata .rodata.*)
+ .rodata        0x00000000040027d0      0x374 build/hdmi_fb-th1520.o
+
+.rela.dyn       0x0000000004002b48        0x0
+ .rela.text.start
+                0x0000000004002b48        0x0 build/start-th1520.o
+
+.data           0x0000000004002b50        0x0
+ *(.data .data.*)
+ .data          0x0000000004002b50        0x0 build/start-th1520.o
+ .data          0x0000000004002b50        0x0 build/runtime_boot-th1520.o
+ .data          0x0000000004002b50        0x0 build/hdmi_fb-th1520.o
+ .data          0x0000000004002b50        0x0 build/uart_hello-th1520.o
+
+.bss            0x0000000004002b50    0x10008
+                0x0000000004002b50                __bss_start = .
+ *(.bss .bss.*)
+ .bss           0x0000000004002b50        0x0 build/start-th1520.o
+ .bss           0x0000000004002b50    0x10008 build/runtime_boot-th1520.o
+ .bss           0x0000000004012b58        0x0 build/hdmi_fb-th1520.o
+ .bss           0x0000000004012b58        0x0 build/uart_hello-th1520.o
+ *(COMMON)
+                0x0000000004012b58                __bss_end = .
+                0x0000000004012b60                . = ALIGN (0x10)
+                0x0000000004012b60                __stack_bottom = .
+                0x0000000004022b60                . = (. + 0x10000)
+                0x0000000004022b60                __stack_top = .
+
+/DISCARD/
+ *(.note.GNU-stack)
+ *(.comment)
+LOAD build/start-th1520.o
+LOAD build/runtime_boot-th1520.o
+LOAD build/hdmi_fb-th1520.o
+LOAD build/uart_hello-th1520.o
+OUTPUT(build/uart_hello-th1520.elf elf64-littleriscv)
+
+.riscv.attributes
+                0x0000000000000000       0x57
+ .riscv.attributes
+                0x0000000000000000       0x55 build/start-th1520.o
+ .riscv.attributes
+                0x0000000000000055       0x53 build/runtime_boot-th1520.o
+ .riscv.attributes
+                0x00000000000000a8       0x53 build/hdmi_fb-th1520.o
+ .riscv.attributes
+                0x00000000000000fb       0x51 build/uart_hello-th1520.o

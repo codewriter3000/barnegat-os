@@ -1,0 +1,162 @@
+# Barnegat OS
+
+This workspace is set up for bare-metal Calynda development on RISC-V, targeting either the QEMU `virt` machine (for local testing) or the BeagleV-Ahead (T-Head TH1520, quad-core RV64GC).
+
+The flow is:
+
+1. Merge local imported `.cal` files into one generated source file.
+2. Compile that generated `.cal` to RISC-V assembly with the sibling Calynda compiler.
+3. Assemble and link a freestanding ELF with a custom startup file and linker script.
+4. Boot the ELF — either via `qemu-system-riscv64` or via U-Boot on the board.
+
+The target machine is selected with `MACHINE=virt` (default) or `MACHINE=th1520`. Machine-specific source files live under `src/machines/<machine>/` and are overlaid on top of the common `src/` tree at build time.
+
+## Prerequisites
+
+Required host tools:
+
+- `make`
+- `gcc`
+- `qemu-system-riscv64`
+- `riscv64-linux-gnu-gcc`
+- `riscv64-linux-gnu-objdump`
+- the sibling Calynda compiler at `../calynda-lang/compiler/build/calynda`
+
+On Debian or Ubuntu, install the missing cross tools with:
+
+```sh
+sudo apt-get update
+sudo apt-get install gcc-riscv64-linux-gnu binutils-riscv64-linux-gnu qemu-system-misc
+```
+
+This machine already has QEMU, `gcc`, and `make`, but it is missing the RISC-V cross compiler.
+
+## Quick Start
+
+Check tool availability:
+
+```sh
+make doctor
+```
+
+Generate RISC-V assembly from the sample Calynda program:
+
+```sh
+make asm
+```
+
+This also writes the merged source file used by the bare-metal assembly flow:
+
+- `build/uart_hello.merged.cal`
+- `build/uart_hello.generated.s`
+
+Build a bootable ELF for QEMU:
+
+```sh
+make build
+```
+
+Build for the BeagleV-Ahead:
+
+```sh
+make build MACHINE=th1520
+```
+
+Run it in QEMU:
+
+```sh
+make run
+```
+
+Run it with explicit terminal UART output:
+
+```sh
+make run-serial
+```
+
+Run it in a QEMU window with the UART rendered inside the window:
+
+```sh
+make run-gui
+```
+
+`make run` defaults to the QEMU loader-device boot path in terminal-serial mode. The sample prints `Hello World` to the `virt` UART at `0x10000000` and then spins.
+
+- `make run` / `make run-serial`: UART text appears in the terminal. Exit QEMU with `Ctrl+A`, then `X`.
+- `make run-gui`: QEMU opens a GTK window and renders the guest UART in a virtual text console inside that window.
+- `make run-kernel`: boots with QEMU's `-kernel` path for comparison; on this workspace it does not currently reach the program entry.
+- `make compare-boot`: captures UART output from both boot paths and shows the difference.
+
+## Running on the BeagleV-Ahead
+
+Since you're already connected via USB-C serial, the easiest method is Y-Modem transfer directly over that connection. The board appears as `/dev/ttyUSB0` (or `/dev/ttyACM0`) on the host.
+
+You'll need `lrzsz` for the `sb` command:
+
+```sh
+sudo apt-get install lrzsz
+```
+
+**Steps:**
+
+1. Open a serial terminal to the board at 115200 baud (e.g. `picocom -b 115200 /dev/ttyUSB0`).
+2. Power on and press any key to interrupt U-Boot autoboot.
+3. In U-Boot, type:
+   ```
+   loady 0x04000000
+   ```
+4. In a second terminal on the host, run:
+   ```sh
+   make flash MACHINE=th1520
+   ```
+   This sends `build/uart_hello.elf` via Y-Modem to `/dev/ttyUSB0`. Override the device with `SERIAL=/dev/ttyACM0` if needed.
+5. Once the transfer completes, back in U-Boot:
+   ```
+   bootelf 0x04000000
+   ```
+
+Output (`Hello World`) will appear in the same serial terminal immediately after `bootelf`.
+
+`make boot-th1520 MACHINE=th1520` prints instructions for the SD card and TFTP alternatives if you prefer those.
+
+## Layout
+
+- `src/uart_hello.cal`: bare-metal Calynda sample — prints `Hello World` via recursive `uart_print_at`
+- `src/lib/io/stdlib.cal`: shared helper module (currently a stub; machine-specific drivers live under `src/machines/`)
+- `src/machines/virt/lib/io/uart.cal`: UART driver for the QEMU `virt` machine (16550 at `0x10000000`)
+- `src/machines/th1520/lib/io/uart.cal`: UART driver for the BeagleV-Ahead (DW APB at `0xFFE7014000`)
+- `baremetal/start.S`: freestanding entry point and stack setup
+- `baremetal/calynda_rt_min.c`: minimal Calynda runtime stubs for string indexing and sized stores
+- `baremetal/riscv64-virt.ld`: linker script for the QEMU `virt` machine (load address `0x80000000`)
+- `baremetal/riscv64-th1520.ld`: linker script for the BeagleV-Ahead (load address `0x04000000`, above OpenSBI/U-Boot)
+- `scripts/merge_calynda_sources.sh`: resolves imports — machine-specific overlay takes precedence over common `src/`
+- `build/`: generated assembly, objects, ELF, map, and disassembly output
+
+## Notes
+
+The current Calynda RISC-V backend already emits a `boot()` symbol and a Linux-oriented `_start` stub. This workspace ignores that stub by selecting `start.S` as the ELF entry point and calling `calynda_unit_boot` directly.
+
+The current GUI mode is not a guest framebuffer yet. It uses QEMU's built-in virtual console to display the UART stream inside the QEMU window, which is the simplest way to make the window show something useful before the OS has real graphics support.
+
+On this machine, the QEMU `virt` machine only produced visible UART output when the ELF was loaded with `-device loader,file=...,cpu-num=0`. The `-kernel` path started QEMU but produced zero captured UART bytes for this image.
+
+The generated bare-metal object code can still reference Calynda helper symbols such as `__calynda_store_sized`. For freestanding builds, this workspace links `baremetal/calynda_rt_min.c` instead of the hosted runtime archive so simple MMIO and raw pointer operations work without libc.
+
+This workspace now supports a practical split-file bare-metal layout by resolving local import lines like `import lib.io.stdlib;` to `src/lib/io/stdlib.cal` before calling `calynda asm`. The imported file bodies are inlined into one generated `.cal` file for the compiler.
+
+That means split files work here as a workspace build feature, not as native bare-metal package linking. To keep the result freestanding, imported helpers should use direct top-level function calls like `print()`, not hosted package-member calls like `stdlib.print()`.
+
+Heap-backed helpers such as `malloc`, `free`, and `stackalloc` are not part of that minimal shim yet.
+
+If you install Calynda globally, you can override the compiler path:
+
+```sh
+make CALYNDA=/path/to/calynda build
+```
+
+If you want a different program, place another `.cal` file in `src/` and select it with:
+
+```sh
+make PROGRAM=my_program build
+make PROGRAM=my_program run
+```

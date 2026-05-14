@@ -1,0 +1,101 @@
+union SchedulingStrategy {
+	FirstComeFirstServe,
+	ShortestJobFirst,
+	RoundRobin,
+	PriorityScheduling
+};
+
+SchedulingStrategy fcfs_strategy = SchedulingStrategy.FirstComeFirstServe;
+SchedulingStrategy shortest_job_first_strategy = SchedulingStrategy.ShortestJobFirst;
+SchedulingStrategy round_robin_strategy = SchedulingStrategy.RoundRobin;
+SchedulingStrategy priority_strategy = SchedulingStrategy.PriorityScheduling;
+
+int32 scheduler_init = () -> 0;
+bool scheduler_is_empty = (int32 head, int32 queued_processes) -> head >= queued_processes;
+bool scheduler_is_full = (int32 queued_processes, int32 capacity) -> queued_processes >= capacity;
+
+int32 scheduler_store = (int32[] queue, int32 queued_processes, int32 process_id) -> {
+	queue[queued_processes] = process_id;
+	return queued_processes + 1;
+};
+
+int32 fcfs_enqueue = (int32[] queue, int32 queued_processes, int32 capacity, int32 process_id) ->
+	scheduler_is_full(queued_processes, capacity)
+		? queued_processes
+		: scheduler_store(queue, queued_processes, process_id);
+
+int32 sjf_enqueue = (int32[] queue, int32 queued_processes, int32 capacity, int32 process_id) ->
+	fcfs_enqueue(queue, queued_processes, capacity, process_id);
+
+int32 round_robin_enqueue = (int32[] queue, int32 queued_processes, int32 capacity, int32 process_id) ->
+	fcfs_enqueue(queue, queued_processes, capacity, process_id);
+
+int32 priority_enqueue = (int32[] queue, int32 queued_processes, int32 capacity, int32 process_id) ->
+	fcfs_enqueue(queue, queued_processes, capacity, process_id);
+
+int32 swap_queue_entries = (int32[] queue, int32 left, int32 right) -> {
+	int32 temp = queue[left];
+	queue[left] = queue[right];
+	queue[right] = temp;
+	return left;
+};
+
+int32 sjf_choose_index = (int32[] queue, int32[] burst_times, int32 candidate_index, int32 best_index) ->
+	burst_times[queue[candidate_index]] < burst_times[queue[best_index]]
+		? candidate_index
+		: best_index;
+
+int32 sjf_find_index = (int32[] queue, int32[] burst_times, int32 index, int32 queued_processes, int32 best_index) ->
+	index >= queued_processes
+		? best_index
+		: sjf_find_index(queue, burst_times, index + 1, queued_processes, sjf_choose_index(queue, burst_times, index, best_index));
+
+int32 priority_choose_index = (int32[] queue, int32[] priorities, int32 candidate_index, int32 best_index) ->
+	priorities[queue[candidate_index]] > priorities[queue[best_index]]
+		? candidate_index
+		: best_index;
+
+int32 priority_find_index = (int32[] queue, int32[] priorities, int32 index, int32 queued_processes, int32 best_index) ->
+	index >= queued_processes
+		? best_index
+		: priority_find_index(queue, priorities, index + 1, queued_processes, priority_choose_index(queue, priorities, index, best_index));
+
+int32 fcfs_prepare_next = (int32[] queue, int32[] burst_times, int32[] priorities, int32 head, int32 queued_processes) -> head;
+
+int32 sjf_prepare_next = (int32[] queue, int32[] burst_times, int32[] priorities, int32 head, int32 queued_processes) ->
+	scheduler_is_empty(head, queued_processes)
+		? head
+		: swap_queue_entries(queue, head, sjf_find_index(queue, burst_times, head + 1, queued_processes, head));
+
+int32 round_robin_prepare_next = (int32[] queue, int32[] burst_times, int32[] priorities, int32 head, int32 queued_processes) -> head;
+
+int32 priority_prepare_next = (int32[] queue, int32[] burst_times, int32[] priorities, int32 head, int32 queued_processes) ->
+	scheduler_is_empty(head, queued_processes)
+		? head
+		: swap_queue_entries(queue, head, priority_find_index(queue, priorities, head + 1, queued_processes, head));
+
+int32 scheduler_enqueue = (SchedulingStrategy strategy, int32[] queue, int32 queued_processes, int32 capacity, int32 process_id) ->
+	strategy.tag == 0
+		? fcfs_enqueue(queue, queued_processes, capacity, process_id)
+		: strategy.tag == 1
+			? sjf_enqueue(queue, queued_processes, capacity, process_id)
+			: strategy.tag == 2
+				? round_robin_enqueue(queue, queued_processes, capacity, process_id)
+				: priority_enqueue(queue, queued_processes, capacity, process_id);
+
+int32 scheduler_prepare_next = (SchedulingStrategy strategy, int32[] queue, int32[] burst_times, int32[] priorities, int32 head, int32 queued_processes) ->
+	strategy.tag == 0
+		? fcfs_prepare_next(queue, burst_times, priorities, head, queued_processes)
+		: strategy.tag == 1
+			? sjf_prepare_next(queue, burst_times, priorities, head, queued_processes)
+			: strategy.tag == 2
+				? round_robin_prepare_next(queue, burst_times, priorities, head, queued_processes)
+				: priority_prepare_next(queue, burst_times, priorities, head, queued_processes);
+
+int32 scheduler_current_process_id = (int32[] queue, int32 head) -> queue[head];
+int32 scheduler_advance = (SchedulingStrategy strategy, int32 head, int32 queued_processes) ->
+	scheduler_is_empty(head, queued_processes)
+		? head
+		: head + 1;
+
+SchedulingStrategy scheduler_change_strategy = (SchedulingStrategy strategy) -> strategy;

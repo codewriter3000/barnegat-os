@@ -1,0 +1,14 @@
+package app;
+
+// BeagleV-Ahead: TH1520 UART0 (DW APB, reg-shift=2) at 0xFFE7014000
+// a0 = char value; polls THRE (LSR bit5) before writing
+int32 uart_putc = asm(int32 ch) -> {
+    li   t0, 0xFFE7014000
+1:
+    lw   t1, 0x14(t0)        # LSR (byte-offset 5 * reg-shift 4 = 0x14)
+    andi t1, t1, 0x20        # bit 5: THRE
+    beqz t1, 1b
+    sw   a0, 0(t0)           # write THR
+    li   a0, 0
+    ret
+};

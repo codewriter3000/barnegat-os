@@ -1,0 +1,11 @@
+int32 print_at = (string msg, int32 index) -> index < msg.length ? emit_and_recur(int8(msg[index]), msg, index + 1) : 0;
+
+int32 emit_and_recur = manual(int8 ch, string msg, int32 next) -> {
+    ptr<int8> uart = 0x10000000;
+    store(uart, ch);
+    return print_at(msg, next);
+};
+
+int32 print = (string msg) -> print_at(msg, 0);
+
+boot() -> print("hi");

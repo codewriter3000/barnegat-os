@@ -1,0 +1,5 @@
+int32 print = asm(string msg) -> {
+    tail barnegat_uart_print_string
+};
+
+boot() -> print("hi");

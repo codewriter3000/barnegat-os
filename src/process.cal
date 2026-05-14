@@ -1,0 +1,10 @@
+union ProcessState { New, Running, Waiting, Ready, Terminated };
+
+type ThreadList = Thread[];
+type Process = arr<?>;
+
+Process create_process = (ThreadList threads, ProcessState state) -> {
+	arr<?> process = [threads, state];
+	return process;
+};
+Process create_new_process = (ThreadList threads) -> create_process(threads, ProcessState.New);

@@ -1,0 +1,96 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "barnegat: doctor",
+            "type": "shell",
+            "command": "make",
+            "args": ["doctor"],
+            "options": {
+                "cwd": "${workspaceFolder:barnegat-os}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "barnegat: asm",
+            "type": "shell",
+            "command": "make",
+            "args": ["asm"],
+            "options": {
+                "cwd": "${workspaceFolder:barnegat-os}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "barnegat: build",
+            "type": "shell",
+            "command": "make",
+            "args": ["build"],
+            "options": {
+                "cwd": "${workspaceFolder:barnegat-os}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "barnegat: run",
+            "type": "shell",
+            "command": "make",
+            "args": ["run"],
+            "options": {
+                "cwd": "${workspaceFolder:barnegat-os}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "barnegat: run-serial",
+            "type": "shell",
+            "command": "make",
+            "args": ["run-serial"],
+            "options": {
+                "cwd": "${workspaceFolder:barnegat-os}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "barnegat: run-gui",
+            "type": "shell",
+            "command": "make",
+            "args": ["run-gui"],
+            "options": {
+                "cwd": "${workspaceFolder:barnegat-os}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "barnegat: run-kernel",
+            "type": "shell",
+            "command": "make",
+            "args": ["run-kernel"],
+            "options": {
+                "cwd": "${workspaceFolder:barnegat-os}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "barnegat: compare-boot",
+            "type": "shell",
+            "command": "make",
+            "args": ["compare-boot"],
+            "options": {
+                "cwd": "${workspaceFolder:barnegat-os}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "barnegat: disasm",
+            "type": "shell",
+            "command": "make",
+            "args": ["disasm"],
+            "options": {
+                "cwd": "${workspaceFolder:barnegat-os}"
+            },
+            "problemMatcher": []
+        }
+    ]
+}
