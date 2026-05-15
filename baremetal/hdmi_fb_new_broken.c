@@ -11,6 +11,11 @@
  *
  *   IOVA 0x67000000 → PA 0x100970000   (from /sys/kernel/debug/dri/0/*)
  *
+ * NOTE: The DC8200 SE-MMU is DISABLED after the warm U-Boot handoff
+ * (confirmed: SE_MMU_CONTROL BIT(0)=0).  We therefore use a single
+ * 32-bit physical address (0x50000000) for both CPU writes and the
+ * DC_FRAMEBUFFER_ADDRESS register — no IOMMU translation is used.
+ *
  * Both the MMIO register state and the IOMMU page tables reside in DRAM
  * and survive the warm U-Boot handoff that loaded us.  We therefore do
  * not need to re-initialise the display pipeline; we only need to write
@@ -23,11 +28,31 @@
 
 #include <stdint.h>
 
-/* Physical base address of our bare-metal framebuffer.
- * Must fit in 32 bits — the DC8200 FB_ADDRESS register is 32-bit.
- * 0x50000000 (1.25 GB) is well within the BeagleV-Ahead's 4 GB DRAM
- * and safely above our 128 MB load region at 0x04000000. */
-#define FB_PHYS   ((volatile uint32_t *)0x50000000ULL)
+/* Framebuffer physical address in DRAM.
+ *
+ * The DC8200 SE-MMU (IOMMU) is DISABLED after the warm U-Boot handoff
+ * (SE_MMU_CONTROL BIT(0) = 0, confirmed by scratch[23] = 0x00005720).
+ * Linux tears down the IOMMU page tables during shutdown; they do NOT
+ * survive the handoff.  With IOMMU off the DC8200 DMA uses the value
+ * in DC_FRAMEBUFFER_ADDRESS as a raw physical address.
+ *
+ * We therefore pick a single <4GB physical address for the framebuffer:
+ *   - CPU writes pixels to FB_ADDR (physical)
+ *   - DC_FRAMEBUFFER_ADDRESS register gets the same value
+ *   - No IOMMU translation involved
+ *
+ * 0x50000000 (1.25 GB): safely above our code at 0x04000000, within
+ * the BeagleV-Ahead's 4 GB DRAM, and fits in the 32-bit register. */
+#define FB_ADDR   0x04200000U   /* cold-boot framebuffer: 2 MB above binary base.
+                               * Confirmed-valid DDR: 0x04000000 (code) and
+                               * 0x05000000 (scratch) both work; 0x10000000 and
+                               * 0x50000000 both cause AXI bus timeouts on cold
+                               * boot (they are outside the accessible S-mode DDR
+                               * window before the security/bus filters are set up
+                               * by Linux).  This puts the 8 MB framebuffer at
+                               * 0x04200000–0x04A00000, safely below scratch. */
+/* Set at runtime in hdmi_hello_world() from dc[0x1400/4] (U-Boot's scanout address). */
+static volatile uint32_t *FB_PHYS;
 
 #define FB_WIDTH   1920
 #define FB_HEIGHT  1080
@@ -485,8 +510,16 @@ static void dpu1_pll_configure_1080p60(void)
 
 /* ----------------------------------------------------------------
  * vosys-clk-gate (0xFFEF528000)
- * Re-enable display-subsystem clocks (DC8200 + HDMI TX).
- * Values from /dev/mem read while Linux had HDMI active.
+ * Re-enable display-subsystem clock gates (DC8200 + HDMI TX).
+ *
+ * clk[0x074] and clk[0x078] ARE written here (restored).
+ * These are the pixel-clock-select/enable registers.  U-Boot leaves
+ * them at 0x7050; Linux sets them to 0x7130 when HDMI is active.
+ * With 0x7050 the PHY MPLL gets no reference and TX_PHY_LOCK stays 0.
+ * With 0x7130 (Linux-verified value) the MPLL receives 148.5 MHz and
+ * locks correctly.  We previously removed these writes thinking they
+ * were corrupting a divider, but that was a false diagnosis — the real
+ * problem at the time was the MC_PHYRSTZ active-LOW polarity bug.
  * ---------------------------------------------------------------- */
 static void vosys_clk_enable(void)
 {
@@ -501,11 +534,8 @@ static void vosys_clk_enable(void)
     clk[0x054/4] = 0x00000001U;
     clk[0x064/4] = 0x00000014U;
     clk[0x070/4] = 0x00000001U;
-    clk[0x074/4] = 0x00007130U;  /* pixel clock divider */
+    clk[0x074/4] = 0x00007130U;  /* pixel clock select/enable (Linux value) */
     clk[0x078/4] = 0x00007130U;
-    /* Additional enable banks present in Linux live capture but absent
-     * from our original write list.  0x0A4 contains bits[19:12] which
-     * gate individual DW-HDMI sub-block clocks (sfr, i2cm, etc.). */
     clk[0x0A4/4] = 0x000FF000U;
     clk[0x100/4] = 0x00000001U;
     clk[0x108/4] = 0x00000001U;
@@ -523,16 +553,13 @@ static void vosys_clk_enable(void)
  * Single I2CM write attempt.
  * Returns:  1 = success,  0 = timeout (neither bit set after 2ms),  -1 = error
  *
- * The IH_I2CMPHY_STAT0 clear (W1C) is placed as the LAST write before
- * triggering OPERATION.  Placing it earlier allows synchroniser-pipeline
- * events from SOFTRSTZ to arrive in the window between the clear and the
- * poll, producing a spurious bit[0]=1 (error) before any I2C clock edge.
- *
- * We poll IH every 1 ms for up to 50 ms.  At DIV=0x0B / SS_HCNT=0x7F
- * the PHY I2C bus runs ~50 kHz and a 16-bit write takes ~1 ms end-to-end,
- * so 50 ms is a 50× margin regardless of U-Boot CPU clock speed.  Using
- * 1000 ms (Linux's ceiling) works but inflates failure-detection time to
- * ~3 minutes when the C910 is at its slow U-Boot frequency (~300 MHz).
+ * The IH_I2CMPHY_STAT0 clear (W1C) must happen BEFORE the address/data
+ * setup writes, not after triggering OPERATION.  After OPMODE_PLLCFG is
+ * written the PHY MPLL starts up; subsequent I2CM transactions complete
+ * in nanoseconds on the internal bus.  A post-OPERATION W1C arrives late
+ * enough to wipe the DONE bit before the poll ever reads it → permanent
+ * timeout on every write after the first.  Pre-OPERATION W1C is safe: any
+ * stale SOFTRSTZ glitch will have fully settled well before we get here.
  *
  * PHY_I2CM_INT (0x3027) and PHY_I2CM_CTLINT (0x3028) must be written
  * per-transaction, immediately before triggering OPERATION.
@@ -548,18 +575,31 @@ static void vosys_clk_enable(void)
 static int hdmi_phy_i2cm_write_once(volatile uint32_t *h,
                                     uint8_t reg, uint16_t val)
 {
+    /* W1C flush: clear stale bits from any previous transaction BEFORE
+     * setting up the new one.  This must come first — clearing AFTER
+     * OPERATION risks wiping the DONE bit of the current transaction on
+     * fast MPLL-clocked writes (DONE can arrive in <10 ns). */
+    h[0x0108] = 0xFFU;
+    __asm__ volatile ("fence" ::: "memory");
     h[0x3021] = reg;                  /* PHY_I2CM_ADDRESS */
     h[0x3022] = (val >> 8) & 0xFFU;  /* PHY_I2CM_DATAO_1 (MSB) */
     h[0x3023] = val & 0xFFU;          /* PHY_I2CM_DATAO_0 (LSB) */
-    h[0x0108] = 0xFFU;               /* IH_I2CMPHY_STAT0: W1C clear */
     h[0x3027] = 0x08U;               /* PHY_I2CM_INT:    DONE_POL=BIT(3), DONE_MASK=0 */
     h[0x3028] = 0x88U;               /* PHY_I2CM_CTLINT: NAK_POL=BIT(7)|ARB_POL=BIT(3) */
     __asm__ volatile ("fence" ::: "memory");
-    h[0x3026] = 0x10U;               /* PHY_I2CM_OPERATION = write — starts the transaction */
+    h[0x3026] = 0x10U;               /* PHY_I2CM_OPERATION = write */
     __asm__ volatile ("fence" ::: "memory");
-    /* Poll IH every 1 ms for up to 50 ms.
-     * At DIV=0x0B / SS_HCNT=0x7F the bus runs ~50 kHz; a 16-bit write
-     * takes ~1 ms.  50 ms gives 50× margin even on a slow U-Boot clock. */
+    /* Immediate sample: catches fast-path (MPLL running) where DONE fires
+     * in nanoseconds and is already set before the first poll delay. */
+    {
+        uint32_t s = h[0x0108] & 0x03U;
+        if (s) {
+            h[0x0108] = s;
+            if (s & 0x02U) return  1;
+            if (s & 0x01U) return -1;
+        }
+    }
+    /* Poll IH every 1 ms for up to 50 ms (50kHz I2C: ~640 µs per write). */
     for (int t = 0; t < 50; t++) {
         delay_us(1000);
         uint32_t s = h[0x0108] & 0x03U;
@@ -572,8 +612,8 @@ static int hdmi_phy_i2cm_write_once(volatile uint32_t *h,
     return 0;                         /* timeout after 50 ms */
 }
 
-#define I2CM_ATTEMPTS       5
-#define I2CM_RETRY_DELAY_US 500
+#define I2CM_ATTEMPTS       3
+#define I2CM_RETRY_DELAY_US 200
 static int hdmi_phy_i2cm_write(volatile uint32_t *h,
                                uint8_t reg, uint16_t val)
 {
@@ -615,6 +655,37 @@ static int hdmi_phy_i2cm_write(volatile uint32_t *h,
  *   bits[7:0]   = fail_type       (0=none, 1=timeout, 2=NACK/error)
  *
  * Perfect run: scratch[6]=0x690B0006, scratch[7]=0x0000F300 */
+
+/* ----------------------------------------------------------------
+ * Minimal 16550-compatible UART TX for TH1520 UART0 (0xFFE7014000).
+ * U-Boot uses this console UART; it is always accessible from S-mode.
+ * Writes one character, waiting for the transmit-hold-register-empty
+ * bit (LSR bit 5) before writing.  No init required: U-Boot already
+ * configured the UART divisor and line control.
+ * ---------------------------------------------------------------- */
+#define TH1520_UART0  0xFFE7014000ULL
+static void uart_putc(char c)
+{
+    volatile uint32_t *u = (volatile uint32_t *)TH1520_UART0;
+    while (!(u[5] & 0x20U))   /* LSR[5] = THRE */
+        ;
+    u[0] = (uint32_t)(unsigned char)c;
+}
+static void uart_puts_bare(const char *s)
+{
+    while (*s) {
+        if (*s == '\n') uart_putc('\r');
+        uart_putc(*s++);
+    }
+}
+static void uart_puthex(uint32_t v)
+{
+    static const char h[] = "0123456789ABCDEF";
+    uart_putc('0'); uart_putc('x');
+    for (int i = 28; i >= 0; i -= 4)
+        uart_putc(h[(v >> i) & 0xFU]);
+}
+
 static void dw_hdmi_init(uint32_t *diag0_out, uint32_t *diag1_out,
                          uint32_t *diag2_out)
 {
@@ -707,13 +778,15 @@ static void dw_hdmi_init(uint32_t *diag0_out, uint32_t *diag1_out,
     h[0x3000] = 0x36U;
     __asm__ volatile ("fence" ::: "memory");
 
-    /* Step 2: MC_PHYRSTZ pulse — Gen2 active-HIGH reset. */
-    h[0x4005] = 0x01U;  /* MC_PHYRSTZ: ASSERT (gen2: 1 = in reset) */
+    /* Step 2: MC_PHYRSTZ pulse — Gen2 PHY is ACTIVE-HIGH reset.
+     * Linux dw_hdmi_phy_gen2_reset(): ASSERT=0x01 (in reset), DEASSERT=0x00 (running).
+     * Gen1 is active-LOW; Gen2 (TH1520) is active-HIGH. */
+    h[0x4005] = 0x01U;  /* MC_PHYRSTZ: ASSERT   (active-HIGH: 1 = in reset) */
     __asm__ volatile ("fence" ::: "memory");
     delay_us(200);
-    h[0x4005] = 0x00U;  /* MC_PHYRSTZ: DEASSERT (gen2: 0 = running) */
+    h[0x4005] = 0x00U;  /* MC_PHYRSTZ: DEASSERT (active-HIGH: 0 = running)  */
     __asm__ volatile ("fence" ::: "memory");
-    delay_us(50000);    /* 50 ms: PHY digital logic (including I2C slave) stabilises */
+    delay_us(50000);    /* 50 ms: PHY digital logic (incl. I2C slave) stabilises */
 
     /* Step 3: Assert HEAC PHY reset (Linux: MC_HEACPHY_RST = 0x4007, ASSERT=1). */
     h[0x4007] = 0x01U;
@@ -736,19 +809,33 @@ static void dw_hdmi_init(uint32_t *diag0_out, uint32_t *diag1_out,
     __asm__ volatile ("fence" ::: "memory");
     delay_us(1000);     /* 1 ms settle after TSTCLR release */
 
-    /* Step 5: I2CM controller setup AFTER TSTCLR (so TSTCLR can't reset them). */
-    h[0x3029] = 0x0BU;  /* PHY_I2CM_DIV */
+    /* Step 5: I2CM controller setup AFTER TSTCLR (so TSTCLR can't reset them).
+     *
+     * MC_SWRSTZ (written above) resets the I2CM master to all zeros including
+     * HCNT/LCNT, so we must reprogram timing here.
+     *
+     * DIV=0x0B: bit[3]=1 → fast speed mode (uses FS_HCNT/LCNT),
+     *           bits[2:0]=3 → reference = pclk / 2^4 = 148.5MHz/16 = 9.28MHz.
+     * FS_HCNT=53, FS_LCNT=127 → SCL = 9.28MHz / 180 ≈ 51.5 kHz.
+     * At ~50 kHz a 16-bit write completes in ~640 µs.
+     *
+     * Correct register offsets (confirmed from Linux dw-hdmi.h):
+     *   0x302B/0x302C = SS_SCL_HCNT_1/0    0x302D/0x302E = SS_SCL_LCNT_1/0
+     *   0x302F/0x3030 = FS_SCL_HCNT_1/0    0x3031/0x3032 = FS_SCL_LCNT_1/0
+     *   0x3033        = SDA_HOLD
+     * (No gap between SOFTRSTZ at 0x302A and SS_HCNT_1 at 0x302B.) */
+    h[0x3029] = 0x0BU;  /* PHY_I2CM_DIV: fast mode (bit[3]=1), pre-div 3 */
     h[0x302A] = 0x00U;  /* PHY_I2CM_SOFTRSTZ: assert */
     __asm__ volatile ("fence" ::: "memory");
     delay_us(100);
     h[0x302A] = 0x01U;  /* PHY_I2CM_SOFTRSTZ: release */
     __asm__ volatile ("fence" ::: "memory");
     delay_us(100);
-    h[0x302B] = 0x00U; h[0x302C] = 0x7FU;  /* SS_HCNT */
-    h[0x302D] = 0x00U; h[0x302E] = 0x7FU;  /* SS_LCNT */
-    h[0x302F] = 0x00U; h[0x3030] = 0x35U;  /* FS_HCNT */
-    h[0x3031] = 0x00U; h[0x3032] = 0x7FU;  /* FS_LCNT */
-    h[0x3033] = 0x08U;                       /* SDA_HOLD */
+    h[0x302B] = 0x00U; h[0x302C] = 0x7FU;  /* SS_HCNT = 127 (unused in fast mode) */
+    h[0x302D] = 0x00U; h[0x302E] = 0x7FU;  /* SS_LCNT = 127 (unused in fast mode) */
+    h[0x302F] = 0x00U; h[0x3030] = 0x35U;  /* FS_HCNT = 53  → ~51.5 kHz SCL     */
+    h[0x3031] = 0x00U; h[0x3032] = 0x7FU;  /* FS_LCNT = 127                       */
+    h[0x3033] = 0x08U;                       /* SDA_HOLD = 8                        */
     h[0x3027] = 0x08U;  /* PHY_I2CM_INT:    DONE_POL=BIT(3), DONE_MASK=0 (enabled) */
     h[0x3028] = 0x88U;  /* PHY_I2CM_CTLINT: NAK_POL=BIT(7)|ARB_POL=BIT(3), masks=0 */
     __asm__ volatile ("fence" ::: "memory");
@@ -760,6 +847,8 @@ static void dw_hdmi_init(uint32_t *diag0_out, uint32_t *diag1_out,
      *   Either = 0x00   → clock-gated; writes silently discarded */
     uint32_t slave_rb = h[0x3020] & 0xFFU;  /* PHY_I2CM_SLAVE readback */
     uint32_t div_rb   = h[0x3029] & 0xFFU;  /* PHY_I2CM_DIV   readback */
+    uart_puts_bare("[phy] slave="); uart_puthex(slave_rb);
+    uart_puts_bare(" div="); uart_puthex(div_rb); uart_putc('\n');
 
     /* Flush IH before transactions. */
     h[0x0108] = 0xFFU;
@@ -779,6 +868,11 @@ static void dw_hdmi_init(uint32_t *diag0_out, uint32_t *diag1_out,
     /* diag2: fire the first transaction manually so we can sample IH
      * immediately after OPERATION to detect very-fast done/error.
      * First real PHY config register: OPMODE_PLLCFG (0x06) = 0x0001. */
+    /* Fire the first PHY config write (OPMODE_PLLCFG 0x06 = 0x0001)
+     * and sample IH at 5 µs for diagnostic purposes only.
+     * The W1C flush must happen AFTER triggering OPERATION because
+     * the SOFTRSTZ resonance can re-assert IH bits in the window
+     * between the pre-OPERATION flush and the OPERATION write itself. */
     uint32_t ih_fast = 0;
     uint32_t ih_final = 0;
     {
@@ -786,22 +880,25 @@ static void dw_hdmi_init(uint32_t *diag0_out, uint32_t *diag1_out,
         h[0x3021] = ra;
         h[0x3022] = (va >> 8) & 0xFFU;
         h[0x3023] = va & 0xFFU;
-        h[0x0108] = 0xFFU;
         h[0x3027] = 0x08U;  /* DONE_POL=BIT(3), DONE_MASK=0 */
         h[0x3028] = 0x88U;  /* NAK_POL=BIT(7)|ARB_POL=BIT(3) */
         __asm__ volatile ("fence" ::: "memory");
-        h[0x3026] = 0x10U;
+        h[0x3026] = 0x10U;  /* trigger OPERATION */
         __asm__ volatile ("fence" ::: "memory");
-        delay_us(5);                         /* ~5 µs: sample IH immediately */
+        h[0x0108] = 0xFFU;  /* W1C flush AFTER OPERATION to clear pre-existing glitch */
+        __asm__ volatile ("fence" ::: "memory");
+        delay_us(5);        /* ~5 µs: sample IH */
         ih_fast = h[0x0108] & 0x03U;
-        /* now continue polling to get final outcome */
-        int done = 0;
-        for (int t = 0; t < 50 && !done; t++) {
-            delay_us(1000);
+        /* Poll for final outcome — do NOT consume the bit; let i2cm_ok logic read it. */
+        for (int t = 0; t < 20; t++) {
+            delay_us(200);
             uint32_t s = h[0x0108] & 0x03U;
-            if (s) { h[0x0108] = s; ih_final = s; done = 1; }
+            if (s) { ih_final = s; break; }
         }
+        if (ih_final) { h[0x0108] = (uint8_t)ih_final; }  /* W1C consume */
     }
+    uart_puts_bare("[phy] ih_fast="); uart_puthex(ih_fast);
+    uart_puts_bare(" ih_final="); uart_puthex(ih_final); uart_putc('\n');
     *diag2_out = ((uint32_t)mc_clkdis_rb << 16) |
                  ((uint32_t)ih_fast       <<  8) |
                   (uint32_t)ih_final;
@@ -847,11 +944,12 @@ static void dw_hdmi_init(uint32_t *diag0_out, uint32_t *diag1_out,
     h[0x3000] = 0x2EU;
     __asm__ volatile ("fence" ::: "memory");
 
-    /* Wait up to 200 ms for TX_PHY_LOCK after first iteration. */
-    for (int i = 0; i < 200; i++) {
+    /* Wait up to 50 ms for TX_PHY_LOCK after first iteration. */
+    for (int i = 0; i < 50; i++) {
         if (h[0x3004] & 0x01U) break;
         delay_us(1000);
     }
+    uart_puts_bare("[phy] lock1="); uart_puthex(h[0x3004] & 0xFFU); uart_putc('\n');
 
     /* Linux runs hdmi_phy_configure() TWICE ("HDMI Phy spec says to do the
      * phy initialization sequence twice").  If not locked after first pass,
@@ -862,13 +960,13 @@ static void dw_hdmi_init(uint32_t *diag0_out, uint32_t *diag1_out,
         __asm__ volatile ("fence" ::: "memory");
         delay_us(5000);
 
-        /* MC_PHYRSTZ assert/deassert */
-        h[0x4005] = 0x01U;
+        /* MC_PHYRSTZ assert/deassert (Gen2: active-HIGH) */
+        h[0x4005] = 0x01U;  /* ASSERT   (1 = in reset) */
         __asm__ volatile ("fence" ::: "memory");
         delay_us(200);
-        h[0x4005] = 0x00U;
+        h[0x4005] = 0x00U;  /* DEASSERT (0 = running)  */
         __asm__ volatile ("fence" ::: "memory");
-        delay_us(10000);
+        delay_us(5000);
 
         /* HEACPHY_RST assert */
         h[0x4007] = 0x01U;
@@ -903,13 +1001,16 @@ static void dw_hdmi_init(uint32_t *diag0_out, uint32_t *diag1_out,
         __asm__ volatile ("fence" ::: "memory");
     }
 
-    /* Wait up to 1 s for TX_PHY_LOCK (total). */
-    for (int i = 0; i < 1000; i++) {
+    /* Wait up to 100 ms for TX_PHY_LOCK (second pass). */
+    for (int i = 0; i < 100; i++) {
         if (h[0x3004] & 0x01U) break;
         delay_us(1000);
     }
 
     uint32_t phystat = h[0x3004] & 0xFFU;
+    uart_puts_bare("[phy] phystat="); uart_puthex(phystat);
+    uart_puts_bare(" i2cm_ok="); uart_puthex((uint32_t)(i2cm_ok & 0xFFU));
+    uart_puts_bare(" mc_clkdis="); uart_puthex(mc_clkdis_rb); uart_putc('\n');
     *diag0_out = (slave_rb             << 24) |   /* PHY_I2CM_SLAVE rb (0x69=good, 0x00=gated) */
                  (div_rb               << 16) |   /* PHY_I2CM_DIV   rb (0x0B=good, 0x00=gated) */
                  (ih_preop             <<  8) |   /* IH before first OPERATION (0=clean) */
@@ -922,265 +1023,281 @@ static void dw_hdmi_init(uint32_t *diag0_out, uint32_t *diag1_out,
 /* ----------------------------------------------------------------
  * DC8200 display engine init (base 0xFFEF600000).
  *
- * Plane assignment (from dc_hw_planes[DC_REV_0] in vs_dc_hw.c):
- *   PRIMARY_PLANE_0 (offset=0x00) → display 0 = eDP
- *   PRIMARY_PLANE_1 (offset=0x04) → display 1 = HDMI  ← we use this
+ * Uses PRIMARY_PLANE_0 (base register offsets, no +4 variant).
  *
- * Linux uses PRIMARY_PLANE_1 for HDMI.  Its secondary registers
- * (BLEND_CONFIG, SRC/DST_GLOBAL_COLOR, TOP_LEFT, BOTTOM_RIGHT) may
- * or may not be valid from a prior Linux session, so we write them
- * explicitly here.
+ * The DC8200 SE-MMU (IOMMU) is DISABLED after the warm U-Boot handoff
+ * (SE_MMU_CONTROL BIT(0)=0, confirmed by scratch[23]=0x00005720).
+ * DC_FRAMEBUFFER_ADDRESS therefore takes a raw physical address.
+ * FB_ADDR = 0x50000000 is used for both CPU pixel writes and the
+ * register value — no IOMMU translation involved.
  *
- * Key registers and their plane-1 addresses (base + offset 4):
- *   DC_FRAMEBUFFER_ADDRESS      0x1400 → 0x1404
- *   DC_FRAMEBUFFER_STRIDE       0x1408 → 0x140C
- *   DC_FRAMEBUFFER_SIZE         0x1810 → 0x1814
- *   DC_FRAMEBUFFER_CONFIG       0x1518 → 0x151C
- *   DC_FRAMEBUFFER_CONFIG_EX    0x1CC0 → 0x1CC4
- *   DC_FRAMEBUFFER_SCALE_CONFIG 0x1520 → 0x1524
- *   DC_FRAMEBUFFER_BLEND_CONFIG 0x2510 → 0x2514
- *   DC_FRAMEBUFFER_SRC_GLOBAL_COLOR 0x2500 → 0x2504
- *   DC_FRAMEBUFFER_DST_GLOBAL_COLOR 0x2508 → 0x250C
- *   DC_FRAMEBUFFER_TOP_LEFT     0x24D8 → 0x24DC
- *   DC_FRAMEBUFFER_BOTTOM_RIGHT 0x24E0 → 0x24E4
+ * BLEND_PIXEL_NONE (0x3548) bypasses per-pixel alpha so our XRGB8888
+ * pixels (alpha=0x00) are not treated as transparent.
  *
- * Commit sequence follows Linux vs_dc.c vs_dc_commit:
- *   1. dc_hw_enable_shadow_register(false) — clear BIT(12) in CONFIG_EX
- *   2. plane_commit: write all plane registers
- *   3. setup_display: write display registers + PANEL_START
- *   4. dc_hw_enable_shadow_register(true) — set BIT(12) in CONFIG_EX
+ * PANEL_CONFIG is read-modify-write |= BIT(12) to avoid disturbing
+ * bits that gate the HDMI output clock.
  * ---------------------------------------------------------------- */
-static void dc8200_init(void)
+/*
+ * dc8200_init — configure the DC8200 display engine for 1920×1080@60 HDMI.
+ *
+ * Always does a full pipeline setup regardless of cold/warm boot.
+ * Disables shadow mode first so all register writes take effect immediately
+ * (avoids the shadow-register trap where writes go to a shadow copy that only
+ * commits on the next VSYNC — which never arrives if the display isn't running).
+ *
+ * U-Boot's failed LCD-panel probe may have left DC8200 routing its output to
+ * display 0 (DSI/LCD).  We always switch to display_id=1 (HDMI) and re-arm
+ * the timing generator so the DW-HDMI PHY has a reference pixel clock to lock.
+ */
+static void dc8200_init(int cold_boot)
 {
+    (void)cold_boot;   /* always full pipeline setup */
     volatile uint32_t *dc = (volatile uint32_t *)0xFFEF600000ULL;
 
-    /* Step 1: Disable shadow registers for PRIMARY_PLANE_1 (offset=4).
-     * With shadow OFF, all writes take effect immediately. */
-    dc[0x1CC4/4] &= ~(1U << 12);
+    /* Disable plane 1, clear leftover state. */
+    dc[0x1CC4/4] = 0U;           /* plane 1: fully disabled */
+    dc[0x1814/4] = 0U;           /* clear mystery register */
+    dc[0x1CD4/4] &= ~(1U << 3); /* DP_CONFIG display 1: clear DP-mode bit */
     __asm__ volatile ("fence" ::: "memory");
 
-    /* Step 2a: Framebuffer data registers for plane 1.
-     *   ADDRESS (0x1404): physical base of XRGB8888 pixel data = 0x50000000
-     *   STRIDE  (0x140C): bytes per row = 1920 × 4 = 7680 = 0x1E00
-     *   SIZE    (0x1814): bits[14:0]=width, bits[29:15]=height
-     *                     1920 | (1080 << 15) = 0x021C0780 */
-    dc[0x1404/4] = 0x50000000U;
-    dc[0x140C/4] = 0x00001E00U;
-    dc[0x1814/4] = (1080U << 15) | 1920U;  /* = 0x021C0780 */
-
-    /* Step 2b: Pixel format in DC_FRAMEBUFFER_CONFIG (0x151C for plane 1).
-     * FORMAT_X8R8G8B8 = 5 at bits[30:26] → 5 << 26 = 0x14000000.
-     * SWIZZLE_ARGB = 0 (default); no rotation, no YUV, no tile. */
-    dc[0x151C/4] = (5U << 26);
-
-    /* Step 2c: Scale config — default value from load_default_filter.
-     * 0x33 = BIT(0)|BIT(1)|BIT(4)|BIT(5): enables H and V scale path.
-     * Required for the plane scaler to pass pixels through at 1:1. */
-    dc[0x1524/4] = 0x33U;
-
-    /* Step 2d: Blend configuration.
-     * BLEND_PIXEL_NONE (0x3548) makes the plane fully opaque regardless
-     * of the per-pixel alpha byte.  Our RGB() macro sets alpha=0x00 in
-     * bits[31:24] of each XRGB8888 pixel; if the hardware uses per-pixel
-     * alpha with BLEND_PREMULTI the plane would be fully transparent.
-     * BLEND_PIXEL_NONE bypasses per-pixel alpha and uses the global alpha. */
-    dc[0x2514/4] = 0x3548U;
-
-    /* Step 2e: Global plane alpha = 0xFF (fully opaque).
-     * SRC_GLOBAL_COLOR and DST_GLOBAL_COLOR each encode alpha in bits[31:24]. */
-    dc[0x2504/4] = 0xFF000000U;   /* SRC_GLOBAL_COLOR plane 1 */
-    dc[0x250C/4] = 0xFF000000U;   /* DST_GLOBAL_COLOR plane 1 */
-
-    /* Step 2f: Plane position on the display.
-     * TOP_LEFT    (0x24DC): start_x | (start_y << 15) = 0 for top-left corner
-     * BOTTOM_RIGHT (0x24E4): end_x | (end_y << 15).
-     *   end_x = 1920, end_y = 1080 → same encoding as FB_SIZE = 0x021C0780 */
-    dc[0x24DC/4] = 0x00000000U;
-    dc[0x24E4/4] = (1080U << 15) | 1920U;  /* = 0x021C0780 */
-
-    /* Step 2g: Enable plane 1, assign to display 1.
-     * CONFIG_EX bits:
-     *   BIT(13) = fb.enable
-     *   BIT(19) = fb.display_id = 1 (HDMI)
-     * BIT(12) = shadow — left CLEAR here, re-enabled in step 5. */
-    dc[0x1CC4/4] = (1U << 19) | (1U << 13);
+    /* Disable shadow: all subsequent writes hit active registers immediately.
+     * Without this, writes go to shadow and only commit on the next VSYNC. */
+    dc[0x1CC0/4] &= ~(1U << 12);
     __asm__ volatile ("fence" ::: "memory");
 
-    /* Step 3: Display 1 pipeline setup.
-     *
-     * DC_DISPLAY_PANEL_CONFIG (0x141C):
-     *   Linux dc_hw_init writes 0x111 = BIT(0)|BIT(4)|BIT(8) for all panels.
-     *   Linux setup_display OR's in BIT(12) = output pipe enable → 0x1111.
-     *   We write 0x1111 directly (BIT(13) would enable gamma — leave clear). */
-    dc[0x141C/4] = 0x00001111U;
+    dc[0x1400/4] = (uint32_t)(uintptr_t)FB_PHYS; /* framebuffer PA          */
+    dc[0x1408/4] = 0x00001E00U;        /* DC_FRAMEBUFFER_STRIDE = 7680     */
+    dc[0x1810/4] = (1080U << 15) | 1920U; /* DC_FRAMEBUFFER_SIZE           */
 
-    /* DC_DISPLAY_DPI_CONFIG (0x14BC): 5 = MEDIA_BUS_FMT_RGB888_1X24
-     * DC_DISPLAY_H (0x1434): h_active | (h_total << 16) = 1920 | (2200 << 16)
-     * DC_DISPLAY_H_SYNC (0x143C): captured from live Linux 1080p60 session
-     * DC_DISPLAY_V (0x1444): v_active | (v_total << 16) = 1080 | (1125 << 16)
-     * DC_DISPLAY_V_SYNC (0x144C): captured from live Linux 1080p60 session
-     * DC_FRAMEBUFFER_BG_COLOR (0x152C): black background for display 1 */
-    dc[0x14BC/4] = 5U;
-    dc[0x1434/4] = 0x08980780U;
-    dc[0x143C/4] = 0x440207D8U;
-    dc[0x1444/4] = 0x04650438U;
-    dc[0x144C/4] = 0x4220843CU;
-    dc[0x152C/4] = 0x00000000U;
+    dc[0x1518/4] = (5U << 26);         /* FORMAT_X8R8G8B8                  */
+    dc[0x1520/4] = 0x33U;              /* SCALE_CONFIG: H+V scaler enabled */
+
+    dc[0x2510/4] = 0x3548U;            /* BLEND_CONFIG = PIXEL_NONE        */
+    dc[0x2500/4] = 0xFF000000U;        /* SRC global alpha = 0xFF          */
+    dc[0x2508/4] = 0xFF000000U;        /* DST global alpha = 0xFF          */
+
+    dc[0x24D8/4] = 0x00000000U;        /* viewport top-left  (0,0)         */
+    dc[0x24E0/4] = (1080U << 15) | 1920U; /* viewport bottom-right         */
+
+    /* Enable plane 0, display_id=1 (HDMI), shadow still off. */
+    dc[0x1CC0/4] = (1U << 19) | (1U << 13);
     __asm__ volatile ("fence" ::: "memory");
 
-    /* Step 4: Trigger PANEL_START for display 1.
-     * From Linux setup_display: dc_set_clear(PANEL_START, BIT(1), BIT(3))
-     *   BIT(1) = display 1 scanout active
-     *   BIT(3) cleared = not in sync/pipe-sync mode */
+    /* Display 1 pipeline timing (1920×1080@60 Hz, captured from Linux). */
+    dc[0x14BC/4] = 5U;             /* DPI_CONFIG: RGB888_1X24           */
+    dc[0x1434/4] = 0x08980780U;   /* H: total=2200, active=1920        */
+    dc[0x143C/4] = 0x440207D8U;   /* H_SYNC                            */
+    dc[0x1444/4] = 0x04650438U;   /* V: total=1125, active=1080        */
+    dc[0x144C/4] = 0x4220843CU;   /* V_SYNC                            */
+    dc[0x152C/4] = 0x00000000U;   /* BG_COLOR display 1: black         */
+    __asm__ volatile ("fence" ::: "memory");
+
+    /* Enable display 1 output pipe. */
+    dc[0x141C/4] |= (1U << 12);
+    __asm__ volatile ("fence" ::: "memory");
+
+    /* PANEL_START display 1: BIT(1)=start, clear BIT(3)=sync_mode. */
     dc[0x1CCC/4] = (dc[0x1CCC/4] & ~(1U << 3)) | (1U << 1);
     __asm__ volatile ("fence" ::: "memory");
 
-    /* Step 5: Re-enable shadow registers for plane 1. */
-    dc[0x1CC4/4] |= (1U << 12);
+    /* Re-enable shadow for future double-buffered updates. */
+    dc[0x1CC0/4] |= (1U << 12);
     __asm__ volatile ("fence" ::: "memory");
 }
 
 /*
- * hdmi_hello_world
+ * hdmi_hello_world — bare-metal display bring-up for the BeagleV-Ahead.
  *
- * Full bare-metal display init + "Hello World" render.
+ * Handles both cold boot (power-off reset) and warm boot (go after prior run).
  *
- * Scratch (md.l 0x05000000 22):
- *   [0] aa000001 — entered
- *   [1] aa000002 — clocks enabled
- *   [2] aa000003 — framebuffer painted + dcache flushed
- *   [3] aa000004 — DW-HDMI init done
- *   [4] aa000005 — DC8200 init + commit done
- *   [5] aa000006 — returning
- *   [6] scratch[6]: [31:24]=SLAVE_rb [23:16]=DIV_rb [15:8]=IH_preop [7:0]=i2cm_ok
- *       0x690B0006 = all good (0x69 slave, 0x0B div, 6 writes)
- *   [7] scratch[7]: [23:16]=first_fail_reg [15:8]=PHY_STAT0 [7:0]=fail_type
- *       0x0000F300 = TX_PHY_LOCK=1 → video should appear
- *   [8] scratch[8]: [23:16]=MC_CLKDIS_rb [15:8]=IH_5us_after_OP [7:0]=IH_after_50ms
- *       0x000002xx = I2CM clocked, IH fired fast (0x02=done)
- *   [9] scratch[9]: DPU0 PLL STS (ap+0x80)
- *       BIT(8)=DPU0_LOCK, BIT(9)=DPU1_LOCK — expect both 1
- *   [10] scratch[10]: DPU0 PLL CFG0 (ap+0x40)
- *       expect 0x01206301 if PLL write succeeded
- *   [11] scratch[11]: DPU0 PLL CFG1 (ap+0x44)
- *       BIT(30)=BYPASS, BIT(29)=RST — expect both 0
- *   [12] scratch[12]: DPU0_PLL_DIV_CLK (ap+0x1E8)
- *       bits[7:0]=divider(8), bit[8]=sync_en(1)
- *   [13] scratch[13]: DPU1 PLL CFG0 (ap+0x50)
- *       expect 0x01206301
- *   [14] scratch[14]: DPU1 PLL CFG1 (ap+0x54)
- *       BIT(30)=BYPASS, BIT(29)=RST — expect both 0
- *   [15] scratch[15]: DPU1_PLL_DIV_CLK (ap+0x1EC)
- *       bits[7:0]=divider(8), bit[8]=sync_en(1)
- *   [16] First framebuffer pixel FB_PHYS[0] (after dcache flush)
- *       should be 0x00FFFFFF = white bar (confirms flush + DRAM write)
- *   [17] DC_FRAMEBUFFER_ADDRESS plane 1 (dc+0x1404)
- *       should be 0x50000000
- *   [18] DC_FRAMEBUFFER_CONFIG_EX plane 1 (dc+0x1CC4)
- *       should be 0x00082000 (enable=BIT(13), display_id=1=BIT(19))
- *   [19] DC_FRAMEBUFFER_BG_COLOR display 1 (dc+0x152C)
- *       should be 0x00000000 (black — written by dc8200_init)
- *   [20] DC_DISPLAY_PANEL_START (dc+0x1CCC) readback after commit
- *       (hardware may auto-clear; value is informational)
- *   [21] DC_DISPLAY_PANEL_CONFIG display 1 (dc+0x141C)
- *       should be 0x00001111 (bit12=panel_enable)
+ * ---- Root cause of the cold-boot "reboot" crash --------------------------------
+ *
+ * On cold boot the DC8200 MMIO (0xFFEF600000) is clock-gated because U-Boot's
+ * display driver disables the VOSYS domain clocks after the failed LCD-panel
+ * probe ("LCD panel cannot be found : -121").  Reading a clock-gated MMIO
+ * address on the C910 generates an imprecise bus error.  Crucially, this fault
+ * is delivered as an M-mode trap (not delegated to S-mode via medeleg), so our
+ * stvec handler at 0x05000010 is NEVER invoked.  OpenSBI's M-mode handler
+ * handles the fault by resetting the hart → BROM re-executes → looks like a
+ * hard reboot ("brom_ver 8" appears immediately after `go 0x04000000`).
+ *
+ * Because the C910's bus error is *imprecise* (the CPU posts MMIO writes/reads
+ * and continues), the fault is not raised immediately.  It fires when the CPU
+ * reaches the next fence instruction.  This is why the crash point shifts by
+ * exactly one scratch slot when we add code between the triggering MMIO access
+ * and the next fence().
+ *
+ * ---- The fix -------------------------------------------------------------------
+ *
+ * Never read DC8200 MMIO before we know the VOSYS domain is clocked.  Use a
+ * DRAM magic cookie (scratch[22]+scratch[23]) for cold/warm boot detection
+ * instead of reading dc[0x1400/4].  DRAM reads are always safe.
+ *
+ * For cold boot the correct enable sequence is:
+ *   1. PLLs first  — provide a clock source for the VOSYS clock gates.
+ *   2. vosys_clk_enable() — open the gates (PLLs now drive VOSYS domain).
+ *   3. delay 1 ms  — allow the DC8200 APB to clock up and stabilise.
+ *   4. Only THEN access DC8200 MMIO (inside dc8200_init).
+ *
+ * For warm boot the VOSYS domain is already running, so step 1 is skipped and
+ * reading dc[0x1400/4] is safe.
+ *
+ * ---- Magic cookie lifecycle ---------------------------------------------------
+ *
+ * scratch[22] = 0xDEADBEEF  \  Written at the END of a successful run.
+ * scratch[23] = 0xCAFEF00D  /  After a power-off reset, DDR training overwrites
+ *                              DRAM with calibration patterns, so the pair will
+ *                              NOT survive a true cold boot (1-in-2^64 chance).
+ *
+ * ---- Scratch diagnostics (md.l 0x05000000 24) --------------------------------
+ *   [0]  0xAA000001 — entered
+ *   [1]  0xAA000002 — boot path complete (PLLs/vosys done)
+ *   [2]  fb_pa      — framebuffer PA (0x67000000=warm, 0x50000000=cold)
+ *   [3]  0xAA000004 — pixels written + dcache flushed
+ *   [4]  0xAA000005 — DC8200 init done  (trap handler: 0xDEAD0001 if S-mode fault)
+ *   [5]  0xAA000006 — HDMI PHY done     (trap handler: sepc low 32b)
+ *   [6]  diag0      — 0x690B0006=all good  (trap handler: sepc high 32b)
+ *   [7]  diag1      — 0x0000F300=TX_PHY_LOCK=1
+ *   [8]  diag2      — clock/IH probe
+ *   [16] FB_PHYS[0] — 0x00FFFFFF=white bar (dcache flush OK)
+ *   [17] dc[0x1400] — framebuffer address (should match scratch[2])
+ *   [18] dc[0x1CC0] — CONFIG_EX plane 0
+ *   [19] dc[0x2510] — BLEND_CONFIG (0x00003548=PIXEL_NONE)
+ *   [20] dc[0x1CC4] — CONFIG_EX plane 1 (0=disabled)
+ *   [21] cold_boot  — 1=cold, 0=warm
+ *   [22] 0xDEADBEEF — warm-boot marker (written last, before spin)
+ *   [23] 0xCAFEF00D — warm-boot marker (second word, reduces false-positive risk)
  */
+
 void hdmi_hello_world(void)
 {
     volatile uint32_t *scratch = (volatile uint32_t *)0x05000000ULL;
+    volatile uint32_t *dc = (volatile uint32_t *)0xFFEF600000ULL;
+
+    /* Cold vs warm boot: detected from DRAM magic cookie (no MMIO read). */
+    int cold_boot = (scratch[22] != 0xDEADBEEFU ||
+                     scratch[23] != 0xCAFEF00DU);
 
     scratch[0] = 0xAA000001;
     __asm__ volatile ("fence" ::: "memory");
 
-    /* 1. Re-enable display subsystem clocks. */
+    uart_puts_bare("\n[hdmi] cold_boot=");
+    uart_putc('0' + (cold_boot & 1));
+    uart_putc('\n');
+
+    /* Enable VOSYS clocks.
+     * Safe on warm boot (no-op).  On cold boot, U-Boot's 16ms splash attempt
+     * already enabled VOSYS clocks before giving up on the LCD panel probe,
+     * so this write is safe. */
+    /* Enable VOSYS clock gates.
+     * Print the pixel-clock-divider regs (0x074/0x078) before and after
+     * so we can verify U-Boot's setting is preserved. */
+    {
+        volatile uint32_t *clk = (volatile uint32_t *)0xFFEF528000ULL;
+        uart_puts_bare("[hdmi] pre-vosys clk[074]=");
+        uart_puthex(clk[0x074/4]);
+        uart_puts_bare(" clk[078]=");
+        uart_puthex(clk[0x078/4]);
+        uart_putc('\n');
+    }
+    uart_puts_bare("[hdmi] vosys_clk_enable\n");
     vosys_clk_enable();
-    delay_us(500);
+    delay_us(50000);    /* 50 ms: allow pixel clock PLL to lock after clk[074] write */
+    {
+        volatile uint32_t *clk = (volatile uint32_t *)0xFFEF528000ULL;
+        uart_puts_bare("[hdmi] post-vosys clk[074]=");
+        uart_puthex(clk[0x074/4]);
+        uart_puts_bare(" clk[078]=");
+        uart_puthex(clk[0x078/4]);
+        uart_putc('\n');
+    }
+    uart_puts_bare("[hdmi] vosys done\n");
+
+    /* Framebuffer address. */
+    uint32_t fb_pa;
+    if (!cold_boot) {
+        fb_pa = dc[0x1400/4];
+        uart_puts_bare("[hdmi] warm fb_pa=");
+        uart_puthex(fb_pa);
+        uart_putc('\n');
+        if (fb_pa < 0x1000U || fb_pa == 0xFFFFFFFFU)
+            fb_pa = FB_ADDR;
+    } else {
+        fb_pa = FB_ADDR;
+        uart_puts_bare("[hdmi] cold fb_pa=");
+        uart_puthex(fb_pa);
+        uart_putc('\n');
+    }
+    FB_PHYS = (volatile uint32_t *)(uintptr_t)fb_pa;
     scratch[1] = 0xAA000002;
+    scratch[2] = fb_pa;
+    scratch[21] = (uint32_t)cold_boot;
     __asm__ volatile ("fence" ::: "memory");
 
-    /* 1b. Configure DPU0 and DPU1 PLLs for 148.5 MHz pixel clock (1080p60).
-     *     Both PLLs are configured to ensure 148.5 MHz reaches the HDMI PHY:
-     *     DPU0_PLL_DIV_CLK feeds the DC8200 display engine pixel clock;
-     *     DPU1_PLL_DIV_CLK may feed the DW-HDMI pixel clock — configure both. */
-    dpu0_pll_configure_1080p60();
-    dpu1_pll_configure_1080p60();
-
-    /* PLL diagnostic: read AP CLKGEN registers after both PLLs configured.
-     *   scratch[9]  = PLL_STS (ap+0x80): BIT(8)=DPU0_LOCK, BIT(9)=DPU1_LOCK
-     *   scratch[10] = DPU0_PLL_CFG0 (ap+0x40): expect 0x01206301
-     *   scratch[11] = DPU0_PLL_CFG1 (ap+0x44): BIT(30)=BYPASS, BIT(29)=RST (want 0)
-     *   scratch[12] = DPU0_PLL_DIV_CLK (ap+0x1E8): bits[7:0]=div(8), bit[8]=sync_en(1)
-     *   scratch[13] = DPU1_PLL_CFG0 (ap+0x50): expect 0x01206301
-     *   scratch[14] = DPU1_PLL_CFG1 (ap+0x54): BIT(30)=BYPASS, BIT(29)=RST (want 0)
-     *   scratch[15] = DPU1_PLL_DIV_CLK (ap+0x1EC): bits[7:0]=div(8), bit[8]=sync_en(1) */
-    {
-        volatile uint32_t *ap = (volatile uint32_t *)0xFFEF010000ULL;
-        scratch[9]  = ap[0x80/4];
-        scratch[10] = ap[0x40/4];
-        scratch[11] = ap[0x44/4];
-        scratch[12] = ap[0x1E8/4];
-        scratch[13] = ap[0x50/4];
-        scratch[14] = ap[0x54/4];
-        scratch[15] = ap[0x1EC/4];
-    }
-
-    /* 2. Paint framebuffer before display comes up.
-     *    Full-screen SMPTE colour bars (W/Y/C/G/M/R/B) — immediately verifiable.
-     *    "Hello World" centred in white at scale 5 over a black box. */
+    /* Paint framebuffer. */
+    uart_puts_bare("[hdmi] fb_colour_bars\n");
+    scratch[24] = 0xAA000003;
+    __asm__ volatile ("fence" ::: "memory");
     fb_colour_bars(0, FB_HEIGHT - 1);
-    /* Black backing box so text is legible over any bar colour. */
-    fb_rect(17 * 8 * 5 - 8, 12 * 8 * 5 - 8,
+    fb_rect(17 * 8 * 5 - 8,        12 * 8 * 5 - 8,
             (18 + 11) * 8 * 5 + 8, (13 + 1) * 8 * 5 + 8,
             RGB(0, 0, 0));
     fb_puts(18, 13, "Hello World", 5,
             RGB(0xFF, 0xFF, 0xFF), RGB(0, 0, 0), 0);
+    scratch[25] = 0xAA00003B;
     __asm__ volatile ("fence" ::: "memory");
+    uart_puts_bare("[hdmi] fb done\n");
 
-    /* Flush D-cache to DRAM so DC8200 DMA sees our pixel writes.
-     * The C910 L1/L2 data cache is write-back; the DC8200 DMA engine
-     * reads directly from physical DRAM and is NOT cache-coherent with
-     * the C910 CPU.  'fence' orders CPU accesses but does NOT evict
-     * dirty cache lines to DRAM.  th.dcache.ciall (T-Head custom ISA)
-     * cleans and invalidates the entire D-cache, ensuring all dirty
-     * lines are written back to DRAM before DC8200 starts scanning. */
+    /* Flush D-cache → DRAM (DC8200 DMA is not cache-coherent). */
     __asm__ volatile (".word 0x0030000B" ::: "memory");  /* th.dcache.ciall */
     __asm__ volatile (".word 0x0190000B" ::: "memory");  /* th.sync.s */
-
-    scratch[2] = 0xAA000003;
+    scratch[3] = 0xAA000004;
     __asm__ volatile ("fence" ::: "memory");
+    uart_puts_bare("[hdmi] dcache flushed\n");
 
-    /* 3. Initialise DW-HDMI transmitter (clocks, FC, PHY). */
+    /* DC8200. */
+    uart_puts_bare("[hdmi] dc8200_init\n");
+    dc8200_init(cold_boot);
+    scratch[4] = 0xAA000005;
+    __asm__ volatile ("fence" ::: "memory");
+    uart_puts_bare("[hdmi] dc8200 done\n");
+
+    /* Wait for DC8200 to start generating the pixel clock.
+     * The PHY MPLL needs this reference to lock.  One full 60 Hz frame
+     * takes 16.7 ms; wait 30 ms to ensure the clock is stable. */
+    delay_us(30000);
+
+    /* DW-HDMI PHY. */
+    uart_puts_bare("[hdmi] dw_hdmi_init\n");
     uint32_t diag0, diag1, diag2;
     dw_hdmi_init(&diag0, &diag1, &diag2);
-    scratch[3] = 0xAA000004;
-    scratch[6] = diag0;  /* [31:24]=SLAVE_rb [23:16]=DIV_rb [15:8]=IH_preop [7:0]=i2cm_ok */
-    scratch[7] = diag1;  /* [23:16]=first_fail_reg [15:8]=PHY_STAT0 [7:0]=fail_type */
-    scratch[8] = diag2;  /* [23:16]=MC_CLKDIS_rb [15:8]=IH_fast [7:0]=IH_final */
-    __asm__ volatile ("fence" ::: "memory");
-
-    /* 4. Initialise DC8200 and commit framebuffer to scanout. */
-    dc8200_init();
-    scratch[4] = 0xAA000005;
-
-    /* DC8200 post-init diagnostics (md.l 0x05000000 22):
-     *   [16] First framebuffer pixel (should be 0x00FFFFFF = white bar)
-     *   [17] DC_FRAMEBUFFER_ADDRESS (0x1400): should be 0x50000000
-     *   [18] DC_FRAMEBUFFER_CONFIG_EX (0x1CC0): should have BIT(13)+BIT(19)=0x000A2000
-     *        (BIT(12)=shadow enabled after step 5)
-     *   [19] DC_FRAMEBUFFER_BG_COLOR display 1 (0x152C): should be 0x00000000
-     *   [20] DC_DISPLAY_PANEL_START (0x1CCC): BIT(1) should be set
-     *   [21] DC_DISPLAY_PANEL_CONFIG display 1 (0x141C): should have BIT(12) set */
-    {
-        volatile uint32_t *dc = (volatile uint32_t *)0xFFEF600000ULL;
-        scratch[16] = FB_PHYS[0];       /* first pixel after dcache flush */
-        scratch[17] = dc[0x1400/4];    /* FB_ADDRESS plane 0            */
-        scratch[18] = dc[0x1CC0/4];    /* FB_CONFIG_EX plane 0          */
-        scratch[19] = dc[0x152C/4];    /* BG_COLOR display 1            */
-        scratch[20] = dc[0x1CCC/4];    /* PANEL_START readback          */
-        scratch[21] = dc[0x141C/4];    /* PANEL_CONFIG display 1        */
-    }
-    __asm__ volatile ("fence" ::: "memory");
-
     scratch[5] = 0xAA000006;
+    scratch[6] = diag0;
+    scratch[7] = diag1;
+    scratch[8] = diag2;
     __asm__ volatile ("fence" ::: "memory");
+    uart_puts_bare("[hdmi] diag0="); uart_puthex(diag0);
+    uart_puts_bare(" diag1="); uart_puthex(diag1);
+    uart_puts_bare(" diag2="); uart_puthex(diag2);
+    uart_putc('\n');
+
+    /* Register snapshot. */
+    scratch[16] = FB_PHYS[0];
+    scratch[17] = dc[0x1400/4];
+    scratch[18] = dc[0x1CC0/4];
+    scratch[19] = dc[0x2510/4];
+    scratch[20] = dc[0x1CC4/4];
+    __asm__ volatile ("fence" ::: "memory");
+    uart_puts_bare("[hdmi] FB[0]="); uart_puthex(scratch[16]);
+    uart_puts_bare(" blend="); uart_puthex(scratch[19]);
+    uart_putc('\n');
+
+    /* Write magic cookie — marks this as a successful run for next boot. */
+    scratch[22] = 0xDEADBEEFU;
+    scratch[23] = 0xCAFEF00DU;
+    __asm__ volatile ("fence" ::: "memory");
+
+    uart_puts_bare("[hdmi] done. Reset board to return to U-Boot.\n");
+    while (1)
+        __asm__ volatile ("nop");
 }
