@@ -20,7 +20,7 @@ Linker script and memory map
 
                 0x0000000004000000                . = ORIGIN (ram)
 
-.text           0x0000000004000000     0x26e8
+.text           0x0000000004000000     0x387c
  *(.text.start)
  .text.start    0x0000000004000000       0xb8 build/start-th1520.o
                 0x0000000004000000                _start_baremetal
@@ -34,43 +34,43 @@ Linker script and memory map
                 0x000000000400065e                __calynda_rt_array_cdr
                 0x00000000040006b8                __calynda_rt_string_cdr
                 0x0000000004000702                __calynda_rt_store_index
- .text          0x0000000004000772     0x1ef2 build/hdmi_fb-th1520.o
-                0x0000000004000f8e                hdmi_fb_demo
-                0x00000000040023fe                hdmi_hello_world
- .text          0x0000000004002664       0x84 build/uart_hello-th1520.o
-                0x0000000004002664                calynda_unit_hdmi_hello_world
-                0x0000000004002674                calynda_unit_run
-                0x00000000040026a8                calynda_unit_boot
-                0x00000000040026dc                _start
+ .text          0x0000000004000772     0x3086 build/hdmi_fb-th1520.o
+                0x0000000004001764                hdmi_fb_demo
+                0x000000000400319a                hdmi_hello_world
+ .text          0x00000000040037f8       0x84 build/uart_hello-th1520.o
+                0x00000000040037f8                calynda_unit_hdmi_hello_world
+                0x0000000004003808                calynda_unit_run
+                0x000000000400383c                calynda_unit_boot
+                0x0000000004003870                _start
 
-.rodata         0x00000000040026f0      0x374
+.rodata         0x0000000004003880      0x5c4
  *(.rodata .rodata.*)
- .rodata        0x00000000040026f0      0x374 build/hdmi_fb-th1520.o
+ .rodata        0x0000000004003880      0x5c4 build/hdmi_fb-th1520.o
 
-.rela.dyn       0x0000000004002a68        0x0
+.rela.dyn       0x0000000004003e48        0x0
  .rela.text.start
-                0x0000000004002a68        0x0 build/start-th1520.o
+                0x0000000004003e48        0x0 build/start-th1520.o
 
-.data           0x0000000004002a70        0x0
+.data           0x0000000004003e50        0x0
  *(.data .data.*)
- .data          0x0000000004002a70        0x0 build/start-th1520.o
- .data          0x0000000004002a70        0x0 build/runtime_boot-th1520.o
- .data          0x0000000004002a70        0x0 build/hdmi_fb-th1520.o
- .data          0x0000000004002a70        0x0 build/uart_hello-th1520.o
+ .data          0x0000000004003e50        0x0 build/start-th1520.o
+ .data          0x0000000004003e50        0x0 build/runtime_boot-th1520.o
+ .data          0x0000000004003e50        0x0 build/hdmi_fb-th1520.o
+ .data          0x0000000004003e50        0x0 build/uart_hello-th1520.o
 
-.bss            0x0000000004002a70    0x10008
-                0x0000000004002a70                __bss_start = .
+.bss            0x0000000004003e50    0x10008
+                0x0000000004003e50                __bss_start = .
  *(.bss .bss.*)
- .bss           0x0000000004002a70        0x0 build/start-th1520.o
- .bss           0x0000000004002a70    0x10008 build/runtime_boot-th1520.o
- .bss           0x0000000004012a78        0x0 build/hdmi_fb-th1520.o
- .bss           0x0000000004012a78        0x0 build/uart_hello-th1520.o
+ .bss           0x0000000004003e50        0x0 build/start-th1520.o
+ .bss           0x0000000004003e50    0x10008 build/runtime_boot-th1520.o
+ .bss           0x0000000004013e58        0x0 build/hdmi_fb-th1520.o
+ .bss           0x0000000004013e58        0x0 build/uart_hello-th1520.o
  *(COMMON)
-                0x0000000004012a78                __bss_end = .
-                0x0000000004012a80                . = ALIGN (0x10)
-                0x0000000004012a80                __stack_bottom = .
-                0x0000000004022a80                . = (. + 0x10000)
-                0x0000000004022a80                __stack_top = .
+                0x0000000004013e58                __bss_end = .
+                0x0000000004013e60                . = ALIGN (0x10)
+                0x0000000004013e60                __stack_bottom = .
+                0x0000000004023e60                . = (. + 0x10000)
+                0x0000000004023e60                __stack_top = .
 
 /DISCARD/
  *(.note.GNU-stack)
