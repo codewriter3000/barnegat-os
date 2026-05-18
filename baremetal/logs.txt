@@ -11447,3 +11447,70 @@ C910 Light# run   go 0x04000000
 0x000000FFEF544010: 0x00000001 0x00000038 0x00000004 0x0000002D
 0x000000FFEF544020: 0x00000058 0x00000000
 [hold] scanout active; reset board to return
+  ±‚ f 0 
+C910 Light# t€à   
+C910 Light# 
+C910 Light# go 0x04000000
+## Starting application at 0x04000000 ...
+       à       ð            P         @  à ÿ                 @         @@                  ˆ              @@   	  €@  €          `      @              €           XX                ø   €   ð ð      i@               ø            @   AÀ¨ÆHq  „€                           @          À@                                                                                         0          @                                        € @   !Î²$ª  €   @            ÿbrom_ver 8
+[APP][E] protocol_connect failed, exit.
+
+U-Boot SPL 2020.01 (Jun 10 2023 - 20:19:32 +0000)
+FM[1] lpddr4x singlerank freq=3733 64bit dbi_off=n sdram init
+ddr initialized, jump to uboot
+image has no header
+
+
+U-Boot 2020.01 (Jun 10 2023 - 20:19:32 +0000)
+
+CPU:   rv64imafdcvsu
+Model: T-HEAD c910 light
+DRAM:  4 GiB
+C910 CPU FREQ: 750MHz
+AHB2_CPUSYS_HCLK FREQ: 250MHz
+AHB3_CPUSYS_PCLK FREQ: 125MHz
+PERISYS_AHB_HCLK FREQ: 250MHz
+PERISYS_APB_PCLK FREQ: 62MHz
+GMAC PLL POSTDIV FREQ: 1000MHZ
+DPU0 PLL POSTDIV FREQ: 1188MHZ
+DPU1 PLL POSTDIV FREQ: 1188MHZ
+MMC:   sdhci@ffe7080000: 0, sd@ffe7090000: 1
+Loading Environment from MMC... OK
+Error reading output register
+Warning: cannot get lcd-en GPIO
+LCD panel cannot be found : -121
+splash screen startup cost 15 ms
+In:    serial
+Out:   serial
+Err:   serial
+Net:   
+Warning: ethernet@ffe7070000 (eth0) using random MAC address - 02:26:c8:53:be:94
+eth0: ethernet@ffe7070000ethernet@ffe7070000:0 is connected to ethernet@ffe7070000.  Reconnecting to ethernet@ffe7060000
+
+Warning: ethernet@ffe7060000 (eth1) using random MAC address - 1a:f3:f2:c6:e9:68
+, eth1: ethernet@ffe7060000
+Hit any key to stop autoboot:  5  4  3  0 
+C910 Light# loady 0x04000000
+## Ready for binary (ymodem) download to 0x04000000 at 115200 bps...
+CC) packets, 4 retries
+## Total Size      = 0x00003e44 = 15940 Bytes
+C910 Light# go 0x04000000
+## Starting application at 0x04000000 ...
+[pre] p0_addr=0x00000000 p0_cfgex=0x00000000 p1_addr=0x00000000 p1_cfgex=0x00000000
+[pre] pstart=0x00000000 pcfg0=0x00000000 pcfg1=0x00000000
+[dc] fb0=0x00FFFFFF p0_addr=0x00000000 p0_cfgex=0x00000000
+[dc] p1_addr=0x04200000 p1_cfgex=0x00082000 p1_cfg=0x14000000
+[dc] p1_stride=0x00001E00 p1_size=0x021C0780 p1_scale=0x00000030 p1_blend=0x00000002
+[dc] p1_srcga=0xFF000000 p1_dstga=0xFF000000 p1_tl=0x00000000 p1_br=0x021C0780
+[dc] pstart=0x00000003 pcfg1=0x00001111
+[hdmi] phystat=0x0000F300 i2cm=0x690B0006 ih=0x00000002
+[hdmi-dump] 0xFFEF540000 8
+0x000000FFEF540000: 0x00000021 0x0000004A 0x000000A0 0x000000C1
+0x000000FFEF540010: 0x0000009F 0x00000022 0x000000F3 0x00000000
+[hdmi-dump] 0xFFEF540400 2
+0x000000FFEF540400: 0x00000082 0x00000003
+[hdmi-dump] 0xFFEF544000 10
+0x000000FFEF544000: 0x00000078 0x00000080 0x00000007 0x00000018
+0x000000FFEF544010: 0x00000001 0x00000038 0x00000004 0x0000002D
+0x000000FFEF544020: 0x00000058 0x00000000
+[hold] scanout active; reset board to return

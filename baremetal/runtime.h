@@ -156,6 +156,13 @@ typedef struct {
     _Atomic CalyndaRtWord   value;
 } CalyndaRtAtomic;
 
+#define CALYNDA_RT_NLR_MAX_DEPTH 64
+
+typedef struct {
+    bool          pending;
+    CalyndaRtWord value;
+} CalyndaRtNlrSlot;
+
 #define CALYNDA_RT_THREAD_SPAWN   "__calynda_rt_thread_spawn"
 #define CALYNDA_RT_THREAD_JOIN    "__calynda_rt_thread_join"
 #define CALYNDA_RT_THREAD_CANCEL  "__calynda_rt_thread_cancel"
@@ -171,6 +178,9 @@ typedef struct {
 #define CALYNDA_RT_ATOMIC_LOAD     "__calynda_rt_atomic_load"
 #define CALYNDA_RT_ATOMIC_STORE    "__calynda_rt_atomic_store"
 #define CALYNDA_RT_ATOMIC_EXCHANGE "__calynda_rt_atomic_exchange"
+#define CALYNDA_RT_FENCE           "__calynda_rt_fence"
+#define CALYNDA_RT_CACHE_CLEAN     "__calynda_rt_cache_clean"
+#define CALYNDA_RT_CACHE_FINAL     "__calynda_rt_cache_final"
 #define CALYNDA_RT_ARRAY_CAR       "__calynda_rt_array_car"
 #define CALYNDA_RT_ARRAY_CDR       "__calynda_rt_array_cdr"
 #define CALYNDA_RT_STRING_CDR      "__calynda_rt_string_cdr"
@@ -203,12 +213,19 @@ CalyndaRtWord calynda_rt_make_string_copy(const char *bytes);
 CalyndaRtWord __calynda_rt_closure_new(CalyndaRtClosureEntry code_ptr,
                                        size_t capture_count,
                                        const CalyndaRtWord *captures);
+CalyndaRtWord __calynda_rt_cell_alloc(CalyndaRtWord initial_value);
+CalyndaRtWord __calynda_rt_cell_read(CalyndaRtWord cell);
+CalyndaRtWord __calynda_rt_cell_write(CalyndaRtWord cell, CalyndaRtWord value);
 CalyndaRtWord calynda_rt_callable_dispatch(CalyndaRtWord callable,
                                            const CalyndaRtWord *arguments,
                                            size_t argument_count);
 CalyndaRtWord __calynda_rt_call_callable(CalyndaRtWord callable,
                                          size_t argument_count,
                                          const CalyndaRtWord *arguments);
+CalyndaRtNlrSlot *__calynda_rt_nlr_push(void);
+void __calynda_rt_nlr_invoke(CalyndaRtNlrSlot *slot, CalyndaRtWord value);
+CalyndaRtWord __calynda_rt_nlr_check_pop(CalyndaRtNlrSlot *slot);
+CalyndaRtWord __calynda_rt_nlr_get_value(CalyndaRtNlrSlot *slot);
 CalyndaRtWord __calynda_rt_member_load(CalyndaRtWord target, const char *member);
 CalyndaRtWord __calynda_rt_stdlib_print0(void);
 CalyndaRtWord __calynda_rt_stdlib_print1(CalyndaRtWord value);
@@ -277,13 +294,26 @@ CalyndaRtWord __calynda_issametype(CalyndaRtWord left_value,
 /* Manual memory pointer operations */
 CalyndaRtWord __calynda_deref(CalyndaRtWord ptr);
 CalyndaRtWord __calynda_deref_sized(CalyndaRtWord ptr, CalyndaRtWord size);
+CalyndaRtWord __calynda_mmio_deref(CalyndaRtWord ptr);
+CalyndaRtWord __calynda_mmio_deref_sized(CalyndaRtWord ptr, CalyndaRtWord size);
 CalyndaRtWord __calynda_addr(CalyndaRtWord value);
 CalyndaRtWord __calynda_offset(CalyndaRtWord ptr, CalyndaRtWord count);
 CalyndaRtWord __calynda_offset_stride(CalyndaRtWord ptr, CalyndaRtWord count,
                                       CalyndaRtWord stride);
 void          __calynda_store(CalyndaRtWord ptr, CalyndaRtWord value);
+void          __calynda_mmio_store(CalyndaRtWord ptr, CalyndaRtWord value);
 void          __calynda_store_sized(CalyndaRtWord ptr, CalyndaRtWord value,
                                     CalyndaRtWord size);
+void          __calynda_mmio_store_sized(CalyndaRtWord ptr, CalyndaRtWord value,
+                                         CalyndaRtWord size);
+void          __calynda_rt_fence(void);
+void          __calynda_rt_cache_clean(CalyndaRtWord address);
+void          __calynda_rt_cache_final(void);
+void          __calynda_rt_debug_word(CalyndaRtWord tag, CalyndaRtWord value);
+void          __calynda_rt_debug_pair(CalyndaRtWord tag,
+                                      CalyndaRtWord left,
+                                      CalyndaRtWord right);
+void          __calynda_rt_debug_object(CalyndaRtWord tag, CalyndaRtWord value);
 /* stackalloc() returns scratch storage whose lifetime ends with the enclosing
     manual scope once compiler-inserted cleanup runs. */
 CalyndaRtWord __calynda_stackalloc(CalyndaRtWord size);

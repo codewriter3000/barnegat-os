@@ -1,0 +1,129 @@
+package app;
+
+import lib.loop_while;
+
+static final uint64 AP_CLKGEN_BASE = 0xFFEF010000;
+static final uint64 VOSYS_CLK_GATE_BASE = 0xFFEF528000;
+
+int32 delay_us = asm(uint32 us) -> {
+    li t0, 1000
+    mul t0, a0, t0
+1:
+    beqz t0, 2f
+    addi t0, t0, -1
+    nop
+    j 1b
+2:
+    li a0, 0
+    ret
+};
+
+void dpu0_pll_configure_1080p60 = () -> {
+    mmio<uint32> ap = 0xFFEF010000;
+    uint32 cfg1 = offset(ap, 0x44 / 4).value;
+
+    cfg1 = cfg1 | (1 << 29);
+    offset(ap, 0x44 / 4).value = cfg1;
+    fence();
+
+    offset(ap, 0x40 / 4).value = (1 << 0) | (99 << 8) | (2 << 20) | (1 << 24);
+    fence();
+    delay_us(3);
+
+    cfg1 = offset(ap, 0x44 / 4).value;
+    cfg1 = cfg1 & ~(1 << 29);
+    cfg1 = cfg1 & ~(1 << 30);
+    offset(ap, 0x44 / 4).value = cfg1;
+    fence();
+
+    int32 wait = 0;
+    while(() -> wait < 200 && (offset(ap, 0x80 / 4).value & (1 << 8)) == 0, () -> {
+        delay_us(1);
+        wait = wait + 1;
+    });
+    delay_us(30);
+
+    uint32 div_reg = offset(ap, 0x1E8 / 4).value;
+    div_reg = div_reg & ~(1 << 8);
+    offset(ap, 0x1E8 / 4).value = div_reg;
+    fence();
+    delay_us(1);
+
+    div_reg = div_reg & ~0xFF;
+    div_reg = div_reg | 8;
+    offset(ap, 0x1E8 / 4).value = div_reg;
+    fence();
+    delay_us(1);
+
+    div_reg = div_reg | (1 << 8);
+    offset(ap, 0x1E8 / 4).value = div_reg;
+    fence();
+    exit;
+};
+
+void dpu1_pll_configure_1080p60 = () -> {
+    mmio<uint32> ap = 0xFFEF010000;
+    uint32 cfg1 = offset(ap, 0x54 / 4).value;
+
+    cfg1 = cfg1 | (1 << 29);
+    offset(ap, 0x54 / 4).value = cfg1;
+    fence();
+
+    offset(ap, 0x50 / 4).value = (1 << 0) | (99 << 8) | (2 << 20) | (1 << 24);
+    fence();
+    delay_us(3);
+
+    cfg1 = offset(ap, 0x54 / 4).value;
+    cfg1 = cfg1 & ~(1 << 29);
+    cfg1 = cfg1 & ~(1 << 30);
+    offset(ap, 0x54 / 4).value = cfg1;
+    fence();
+
+    int32 wait = 0;
+    while(() -> wait < 200 && (offset(ap, 0x80 / 4).value & (1 << 9)) == 0, () -> {
+        delay_us(1);
+        wait = wait + 1;
+    });
+    delay_us(30);
+
+    uint32 div_reg = offset(ap, 0x1EC / 4).value;
+    div_reg = div_reg & ~(1 << 8);
+    offset(ap, 0x1EC / 4).value = div_reg;
+    fence();
+    delay_us(1);
+
+    div_reg = div_reg & ~0xFF;
+    div_reg = div_reg | 8;
+    offset(ap, 0x1EC / 4).value = div_reg;
+    fence();
+    delay_us(1);
+
+    div_reg = div_reg | (1 << 8);
+    offset(ap, 0x1EC / 4).value = div_reg;
+    fence();
+    exit;
+};
+
+void vosys_clk_enable = () -> {
+    mmio<uint32> clk = 0xFFEF528000;
+
+    offset(clk, 0x004 / 4).value = 0x00000007;
+    offset(clk, 0x008 / 4).value = 0x00000001;
+    offset(clk, 0x00C / 4).value = 0x00000001;
+    offset(clk, 0x014 / 4).value = 0x00000003;
+    offset(clk, 0x018 / 4).value = 0x00000003;
+    offset(clk, 0x020 / 4).value = 0x0000000F;
+    offset(clk, 0x050 / 4).value = 0x7BFABFE5;
+    offset(clk, 0x054 / 4).value = 0x00000001;
+    offset(clk, 0x064 / 4).value = 0x00000014;
+    offset(clk, 0x070 / 4).value = 0x00000001;
+    offset(clk, 0x074 / 4).value = 0x00007130;
+    offset(clk, 0x078 / 4).value = 0x00007130;
+    offset(clk, 0x0A4 / 4).value = 0x000FF000;
+    offset(clk, 0x100 / 4).value = 0x00000001;
+    offset(clk, 0x108 / 4).value = 0x00000001;
+    offset(clk, 0x130 / 4).value = 0x00000001;
+    offset(clk, 0x138 / 4).value = 0x00000001;
+    fence();
+    exit;
+};

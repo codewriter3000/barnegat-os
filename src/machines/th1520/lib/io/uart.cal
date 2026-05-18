@@ -12,3 +12,111 @@ int32 uart_putc = asm(int32 ch) -> {
     li   a0, 0
     ret
 };
+
+static final string HEX_DIGITS = "0123456789ABCDEF";
+
+int32 uart_puts_bare_walk = (string s, int32 index) -> {
+    return index >= s.length
+        ? 0
+        : uart_puts_bare_emit(s, index);
+};
+
+int32 uart_puts_bare_emit = (string s, int32 index) -> {
+    char ch = s[index];
+    return ch == '\n'
+        ? uart_puts_bare_emit_newline(s, index, ch)
+        : uart_puts_bare_emit_plain(s, index, ch);
+};
+
+int32 uart_puts_bare_emit_plain = (string s, int32 index, char ch) -> {
+    uart_putc(int32(ch));
+    return uart_puts_bare_walk(s, index + 1);
+};
+
+int32 uart_puts_bare_emit_newline = (string s, int32 index, char ch) -> {
+    uart_putc(int32('\r'));
+    uart_putc(int32(ch));
+    return uart_puts_bare_walk(s, index + 1);
+};
+
+void uart_puts_bare = (string s) -> {
+    uart_puts_bare_walk(s, 0);
+    exit;
+};
+
+int32 uart_puthex_walk = (uint32 value, int32 nibble) -> {
+    return nibble >= 8
+        ? 0
+        : uart_puthex_emit(value, nibble);
+};
+
+int32 uart_puthex_emit = (uint32 value, int32 nibble) -> {
+    int32 shift = 28 - nibble * 4;
+    uint32 digit = (value >> shift) & 0xF;
+    uart_putc(int32(HEX_DIGITS[int32(digit)]));
+    return uart_puthex_walk(value, nibble + 1);
+};
+
+void uart_puthex = (uint32 value) -> {
+    uart_putc(int32('0'));
+    uart_putc(int32('x'));
+    uart_puthex_walk(value, 0);
+    exit;
+};
+
+int32 uart_puthex64_walk = (uint64 value, int32 nibble) -> {
+    return nibble >= 16
+        ? 0
+        : uart_puthex64_emit(value, nibble);
+};
+
+int32 uart_puthex64_emit = (uint64 value, int32 nibble) -> {
+    int32 shift = 60 - nibble * 4;
+    uint64 digit = (value >> shift) & 0xF;
+    uart_putc(int32(HEX_DIGITS[int32(digit)]));
+    return uart_puthex64_walk(value, nibble + 1);
+};
+
+void uart_puthex64 = (uint64 value) -> {
+    uart_putc(int32('0'));
+    uart_putc(int32('x'));
+    uart_puthex64_walk(value, 0);
+    exit;
+};
+
+int32 uart_dump_row_cells = (uint64 row_addr, int32 word_index, int32 column, int32 words) -> {
+    return column >= 4 || word_index + column >= words
+        ? 0
+        : uart_dump_row_emit(row_addr, word_index, column, words);
+};
+
+int32 uart_dump_row_emit = (uint64 row_addr, int32 word_index, int32 column, int32 words) -> {
+    uint64 cell_addr = row_addr + uint64(column * 4);
+    mmio<uint32> cell = cell_addr;
+
+    uart_putc(int32(' '));
+    uart_puthex(cell.value);
+    return uart_dump_row_cells(row_addr, word_index, column + 1, words);
+};
+
+int32 uart_dump_rows = (uint64 base, int32 words, int32 row) -> {
+    return row * 4 >= words
+        ? 0
+        : uart_dump_row(base, words, row);
+};
+
+int32 uart_dump_row = (uint64 base, int32 words, int32 row) -> {
+    int32 word_index = row * 4;
+    uint64 row_addr = base + uint64(word_index * 4);
+
+    uart_puthex64(row_addr);
+    uart_putc(int32(':'));
+    uart_dump_row_cells(row_addr, word_index, 0, words);
+    uart_putc(int32('\n'));
+    return uart_dump_rows(base, words, row + 1);
+};
+
+void uart_dump_mmio32 = (uint64 base, int32 words) -> {
+    uart_dump_rows(base, words, 0);
+    exit;
+};

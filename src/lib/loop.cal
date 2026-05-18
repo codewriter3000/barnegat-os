@@ -1,0 +1,24 @@
+package lib.loop;
+
+void while = (var condition, |var body) -> {
+    if(condition(), () -> {
+         body();
+         while(condition, body);
+    });
+};
+
+void forRange = (int32 init, int32 end, var body) -> {
+    var doBody = () -> { body(init); forRange(init + 1, end, body); return 0; };
+    var _r = init >= end ? 0 : doBody();
+};
+
+void forPairs = (arr<?> arr1, arr<?> arr2, |var body) -> {
+    int i1 = 0;
+    int i2 = 0;
+    if(arr1.length != arr2.length, () -> { throw "Arrays must be the same length."; });
+    while(() -> i1 < arr1.length && i2 < arr2.length, () -> {
+        body(arr1[i1], arr2[i2]);
+        i1 = i1 + 1;
+        i2 = i2 + 1;
+    });
+};

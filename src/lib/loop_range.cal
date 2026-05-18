@@ -1,0 +1,6 @@
+package lib.loop_range;
+
+void forRange = (int32 init, int32 end, var body) -> {
+    var doBody = () -> { body(init); forRange(init + 1, end, body); return 0; };
+    var _r = init >= end ? 0 : doBody();
+};

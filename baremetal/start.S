@@ -2,12 +2,33 @@
 .globl _start_baremetal
 
 _start_baremetal:
+    li   t0, 0xFFE7014000
+1:
+    lw   t1, 0x14(t0)
+    andi t1, t1, 0x20
+    beqz t1, 1b
+    li   t1, 'A'
+    sw   t1, 0(t0)
+
     /* ----------------------------------------------------------------
      * Disable S-mode MMU so all addresses are physical from here on.
      * ---------------------------------------------------------------- */
     csrw satp, zero
     sfence.vma
     fence.i
+
+    li   t0, 0xFFE7014000
+2:
+    lw   t1, 0x14(t0)
+    andi t1, t1, 0x20
+    beqz t1, 2b
+    li   t1, 'B'
+    sw   t1, 0(t0)
+
+    li   t1, 0x05000060
+    li   t2, 0xA1000001
+    sw   t2, 0(t1)
+    fence
 
     /* ----------------------------------------------------------------
      * Prologue — save ALL state U-Boot needs restored.
@@ -47,14 +68,35 @@ _start_baremetal:
     /* Zero BSS. */
     la   a0, __bss_start
     la   a1, __bss_end
-1:
+3:
     bgeu a0, a1, 2f
     sd   zero, 0(a0)
     addi a0, a0, 8
-    j    1b
+    j    3b
 2:
 
-    call calynda_unit_boot
+    li   t0, 0xFFE7014000
+4:
+    lw   t1, 0x14(t0)
+    andi t1, t1, 0x20
+    beqz t1, 4b
+    li   t1, 'C'
+    sw   t1, 0(t0)
+
+    li   t1, 0x05000064
+    li   t2, 0xA1000002
+    sw   t2, 0(t1)
+    fence
+
+    li   t0, 0xFFE7014000
+5:
+    lw   t1, 0x14(t0)
+    andi t1, t1, 0x20
+    beqz t1, 5b
+    li   t1, 'D'
+    sw   t1, 0(t0)
+
+    call __calynda_rt_boot_probe
 
     /* ----------------------------------------------------------------
      * Epilogue — restore in reverse order; sp MUST be last.
@@ -69,6 +111,27 @@ _start_baremetal:
     ld   s0,  40(sp)
     ld   ra,  48(sp)
     ld   sp,  56(sp)             /* restore U-Boot's stack pointer last */
+    ret
+
+.globl __calynda_rt_boot_probe
+__calynda_rt_boot_probe:
+    li   t0, 0xFFE7014000
+6:
+    lw   t1, 0x14(t0)
+    andi t1, t1, 0x20
+    beqz t1, 6b
+    li   t1, 'E'
+    sw   t1, 0(t0)
+
+    call __calynda_rt_boot_probe_c
+
+    li   t0, 0xFFE7014000
+7:
+    lw   t1, 0x14(t0)
+    andi t1, t1, 0x20
+    beqz t1, 7b
+    li   t1, 'I'
+    sw   t1, 0(t0)
     ret
 
 /* ----------------------------------------------------------------

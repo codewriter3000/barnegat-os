@@ -1,0 +1,27 @@
+package lib.conditional;
+
+void if = (bool condition, |var whenTrue, var whenFalse = () -> {}) -> {
+    condition ? whenTrue() : whenFalse();
+};
+
+bool invert = (bool value) -> {
+    return value ? false : true;
+};
+
+bool both = (bool left, bool right) -> {
+    return left ? right : false;
+};
+
+bool either = (bool left, bool right) -> {
+    return left ? true : right;
+};
+
+bool allFrom = (bool[] conditions, int index) -> {
+    return index >= conditions.length
+        ? true
+        : (conditions[index] ? allFrom(conditions, index + 1) : false);
+};
+
+bool all = (bool[] conditions) -> {
+    return allFrom(conditions, 0);
+};

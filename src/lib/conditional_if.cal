@@ -1,0 +1,5 @@
+package lib.conditional_if;
+
+void if = (bool condition, |var whenTrue, var whenFalse = () -> {}) -> {
+    condition ? whenTrue() : whenFalse();
+};

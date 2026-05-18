@@ -1,9 +1,5 @@
 package app;
 
-// Fallback stub for targets without an HDMI framebuffer (e.g. QEMU virt).
-// The machine-specific overlay in machines/th1520/lib/io/hdmi.cal
-// overrides this with a real implementation.
-int32 hdmi_hello_world = asm() -> {
-    li a0, 0
-    ret
+int32 hdmi_hello_world = () -> {
+    return 0;
 };

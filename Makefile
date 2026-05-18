@@ -21,12 +21,13 @@ CALYNDA_SOURCES := $(shell find $(SRC_ROOT) -type f -name '*.cal' ! -path '$(SRC
 BUILD_DIR := build
 BUILD_STAMP := $(BUILD_DIR)/.dir
 MERGE_SCRIPT := scripts/merge_calynda_sources.sh
+ASM_SANITIZER := scripts/sanitize_calynda_asm.py
 MERGED_SRC := $(BUILD_DIR)/$(PROGRAM)-$(MACHINE).merged.cal
 ASM := $(BUILD_DIR)/$(PROGRAM)-$(MACHINE).generated.s
 START_OBJ := $(BUILD_DIR)/start-$(MACHINE).o
 RUNTIME_SRC := baremetal/runtime_boot.c
 RUNTIME_OBJ := $(if $(wildcard $(RUNTIME_SRC)),$(BUILD_DIR)/runtime_boot-$(MACHINE).o)
-HDMI_OBJ    := $(if $(filter th1520,$(MACHINE)),$(BUILD_DIR)/hdmi_fb-$(MACHINE).o)
+HDMI_OBJ    :=
 PROGRAM_OBJ := $(BUILD_DIR)/$(PROGRAM)-$(MACHINE).o
 ELF := $(BUILD_DIR)/$(PROGRAM)-$(MACHINE).elf
 BIN := $(BUILD_DIR)/$(PROGRAM)-$(MACHINE).bin
@@ -61,14 +62,16 @@ $(BUILD_STAMP):
 $(MERGED_SRC): $(ENTRY_SRC) $(CALYNDA_SOURCES) $(MERGE_SCRIPT) | $(BUILD_STAMP)
 	bash $(MERGE_SCRIPT) $(SRC_ROOT) $(MACHINE_SRC) $(ENTRY_SRC) $@
 
-$(ASM): $(MERGED_SRC) | $(BUILD_STAMP)
-	$(CALYNDA) asm --target riscv64 $< > $@
+$(ASM): $(MERGED_SRC) $(ASM_SANITIZER) | $(BUILD_STAMP)
+	$(CALYNDA) asm --target riscv64 $< > $@.raw
+	python3 $(ASM_SANITIZER) $@.raw $@
+	rm -f $@.raw
 
 $(START_OBJ): baremetal/start.S | $(BUILD_STAMP)
 	$(CC) $(COMMON_FLAGS) $(if $(filter th1520,$(MACHINE)),-DMACHINE_TH1520) -c $< -o $@
 
 $(BUILD_DIR)/runtime_boot-$(MACHINE).o: $(RUNTIME_SRC) | $(BUILD_STAMP)
-	$(CC) $(COMMON_FLAGS) -I baremetal -c $< -o $@
+	$(CC) $(COMMON_FLAGS) $(if $(filter th1520,$(MACHINE)),-DMACHINE_TH1520) -I baremetal -c $< -o $@
 
 $(BUILD_DIR)/hdmi_fb-$(MACHINE).o: baremetal/hdmi_fb.c | $(BUILD_STAMP)
 	$(CC) $(COMMON_FLAGS) -I baremetal -c $< -o $@

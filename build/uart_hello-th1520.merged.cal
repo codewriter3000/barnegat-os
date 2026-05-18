@@ -4,19 +4,896 @@ package app;
 
 // merged from src/machines/th1520/lib/io/hdmi.cal
 
-// BeagleV-Ahead (TH1520): call the bare-metal C helper that clears the
-// DC8200 framebuffer and renders text at physical address 0x100970000.
-// We must save/restore ra manually: the Calynda asm() block has no
-// prologue, so "call" would overwrite ra and "ret" would loop forever.
-int32 hdmi_hello_world = asm() -> {
-    addi sp, sp, -16
-    sd   ra, 0(sp)
-    call hdmi_hello_world
-    ld   ra, 0(sp)
-    addi sp, sp, 16
-    li   a0, 0
+// merged from src/machines/th1520/lib/io/hdmi_pure.cal
+
+// merged from src/machines/th1520/lib/io/screen.cal
+
+// merged from src/lib/loop_while.cal
+
+// merged from src/lib/conditional_if.cal
+
+void if = (bool condition, |var whenTrue, var whenFalse = () -> {}) -> {
+    condition ? whenTrue() : whenFalse();
+};
+
+
+void while = (var condition, |var body) -> {
+    if(condition(), () -> {
+        body();
+        while(condition, body);
+    });
+};
+
+
+static final uint64 FB_PHYS_ADDR = 0x04200000;
+static final mmio<uint32> FB_PHYS = 0x04200000;
+static final int32 FB_WIDTH = 1920;
+static final int32 FB_HEIGHT = 1080;
+static final uint64 FB_STRIDE_BYTES = 0x00001E00;
+static final uint64 FB_SIZE_BYTES = 0x007E9000;
+static final uint64 THEAD_CMO_STRIDE = 32;
+
+static final int32[8] PROBE_COLS = [
+    0x00FFFFFF,
+    0x00FFFF00,
+    0x0000FFFF,
+    0x0000FF00,
+    0x00FF00FF,
+    0x00FF4040,
+    0x003060FF,
+    0x00808080
+];
+
+uint32 RGB = (uint32 r, uint32 g, uint32 b) -> {
+    return (r << 16) | (g << 8) | b;
+};
+
+bool fb_in_bounds = (int32 x, int32 y) -> {
+    return x >= 0 && y >= 0 && x < FB_WIDTH && y < FB_HEIGHT;
+};
+
+void fb_write_pixel = (int32 x, int32 y, uint32 color) -> {
+    mmio<uint32> fb = 0x04200000;
+
+    offset(fb, y * 1920 + x).value = color;
+    exit;
+};
+
+void fb_rect_span = (int32 x0, int32 x_end, int32 y, uint32 color) -> {
+    int32 x = x0;
+
+    while(() -> x < x_end, () -> {
+        fb_write_pixel(x, y, color);
+        x = x + 1;
+    });
+
+    exit;
+};
+
+void fb_rect = (int32 x0, int32 y0, int32 x1, int32 y1, uint32 color) -> {
+    int32 y = y0;
+    int32 x_end = x1 + 1;
+    int32 y_end = y1 + 1;
+
+    while(() -> y < y_end, () -> {
+        fb_rect_span(x0, x_end, y, color);
+        y = y + 1;
+    });
+
+    exit;
+};
+
+void fb_fill = (uint32 color) -> {
+    fb_rect(0, 0, FB_WIDTH - 1, FB_HEIGHT - 1, color);
+
+    exit;
+};
+
+void thead_dcache_clean_range = (uint64 start_addr, uint64 size) -> {
+    uint64 line = start_addr & ~(THEAD_CMO_STRIDE - 1);
+    uint64 end = start_addr + size;
+
+    while(() -> line < end, () -> {
+        cacheclean(line);
+        line = line + THEAD_CMO_STRIDE;
+    });
+
+    cachefinal();
+    exit;
+};
+
+void fb_border = (int32 x0, int32 y0, int32 x1, int32 y1, uint32 color, int32 thick) -> {
+    fb_rect(x0, y0, x1, y0 + thick - 1, color);
+    fb_rect(x0, y1 - thick + 1, x1, y1, color);
+    fb_rect(x0, y0, x0 + thick - 1, y1, color);
+    fb_rect(x1 - thick + 1, y0, x1, y1, color);
+    exit;
+};
+
+void fb_draw_char_top = (int32 px, int32 py, uint32 color) -> {
+    fb_rect(px, py, px + 27, py + 3, color);
+    exit;
+};
+
+void fb_draw_char_middle = (int32 px, int32 py, uint32 color) -> {
+    fb_rect(px, py + 14, px + 27, py + 17, color);
+    exit;
+};
+
+void fb_draw_char_bottom = (int32 px, int32 py, uint32 color) -> {
+    fb_rect(px, py + 28, px + 27, py + 31, color);
+    exit;
+};
+
+void fb_draw_char_left = (int32 px, int32 py, uint32 color) -> {
+    fb_rect(px, py, px + 3, py + 31, color);
+    exit;
+};
+
+void fb_draw_char_left_lower = (int32 px, int32 py, uint32 color) -> {
+    fb_rect(px, py + 16, px + 3, py + 31, color);
+    exit;
+};
+
+void fb_draw_char_right = (int32 px, int32 py, uint32 color) -> {
+    fb_rect(px + 24, py, px + 27, py + 31, color);
+    exit;
+};
+
+void fb_draw_char_right_upper = (int32 px, int32 py, uint32 color) -> {
+    fb_rect(px + 24, py, px + 27, py + 17, color);
+    exit;
+};
+
+void fb_draw_char_right_lower = (int32 px, int32 py, uint32 color) -> {
+    fb_rect(px + 24, py + 14, px + 27, py + 31, color);
+    exit;
+};
+
+void fb_draw_char_center = (int32 px, int32 py, uint32 color) -> {
+    fb_rect(px + 12, py, px + 15, py + 31, color);
+    exit;
+};
+
+void fb_draw_probe_letter = (int32 px, int32 py, int32 col, uint32 color) -> {
+    if(col == 0, () -> {
+        fb_draw_char_left(px, py, color);
+        fb_draw_char_right(px, py, color);
+        fb_draw_char_top(px, py, color);
+        fb_draw_char_middle(px, py, color);
+    });
+    if(col == 1, () -> {
+        fb_draw_char_left(px, py, color);
+        fb_draw_char_right(px, py, color);
+        fb_draw_char_top(px, py, color);
+        fb_draw_char_middle(px, py, color);
+        fb_draw_char_bottom(px, py, color);
+    });
+    if(col == 2, () -> {
+        fb_draw_char_left(px, py, color);
+        fb_draw_char_top(px, py, color);
+        fb_draw_char_bottom(px, py, color);
+    });
+    if(col == 3, () -> {
+        fb_draw_char_left(px, py, color);
+        fb_draw_char_right(px, py, color);
+        fb_draw_char_top(px, py, color);
+        fb_draw_char_bottom(px, py, color);
+    });
+    if(col == 4, () -> {
+        fb_draw_char_left(px, py, color);
+        fb_draw_char_top(px, py, color);
+        fb_draw_char_middle(px, py, color);
+        fb_draw_char_bottom(px, py, color);
+    });
+    if(col == 5, () -> {
+        fb_draw_char_left(px, py, color);
+        fb_draw_char_top(px, py, color);
+        fb_draw_char_middle(px, py, color);
+    });
+    if(col == 6, () -> {
+        fb_draw_char_left(px, py, color);
+        fb_draw_char_top(px, py, color);
+        fb_draw_char_middle(px, py, color);
+        fb_draw_char_bottom(px, py, color);
+        fb_draw_char_right_lower(px, py, color);
+    });
+    if(col == 7, () -> {
+        fb_draw_char_left(px, py, color);
+        fb_draw_char_right(px, py, color);
+        fb_draw_char_middle(px, py, color);
+    });
+    exit;
+};
+
+void fb_draw_probe_digit = (int32 px, int32 py, int32 row, uint32 color) -> {
+    if(row == 0, () -> {
+        fb_draw_char_left(px, py, color);
+        fb_draw_char_right(px, py, color);
+        fb_draw_char_top(px, py, color);
+        fb_draw_char_bottom(px, py, color);
+    });
+    if(row == 1, () -> {
+        fb_draw_char_center(px, py, color);
+        fb_draw_char_bottom(px, py, color);
+    });
+    if(row == 2, () -> {
+        fb_draw_char_top(px, py, color);
+        fb_draw_char_middle(px, py, color);
+        fb_draw_char_bottom(px, py, color);
+        fb_draw_char_right_upper(px, py, color);
+        fb_draw_char_left_lower(px, py, color);
+    });
+    if(row == 3, () -> {
+        fb_draw_char_top(px, py, color);
+        fb_draw_char_middle(px, py, color);
+        fb_draw_char_bottom(px, py, color);
+        fb_draw_char_right(px, py, color);
+    });
+    exit;
+};
+
+void fb_draw_probe_label = (int32 px, int32 py, int32 col, int32 row, uint32 color) -> {
+    fb_draw_probe_letter(px, py, col, color);
+    fb_draw_probe_digit(px + 32, py, row, color);
+    exit;
+};
+
+void fb_draw_row_markers = (int32 x0, int32 x1, int32 y0, int32 row) -> {
+    int32 marker = 0;
+    int32 marker_count = row + 1;
+
+    while(() -> marker < marker_count, () -> {
+        fb_rect(x0 + 18, y0 + 18 + marker * 16, x1 - 18, y0 + 25 + marker * 16, RGB(0, 0, 0));
+        marker = marker + 1;
+    });
+
+    exit;
+};
+
+void fb_draw_col_markers = (int32 x0, int32 y0, int32 y1, int32 col) -> {
+    int32 marker = 0;
+    int32 marker_count = col + 1;
+
+    while(() -> marker < marker_count, () -> {
+        fb_rect(x0 + 18 + marker * 16, y0 + 72, x0 + 25 + marker * 16, y1 - 18, RGB(0, 0, 0));
+        marker = marker + 1;
+    });
+
+    exit;
+};
+
+void fb_draw_probe_cell = (int32 row, int32 col, int32 cols, int32 rows, int32 cell_w, int32 cell_h) -> {
+    int32 x0 = col * cell_w;
+    int32 y0 = row * cell_h;
+    int32 x1 = col == cols - 1 ? (FB_WIDTH - 1) : ((col + 1) * cell_w - 1);
+    int32 y1 = row == rows - 1 ? (FB_HEIGHT - 1) : ((row + 1) * cell_h - 1);
+    int32 label_px = x0 + (cell_w - 64) / 2;
+    int32 label_py = y0 + (cell_h - 32) / 2;
+
+    fb_rect(x0 + 4, y0 + 4, x1 - 4, y1 - 4, uint32(PROBE_COLS[col]));
+    fb_border(x0, y0, x1, y1, RGB(0xFF, 0xFF, 0xFF), 2);
+    fb_draw_row_markers(x0, x1, y0, row);
+    fb_draw_col_markers(x0, y0, y1, col);
+    fb_rect(label_px - 10, label_py - 10, label_px + 73, label_py + 41, RGB(0, 0, 0));
+    fb_draw_probe_label(label_px, label_py, col, row, RGB(0xFF, 0xFF, 0xFF));
+    exit;
+};
+
+void fb_layout_probe_row = (int32 row, int32 cols, int32 rows, int32 cell_w, int32 cell_h) -> {
+    int32 col = 0;
+
+    while(() -> col < cols, () -> {
+        fb_draw_probe_cell(row, col, cols, rows, cell_w, cell_h);
+        col = col + 1;
+    });
+
+    exit;
+};
+
+void fb_layout_probe = () -> {
+    int32 cols = 8;
+    int32 rows = 4;
+    int32 cell_w = FB_WIDTH / cols;
+    int32 cell_h = FB_HEIGHT / rows;
+    int32 row = 0;
+
+    fb_fill(RGB(0x10, 0x10, 0x10));
+    fb_border(0, 0, FB_WIDTH - 1, FB_HEIGHT - 1, RGB(0xFF, 0xFF, 0xFF), 4);
+
+    while(() -> row < rows, () -> {
+        fb_layout_probe_row(row, cols, rows, cell_w, cell_h);
+        row = row + 1;
+    });
+
+    exit;
+};
+
+// merged from src/machines/th1520/lib/io/clock.cal
+
+
+static final uint64 AP_CLKGEN_BASE = 0xFFEF010000;
+static final uint64 VOSYS_CLK_GATE_BASE = 0xFFEF528000;
+
+int32 delay_us = asm(uint32 us) -> {
+    li t0, 1000
+    mul t0, a0, t0
+1:
+    beqz t0, 2f
+    addi t0, t0, -1
+    nop
+    j 1b
+2:
+    li a0, 0
     ret
 };
+
+void dpu0_pll_configure_1080p60 = () -> {
+    mmio<uint32> ap = 0xFFEF010000;
+    uint32 cfg1 = offset(ap, 0x44 / 4).value;
+
+    cfg1 = cfg1 | (1 << 29);
+    offset(ap, 0x44 / 4).value = cfg1;
+    fence();
+
+    offset(ap, 0x40 / 4).value = (1 << 0) | (99 << 8) | (2 << 20) | (1 << 24);
+    fence();
+    delay_us(3);
+
+    cfg1 = offset(ap, 0x44 / 4).value;
+    cfg1 = cfg1 & ~(1 << 29);
+    cfg1 = cfg1 & ~(1 << 30);
+    offset(ap, 0x44 / 4).value = cfg1;
+    fence();
+
+    int32 wait = 0;
+    while(() -> wait < 200 && (offset(ap, 0x80 / 4).value & (1 << 8)) == 0, () -> {
+        delay_us(1);
+        wait = wait + 1;
+    });
+    delay_us(30);
+
+    uint32 div_reg = offset(ap, 0x1E8 / 4).value;
+    div_reg = div_reg & ~(1 << 8);
+    offset(ap, 0x1E8 / 4).value = div_reg;
+    fence();
+    delay_us(1);
+
+    div_reg = div_reg & ~0xFF;
+    div_reg = div_reg | 8;
+    offset(ap, 0x1E8 / 4).value = div_reg;
+    fence();
+    delay_us(1);
+
+    div_reg = div_reg | (1 << 8);
+    offset(ap, 0x1E8 / 4).value = div_reg;
+    fence();
+    exit;
+};
+
+void dpu1_pll_configure_1080p60 = () -> {
+    mmio<uint32> ap = 0xFFEF010000;
+    uint32 cfg1 = offset(ap, 0x54 / 4).value;
+
+    cfg1 = cfg1 | (1 << 29);
+    offset(ap, 0x54 / 4).value = cfg1;
+    fence();
+
+    offset(ap, 0x50 / 4).value = (1 << 0) | (99 << 8) | (2 << 20) | (1 << 24);
+    fence();
+    delay_us(3);
+
+    cfg1 = offset(ap, 0x54 / 4).value;
+    cfg1 = cfg1 & ~(1 << 29);
+    cfg1 = cfg1 & ~(1 << 30);
+    offset(ap, 0x54 / 4).value = cfg1;
+    fence();
+
+    int32 wait = 0;
+    while(() -> wait < 200 && (offset(ap, 0x80 / 4).value & (1 << 9)) == 0, () -> {
+        delay_us(1);
+        wait = wait + 1;
+    });
+    delay_us(30);
+
+    uint32 div_reg = offset(ap, 0x1EC / 4).value;
+    div_reg = div_reg & ~(1 << 8);
+    offset(ap, 0x1EC / 4).value = div_reg;
+    fence();
+    delay_us(1);
+
+    div_reg = div_reg & ~0xFF;
+    div_reg = div_reg | 8;
+    offset(ap, 0x1EC / 4).value = div_reg;
+    fence();
+    delay_us(1);
+
+    div_reg = div_reg | (1 << 8);
+    offset(ap, 0x1EC / 4).value = div_reg;
+    fence();
+    exit;
+};
+
+void vosys_clk_enable = () -> {
+    mmio<uint32> clk = 0xFFEF528000;
+
+    offset(clk, 0x004 / 4).value = 0x00000007;
+    offset(clk, 0x008 / 4).value = 0x00000001;
+    offset(clk, 0x00C / 4).value = 0x00000001;
+    offset(clk, 0x014 / 4).value = 0x00000003;
+    offset(clk, 0x018 / 4).value = 0x00000003;
+    offset(clk, 0x020 / 4).value = 0x0000000F;
+    offset(clk, 0x050 / 4).value = 0x7BFABFE5;
+    offset(clk, 0x054 / 4).value = 0x00000001;
+    offset(clk, 0x064 / 4).value = 0x00000014;
+    offset(clk, 0x070 / 4).value = 0x00000001;
+    offset(clk, 0x074 / 4).value = 0x00007130;
+    offset(clk, 0x078 / 4).value = 0x00007130;
+    offset(clk, 0x0A4 / 4).value = 0x000FF000;
+    offset(clk, 0x100 / 4).value = 0x00000001;
+    offset(clk, 0x108 / 4).value = 0x00000001;
+    offset(clk, 0x130 / 4).value = 0x00000001;
+    offset(clk, 0x138 / 4).value = 0x00000001;
+    fence();
+    exit;
+};
+
+// merged from src/machines/th1520/lib/io/hdmi_tx.cal
+
+// merged from src/lib/loop_range.cal
+
+void forRange = (int32 init, int32 end, var body) -> {
+    var doBody = () -> { body(init); forRange(init + 1, end, body); return 0; };
+    var _r = init >= end ? 0 : doBody();
+};
+
+
+static final uint64 HDMI_TX_BASE = 0xFFEF540000;
+static final int32 I2CM_ATTEMPTS = 5;
+static final int32 I2CM_RETRY_DELAY_US = 500;
+
+static final int32[3][4] HDMI_IDENTITY_CSC = [
+    [0x2000, 0x0000, 0x0000, 0x0000],
+    [0x0000, 0x2000, 0x0000, 0x0000],
+    [0x0000, 0x0000, 0x2000, 0x0000]
+];
+
+static final int32[3] HDMI_CSC_MSB_BASE = [0x4102, 0x410A, 0x4112];
+static final int32[3] HDMI_CSC_LSB_BASE = [0x4103, 0x410B, 0x4113];
+
+uint32 hdmi_diag0 = 0;
+uint32 hdmi_diag1 = 0;
+uint32 hdmi_diag2 = 0;
+
+int32 hdmi_phy_i2cm_write_once = (uint8 reg, uint16 value) -> {
+    mmio<uint32> h = 0xFFEF540000;
+
+    offset(h, 0x3021).value = reg;
+    offset(h, 0x3022).value = (value >> 8) & 0xFF;
+    offset(h, 0x3023).value = value & 0xFF;
+    offset(h, 0x0108).value = 0xFF;
+    offset(h, 0x3027).value = 0x08;
+    offset(h, 0x3028).value = 0x88;
+    fence();
+
+    offset(h, 0x3026).value = 0x10;
+    fence();
+
+    int32 polls = 0;
+    int32 result = 0;
+
+    while(() -> polls < 50 && result == 0, () -> {
+        delay_us(1000);
+        uint32 status = offset(h, 0x0108).value & 0x03;
+
+        if(status != 0, () -> {
+            offset(h, 0x0108).value = status;
+            result = (status & 0x02) != 0 ? 1 : -1;
+        }, () -> {
+            polls = polls + 1;
+        });
+    });
+
+    return result;
+};
+
+int32 hdmi_phy_i2cm_write_attempt = (int32 remaining, uint8 reg, uint16 value) -> {
+    int32 result = hdmi_phy_i2cm_write_once(reg, value);
+    if(result == 1 || remaining <= 1, () -> {
+        return result;
+    });
+
+    delay_us(500);
+    return hdmi_phy_i2cm_write_attempt(remaining - 1, reg, value);
+};
+
+int32 hdmi_phy_i2cm_write = (uint8 reg, uint16 value) -> {
+    return hdmi_phy_i2cm_write_attempt(5, reg, value);
+};
+
+void hdmi_program_identity_csc = () -> {
+    mmio<uint32> h = 0xFFEF540000;
+
+    forRange(0, 3, (int32 row) -> {
+        forRange(0, 4, (int32 col) -> {
+            int32 coeff = HDMI_IDENTITY_CSC[row][col];
+            offset(h, HDMI_CSC_MSB_BASE[row] + col * 2).value = (coeff >> 8) & 0xFF;
+            offset(h, HDMI_CSC_LSB_BASE[row] + col * 2).value = coeff & 0xFF;
+        });
+    });
+
+    offset(h, 0x4100).value = 0x00;
+    offset(h, 0x4101).value = 0x01;
+    offset(h, 0x4004).value = 0x00;
+    fence();
+    exit;
+};
+
+void hdmi_clear_overflow = () -> {
+    mmio<uint32> h = 0xFFEF540000;
+    uint32 invidconf = offset(h, 0x1000).value & 0xFF;
+
+    offset(h, 0x4002).value = 0xFD;
+    fence();
+    forRange(0, 4, (int32 rewrite_index) -> {
+        offset(h, 0x1000).value = invidconf;
+    });
+    offset(h, 0x4002).value = 0xFF;
+    fence();
+    exit;
+};
+
+void hdmi_program_hdcp_video_polarity = () -> {
+    mmio<uint32> h = 0xFFEF540000;
+
+    offset(h, 0x5000).value = 0x01;
+    offset(h, 0x5001).value = 0x02;
+    offset(h, 0x5009).value = 0x1A;
+    fence();
+    exit;
+};
+
+void hdmi_program_video_path = (mmio<uint32> h) -> {
+    offset(h, 0x4001).value = 0x00;
+    offset(h, 0x4006).value = 0x71;
+    fence();
+    delay_us(100);
+
+    offset(h, 0x0200).value = 0x01;
+    offset(h, 0x0201).value = 0x07;
+    offset(h, 0x0202).value = 0x00;
+    offset(h, 0x0203).value = 0x00;
+    offset(h, 0x0204).value = 0x00;
+    offset(h, 0x0205).value = 0x00;
+    offset(h, 0x0206).value = 0x00;
+    offset(h, 0x0207).value = 0x00;
+    offset(h, 0x0801).value = 0x40;
+    offset(h, 0x0802).value = 0x27;
+    offset(h, 0x0804).value = 0x47;
+    offset(h, 0x0807).value = 0xFF;
+    fence();
+
+    hdmi_program_identity_csc();
+
+    offset(h, 0x1000).value = 0x78;
+    offset(h, 0x1001).value = 0x80;
+    offset(h, 0x1002).value = 0x07;
+    offset(h, 0x1003).value = 0x18;
+    offset(h, 0x1004).value = 0x01;
+    offset(h, 0x1005).value = 0x38;
+    offset(h, 0x1006).value = 0x04;
+    offset(h, 0x1007).value = 0x2D;
+    offset(h, 0x1008).value = 0x58;
+    offset(h, 0x1009).value = 0x00;
+    offset(h, 0x100A).value = 0x2C;
+    offset(h, 0x100B).value = 0x00;
+    offset(h, 0x100C).value = 0x04;
+    offset(h, 0x100D).value = 0x05;
+    offset(h, 0x1011).value = 0x0C;
+    offset(h, 0x1012).value = 0x20;
+    offset(h, 0x1013).value = 0x01;
+    offset(h, 0x1014).value = 0x0B;
+    offset(h, 0x1015).value = 0x16;
+    offset(h, 0x1016).value = 0x21;
+    offset(h, 0x1019).value = 0x60;
+    offset(h, 0x101A).value = 0x28;
+    offset(h, 0x101B).value = 0x04;
+    offset(h, 0x101C).value = 0x10;
+    fence();
+
+    offset(h, 0x4002).value = 0xFF;
+    fence();
+    delay_us(100);
+    hdmi_clear_overflow();
+    exit;
+};
+
+void hdmi_seed_phy_window = (mmio<uint32> h) -> {
+    offset(h, 0x3029).value = 0x0B;
+    offset(h, 0x302A).value = 0x00;
+    fence();
+    delay_us(100);
+    offset(h, 0x302A).value = 0x01;
+    fence();
+    delay_us(100);
+    offset(h, 0x302B).value = 0x00;
+    offset(h, 0x302C).value = 0x7F;
+    offset(h, 0x302D).value = 0x00;
+    offset(h, 0x302E).value = 0x7F;
+    offset(h, 0x302F).value = 0x00;
+    offset(h, 0x3030).value = 0x35;
+    offset(h, 0x3031).value = 0x00;
+    offset(h, 0x3032).value = 0x7F;
+    offset(h, 0x3033).value = 0x08;
+    offset(h, 0x3027).value = 0x08;
+    offset(h, 0x3028).value = 0x88;
+    fence();
+    exit;
+};
+
+void hdmi_program_video_path_final = (mmio<uint32> h) -> {
+    offset(h, 0x4001).value = 0x00;
+    offset(h, 0x4006).value = 0x71;
+    offset(h, 0x0200).value = 0x01;
+    offset(h, 0x0201).value = 0x07;
+    offset(h, 0x0202).value = 0x00;
+    offset(h, 0x0203).value = 0x00;
+    offset(h, 0x0204).value = 0x00;
+    offset(h, 0x0205).value = 0x00;
+    offset(h, 0x0206).value = 0x00;
+    offset(h, 0x0207).value = 0x00;
+    offset(h, 0x0801).value = 0x40;
+    offset(h, 0x0802).value = 0x27;
+    offset(h, 0x0803).value = 0x00;
+    offset(h, 0x0804).value = 0x47;
+    offset(h, 0x0807).value = 0xFF;
+    fence();
+
+    hdmi_program_identity_csc();
+
+    offset(h, 0x1000).value = 0x78;
+    offset(h, 0x1001).value = 0x80;
+    offset(h, 0x1002).value = 0x07;
+    offset(h, 0x1003).value = 0x18;
+    offset(h, 0x1004).value = 0x01;
+    offset(h, 0x1005).value = 0x38;
+    offset(h, 0x1006).value = 0x04;
+    offset(h, 0x1007).value = 0x2D;
+    offset(h, 0x1008).value = 0x58;
+    offset(h, 0x1009).value = 0x00;
+    offset(h, 0x100A).value = 0x2C;
+    offset(h, 0x100B).value = 0x00;
+    offset(h, 0x100C).value = 0x04;
+    offset(h, 0x100D).value = 0x05;
+    offset(h, 0x1011).value = 0x0C;
+    offset(h, 0x1012).value = 0x20;
+    offset(h, 0x1013).value = 0x01;
+    offset(h, 0x1014).value = 0x0B;
+    offset(h, 0x1015).value = 0x16;
+    offset(h, 0x1016).value = 0x21;
+    offset(h, 0x1019).value = 0x60;
+    offset(h, 0x101A).value = 0x28;
+    offset(h, 0x101B).value = 0x04;
+    offset(h, 0x101C).value = 0x10;
+    fence();
+
+    hdmi_program_hdcp_video_polarity();
+    offset(h, 0x4002).value = 0xFF;
+    fence();
+    hdmi_clear_overflow();
+    exit;
+};
+
+void dw_hdmi_init = () -> {
+    mmio<uint32> h = 0xFFEF540000;
+
+    offset(h, 0x0180).value = 0xFF;
+    offset(h, 0x0181).value = 0xFF;
+    offset(h, 0x0182).value = 0xFF;
+    offset(h, 0x0183).value = 0xFF;
+    offset(h, 0x0184).value = 0xFF;
+    offset(h, 0x0185).value = 0xFF;
+    offset(h, 0x0186).value = 0xFF;
+    offset(h, 0x0187).value = 0xFF;
+    offset(h, 0x0188).value = 0xFF;
+    offset(h, 0x01FF).value = 0x03;
+    fence();
+
+    hdmi_program_video_path(h);
+
+    offset(h, 0x3000).value = 0x36;
+    fence();
+
+    offset(h, 0x4005).value = 0x01;
+    fence();
+    delay_us(200);
+    offset(h, 0x4005).value = 0x00;
+    fence();
+    delay_us(50000);
+
+    offset(h, 0x4007).value = 0x01;
+    fence();
+
+    offset(h, 0x3001).value = 0x20;
+    fence();
+    delay_us(100);
+    offset(h, 0x3020).value = 0x69;
+    fence();
+    delay_us(100);
+    offset(h, 0x3001).value = 0x00;
+    fence();
+    delay_us(1000);
+
+    hdmi_seed_phy_window(h);
+    delay_us(1000);
+
+    offset(h, 0x0108).value = 0xFF;
+    fence();
+    hdmi_diag0 = offset(h, 0x3020).value & 0xFF;
+    hdmi_diag1 = offset(h, 0x3029).value & 0xFF;
+    hdmi_diag2 = offset(h, 0x4001).value & 0xFF;
+
+    hdmi_phy_i2cm_write(0x06, 0x0001);
+    hdmi_phy_i2cm_write(0x10, 0x2080);
+    hdmi_phy_i2cm_write(0x11, 0x020A);
+    hdmi_phy_i2cm_write(0x19, 0x0007);
+    hdmi_phy_i2cm_write(0x0E, 0x01A0);
+    hdmi_phy_i2cm_write(0x09, 0x8088);
+    fence();
+
+    offset(h, 0x3000).value = 0x2E;
+    fence();
+
+    int32 lock_wait = 0;
+    while(() -> lock_wait < 200 && (offset(h, 0x3004).value & 0x01) == 0, () -> {
+        delay_us(1000);
+        lock_wait = lock_wait + 1;
+    });
+
+    if((offset(h, 0x3004).value & 0x01) == 0, () -> {
+        offset(h, 0x3000).value = 0x36;
+        fence();
+        delay_us(5000);
+
+        offset(h, 0x4005).value = 0x01;
+        fence();
+        delay_us(200);
+        offset(h, 0x4005).value = 0x00;
+        fence();
+        delay_us(10000);
+
+        offset(h, 0x4007).value = 0x01;
+        fence();
+
+        offset(h, 0x3001).value = 0x20;
+        fence();
+        delay_us(100);
+        offset(h, 0x3020).value = 0x69;
+        fence();
+        delay_us(100);
+        offset(h, 0x3001).value = 0x00;
+        fence();
+        delay_us(1000);
+
+        offset(h, 0x0108).value = 0xFF;
+        fence();
+
+        hdmi_phy_i2cm_write(0x06, 0x0001);
+        hdmi_phy_i2cm_write(0x10, 0x2080);
+        hdmi_phy_i2cm_write(0x11, 0x020A);
+        hdmi_phy_i2cm_write(0x19, 0x0007);
+        hdmi_phy_i2cm_write(0x0E, 0x01A0);
+        hdmi_phy_i2cm_write(0x09, 0x8088);
+        fence();
+
+        offset(h, 0x3000).value = 0x2E;
+        fence();
+    });
+
+    int32 final_wait = 0;
+    while(() -> final_wait < 1000 && (offset(h, 0x3004).value & 0x01) == 0, () -> {
+        delay_us(1000);
+        final_wait = final_wait + 1;
+    });
+
+    uint32 phystat = offset(h, 0x3004).value & 0xFF;
+
+    hdmi_program_video_path_final(h);
+
+    hdmi_diag1 = phystat;
+    exit;
+};
+
+// merged from src/machines/th1520/lib/io/dc8200.cal
+
+
+void dc8200_init = () -> {
+    mmio<uint32> dc = 0xFFEF600000;
+
+    offset(dc, 0x1CC0 / 4).value = 0x00000000;
+    offset(dc, 0x1CC4 / 4).value = 0x00000000;
+    fence();
+
+    offset(dc, 0x1CD0 / 4).value = offset(dc, 0x1CD0 / 4).value & ~(1 << 3);
+    offset(dc, 0x1CD4 / 4).value = offset(dc, 0x1CD4 / 4).value & ~(1 << 3);
+    fence();
+
+    offset(dc, 0x1418 / 4).value = 0x00001111;
+    offset(dc, 0x141C / 4).value = 0x00001111;
+    offset(dc, 0x14B8 / 4).value = 5;
+    offset(dc, 0x14BC / 4).value = 5;
+    offset(dc, 0x1430 / 4).value = 0x08980780;
+    offset(dc, 0x1434 / 4).value = 0x08980780;
+    offset(dc, 0x1438 / 4).value = 0x440207D8;
+    offset(dc, 0x143C / 4).value = 0x440207D8;
+    offset(dc, 0x1440 / 4).value = 0x04650438;
+    offset(dc, 0x1444 / 4).value = 0x04650438;
+    offset(dc, 0x1448 / 4).value = 0x4220843C;
+    offset(dc, 0x144C / 4).value = 0x4220843C;
+
+    offset(dc, 0x1528 / 4).value = RGB(0x00, 0x00, 0xFF);
+    offset(dc, 0x152C / 4).value = RGB(0x00, 0xFF, 0x00);
+    fence();
+
+    offset(dc, 0x1404 / 4).value = 0x04200000;
+    offset(dc, 0x140C / 4).value = 0x00001E00;
+    offset(dc, 0x1814 / 4).value = (1080 << 15) | 1920;
+    offset(dc, 0x151C / 4).value = (5 << 26);
+    offset(dc, 0x1524 / 4).value = 0x00000030;
+    offset(dc, 0x2514 / 4).value = 0x00000002;
+    offset(dc, 0x2504 / 4).value = 0xFF000000;
+    offset(dc, 0x250C / 4).value = 0xFF000000;
+    offset(dc, 0x24DC / 4).value = 0x00000000;
+    offset(dc, 0x24E4 / 4).value = (1080 << 15) | 1920;
+    offset(dc, 0x1CC4 / 4).value = (1 << 19) | (1 << 13);
+    offset(dc, 0x1CC4 / 4).value = offset(dc, 0x1CC4 / 4).value | (1 << 12);
+    fence();
+
+    uint32 panel_start = offset(dc, 0x1CCC / 4).value;
+    panel_start = (panel_start & ~((1 << 2) | (1 << 3))) | (1 << 0) | (1 << 1);
+    offset(dc, 0x1CCC / 4).value = panel_start;
+    fence();
+    exit;
+};
+
+
+void scratch_mark = (int32 index, uint32 value) -> {
+    mmio<uint32> scratch = 0x05000000;
+
+    offset(scratch, index).value = value;
+    fence();
+    exit;
+};
+
+int32 hold_scanout = asm() -> {
+1:
+    nop
+    j 1b
+};
+
+int32 hdmi_hello_world = () -> {
+    scratch_mark(0, 0xAA000001);
+
+    vosys_clk_enable();
+    scratch_mark(1, 0xAA000002);
+    delay_us(500);
+
+    dpu0_pll_configure_1080p60();
+    dpu1_pll_configure_1080p60();
+    scratch_mark(2, 0xAA000003);
+
+    fb_layout_probe();
+    fence();
+    thead_dcache_clean_range(0x04200000, 0x007E9000);
+    scratch_mark(3, 0xAA000004);
+
+    dw_hdmi_init();
+    scratch_mark(7, 0xAA000005);
+    dc8200_init();
+    scratch_mark(8, 0xAA000006);
+    return hold_scanout();
+};
+
 
 
 int32 run = manual() -> {

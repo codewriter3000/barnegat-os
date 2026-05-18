@@ -7,7 +7,7 @@ The flow is:
 1. Merge local imported `.cal` files into one generated source file.
 2. Compile that generated `.cal` to RISC-V assembly with the sibling Calynda compiler.
 3. Assemble and link a freestanding ELF with a custom startup file and linker script.
-4. Boot the ELF — either via `qemu-system-riscv64` or via U-Boot on the board.
+4. Boot the image — either via `qemu-system-riscv64` or as a flat binary via U-Boot on the board.
 
 The target machine is selected with `MACHINE=virt` (default) or `MACHINE=th1520`. Machine-specific source files live under `src/machines/<machine>/` and are overlaid on top of the common `src/` tree at build time.
 
@@ -62,6 +62,8 @@ Build for the BeagleV-Ahead:
 make build MACHINE=th1520
 ```
 
+That produces `build/uart_hello-th1520.bin` for the current U-Boot flow on the board.
+
 Run it in QEMU:
 
 ```sh
@@ -109,13 +111,29 @@ sudo apt-get install lrzsz
    ```sh
    make flash MACHINE=th1520
    ```
-   This sends `build/uart_hello.elf` via Y-Modem to `/dev/ttyUSB0`. Override the device with `SERIAL=/dev/ttyACM0` if needed.
+   This sends `build/uart_hello-th1520.bin` via Y-Modem to `/dev/ttyUSB0`. Override the device with `SERIAL=/dev/ttyACM0` if needed.
 5. Once the transfer completes, back in U-Boot:
    ```
-   bootelf 0x04000000
+   go 0x04000000
    ```
 
-Output (`Hello World`) will appear in the same serial terminal immediately after `bootelf`.
+Output appears in the same serial terminal immediately after `go 0x04000000`.
+
+For TH1520 debug-heavy runs, the bare-metal runtime also emits compact UART trace tokens and mirrors a limited event ring into scratch DRAM at `0x05001000`. The helper script below decodes those tokens and maps any embedded addresses back to the nearest ELF symbols:
+
+```sh
+python3 scripts/decode_th1520_trace.py --elf build/uart_hello-th1520.elf 'ABCDEFG012V000000000400E770!0000000004000730'
+```
+
+Current token classes are:
+
+- single-character stage markers like `A`-`I`, `0`-`7`, and `a`-`d`
+- `P<tag><left>,<right>;` for runtime debug pairs
+- `D<tag><value>;` for runtime debug words
+- `O<tag>K<kind>V<value>;` or `O<tag>V<value>;` for runtime object inspection
+- `V<value>` / `K<kind>V<value>` / `!<caller>` for runtime failure diagnostics
+
+For the current HDMI bring-up architecture, reproduction steps, and known hardware-specific constraints, see `docs/th1520-hdmi-bringup.md`.
 
 `make boot-th1520 MACHINE=th1520` prints instructions for the SD card and TFTP alternatives if you prefer those.
 
@@ -126,7 +144,7 @@ Output (`Hello World`) will appear in the same serial terminal immediately after
 - `src/machines/virt/lib/io/uart.cal`: UART driver for the QEMU `virt` machine (16550 at `0x10000000`)
 - `src/machines/th1520/lib/io/uart.cal`: UART driver for the BeagleV-Ahead (DW APB at `0xFFE7014000`)
 - `baremetal/start.S`: freestanding entry point and stack setup
-- `baremetal/calynda_rt_min.c`: minimal Calynda runtime stubs for string indexing and sized stores
+- `baremetal/runtime_boot.c`: freestanding Calynda runtime support used by the bare-metal boot path
 - `baremetal/riscv64-virt.ld`: linker script for the QEMU `virt` machine (load address `0x80000000`)
 - `baremetal/riscv64-th1520.ld`: linker script for the BeagleV-Ahead (load address `0x04000000`, above OpenSBI/U-Boot)
 - `scripts/merge_calynda_sources.sh`: resolves imports — machine-specific overlay takes precedence over common `src/`
@@ -140,7 +158,7 @@ The current GUI mode is not a guest framebuffer yet. It uses QEMU's built-in vir
 
 On this machine, the QEMU `virt` machine only produced visible UART output when the ELF was loaded with `-device loader,file=...,cpu-num=0`. The `-kernel` path started QEMU but produced zero captured UART bytes for this image.
 
-The generated bare-metal object code can still reference Calynda helper symbols such as `__calynda_store_sized`. For freestanding builds, this workspace links `baremetal/calynda_rt_min.c` instead of the hosted runtime archive so simple MMIO and raw pointer operations work without libc.
+The generated bare-metal object code can still reference Calynda helper symbols such as `__calynda_store_sized`. For freestanding builds, this workspace links `baremetal/runtime_boot.c` instead of the hosted runtime archive so simple MMIO and raw pointer operations work without libc.
 
 This workspace now supports a practical split-file bare-metal layout by resolving local import lines like `import lib.io.stdlib;` to `src/lib/io/stdlib.cal` before calling `calynda asm`. The imported file bodies are inlined into one generated `.cal` file for the compiler.
 

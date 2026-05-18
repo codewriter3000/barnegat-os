@@ -1,0 +1,43 @@
+package app;
+
+import lib.io.screen;
+import lib.io.clock;
+import lib.io.hdmi_tx;
+import lib.io.dc8200;
+
+void scratch_mark = (int32 index, uint32 value) -> {
+    mmio<uint32> scratch = 0x05000000;
+
+    offset(scratch, index).value = value;
+    fence();
+    exit;
+};
+
+int32 hold_scanout = asm() -> {
+1:
+    nop
+    j 1b
+};
+
+int32 hdmi_hello_world = () -> {
+    scratch_mark(0, 0xAA000001);
+
+    vosys_clk_enable();
+    scratch_mark(1, 0xAA000002);
+    delay_us(500);
+
+    dpu0_pll_configure_1080p60();
+    dpu1_pll_configure_1080p60();
+    scratch_mark(2, 0xAA000003);
+
+    fb_layout_probe();
+    fence();
+    thead_dcache_clean_range(0x04200000, 0x007E9000);
+    scratch_mark(3, 0xAA000004);
+
+    dw_hdmi_init();
+    scratch_mark(7, 0xAA000005);
+    dc8200_init();
+    scratch_mark(8, 0xAA000006);
+    return hold_scanout();
+};

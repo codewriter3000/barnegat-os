@@ -1,0 +1,362 @@
+package app;
+
+import lib.loop_range;
+import lib.loop_while;
+import lib.conditional_if;
+import lib.io.clock;
+
+static final uint64 HDMI_TX_BASE = 0xFFEF540000;
+static final int32 I2CM_ATTEMPTS = 5;
+static final int32 I2CM_RETRY_DELAY_US = 500;
+
+static final int32[3][4] HDMI_IDENTITY_CSC = [
+    [0x2000, 0x0000, 0x0000, 0x0000],
+    [0x0000, 0x2000, 0x0000, 0x0000],
+    [0x0000, 0x0000, 0x2000, 0x0000]
+];
+
+static final int32[3] HDMI_CSC_MSB_BASE = [0x4102, 0x410A, 0x4112];
+static final int32[3] HDMI_CSC_LSB_BASE = [0x4103, 0x410B, 0x4113];
+
+uint32 hdmi_diag0 = 0;
+uint32 hdmi_diag1 = 0;
+uint32 hdmi_diag2 = 0;
+
+int32 hdmi_phy_i2cm_write_once = (uint8 reg, uint16 value) -> {
+    mmio<uint32> h = 0xFFEF540000;
+
+    offset(h, 0x3021).value = reg;
+    offset(h, 0x3022).value = (value >> 8) & 0xFF;
+    offset(h, 0x3023).value = value & 0xFF;
+    offset(h, 0x0108).value = 0xFF;
+    offset(h, 0x3027).value = 0x08;
+    offset(h, 0x3028).value = 0x88;
+    fence();
+
+    offset(h, 0x3026).value = 0x10;
+    fence();
+
+    int32 polls = 0;
+    int32 result = 0;
+
+    while(() -> polls < 50 && result == 0, () -> {
+        delay_us(1000);
+        uint32 status = offset(h, 0x0108).value & 0x03;
+
+        if(status != 0, () -> {
+            offset(h, 0x0108).value = status;
+            result = (status & 0x02) != 0 ? 1 : -1;
+        }, () -> {
+            polls = polls + 1;
+        });
+    });
+
+    return result;
+};
+
+int32 hdmi_phy_i2cm_write_attempt = (int32 remaining, uint8 reg, uint16 value) -> {
+    int32 result = hdmi_phy_i2cm_write_once(reg, value);
+    if(result == 1 || remaining <= 1, () -> {
+        return result;
+    });
+
+    delay_us(500);
+    return hdmi_phy_i2cm_write_attempt(remaining - 1, reg, value);
+};
+
+int32 hdmi_phy_i2cm_write = (uint8 reg, uint16 value) -> {
+    return hdmi_phy_i2cm_write_attempt(5, reg, value);
+};
+
+void hdmi_program_identity_csc = () -> {
+    mmio<uint32> h = 0xFFEF540000;
+
+    forRange(0, 3, (int32 row) -> {
+        forRange(0, 4, (int32 col) -> {
+            int32 coeff = HDMI_IDENTITY_CSC[row][col];
+            offset(h, HDMI_CSC_MSB_BASE[row] + col * 2).value = (coeff >> 8) & 0xFF;
+            offset(h, HDMI_CSC_LSB_BASE[row] + col * 2).value = coeff & 0xFF;
+        });
+    });
+
+    offset(h, 0x4100).value = 0x00;
+    offset(h, 0x4101).value = 0x01;
+    offset(h, 0x4004).value = 0x00;
+    fence();
+    exit;
+};
+
+void hdmi_clear_overflow = () -> {
+    mmio<uint32> h = 0xFFEF540000;
+    uint32 invidconf = offset(h, 0x1000).value & 0xFF;
+
+    offset(h, 0x4002).value = 0xFD;
+    fence();
+    forRange(0, 4, (int32 rewrite_index) -> {
+        offset(h, 0x1000).value = invidconf;
+    });
+    offset(h, 0x4002).value = 0xFF;
+    fence();
+    exit;
+};
+
+void hdmi_program_hdcp_video_polarity = () -> {
+    mmio<uint32> h = 0xFFEF540000;
+
+    offset(h, 0x5000).value = 0x01;
+    offset(h, 0x5001).value = 0x02;
+    offset(h, 0x5009).value = 0x1A;
+    fence();
+    exit;
+};
+
+void hdmi_program_video_path = (mmio<uint32> h) -> {
+    offset(h, 0x4001).value = 0x00;
+    offset(h, 0x4006).value = 0x71;
+    fence();
+    delay_us(100);
+
+    offset(h, 0x0200).value = 0x01;
+    offset(h, 0x0201).value = 0x07;
+    offset(h, 0x0202).value = 0x00;
+    offset(h, 0x0203).value = 0x00;
+    offset(h, 0x0204).value = 0x00;
+    offset(h, 0x0205).value = 0x00;
+    offset(h, 0x0206).value = 0x00;
+    offset(h, 0x0207).value = 0x00;
+    offset(h, 0x0801).value = 0x40;
+    offset(h, 0x0802).value = 0x27;
+    offset(h, 0x0804).value = 0x47;
+    offset(h, 0x0807).value = 0xFF;
+    fence();
+
+    hdmi_program_identity_csc();
+
+    offset(h, 0x1000).value = 0x78;
+    offset(h, 0x1001).value = 0x80;
+    offset(h, 0x1002).value = 0x07;
+    offset(h, 0x1003).value = 0x18;
+    offset(h, 0x1004).value = 0x01;
+    offset(h, 0x1005).value = 0x38;
+    offset(h, 0x1006).value = 0x04;
+    offset(h, 0x1007).value = 0x2D;
+    offset(h, 0x1008).value = 0x58;
+    offset(h, 0x1009).value = 0x00;
+    offset(h, 0x100A).value = 0x2C;
+    offset(h, 0x100B).value = 0x00;
+    offset(h, 0x100C).value = 0x04;
+    offset(h, 0x100D).value = 0x05;
+    offset(h, 0x1011).value = 0x0C;
+    offset(h, 0x1012).value = 0x20;
+    offset(h, 0x1013).value = 0x01;
+    offset(h, 0x1014).value = 0x0B;
+    offset(h, 0x1015).value = 0x16;
+    offset(h, 0x1016).value = 0x21;
+    offset(h, 0x1019).value = 0x60;
+    offset(h, 0x101A).value = 0x28;
+    offset(h, 0x101B).value = 0x04;
+    offset(h, 0x101C).value = 0x10;
+    fence();
+
+    offset(h, 0x4002).value = 0xFF;
+    fence();
+    delay_us(100);
+    hdmi_clear_overflow();
+    exit;
+};
+
+void hdmi_seed_phy_window = (mmio<uint32> h) -> {
+    offset(h, 0x3029).value = 0x0B;
+    offset(h, 0x302A).value = 0x00;
+    fence();
+    delay_us(100);
+    offset(h, 0x302A).value = 0x01;
+    fence();
+    delay_us(100);
+    offset(h, 0x302B).value = 0x00;
+    offset(h, 0x302C).value = 0x7F;
+    offset(h, 0x302D).value = 0x00;
+    offset(h, 0x302E).value = 0x7F;
+    offset(h, 0x302F).value = 0x00;
+    offset(h, 0x3030).value = 0x35;
+    offset(h, 0x3031).value = 0x00;
+    offset(h, 0x3032).value = 0x7F;
+    offset(h, 0x3033).value = 0x08;
+    offset(h, 0x3027).value = 0x08;
+    offset(h, 0x3028).value = 0x88;
+    fence();
+    exit;
+};
+
+void hdmi_program_video_path_final = (mmio<uint32> h) -> {
+    offset(h, 0x4001).value = 0x00;
+    offset(h, 0x4006).value = 0x71;
+    offset(h, 0x0200).value = 0x01;
+    offset(h, 0x0201).value = 0x07;
+    offset(h, 0x0202).value = 0x00;
+    offset(h, 0x0203).value = 0x00;
+    offset(h, 0x0204).value = 0x00;
+    offset(h, 0x0205).value = 0x00;
+    offset(h, 0x0206).value = 0x00;
+    offset(h, 0x0207).value = 0x00;
+    offset(h, 0x0801).value = 0x40;
+    offset(h, 0x0802).value = 0x27;
+    offset(h, 0x0803).value = 0x00;
+    offset(h, 0x0804).value = 0x47;
+    offset(h, 0x0807).value = 0xFF;
+    fence();
+
+    hdmi_program_identity_csc();
+
+    offset(h, 0x1000).value = 0x78;
+    offset(h, 0x1001).value = 0x80;
+    offset(h, 0x1002).value = 0x07;
+    offset(h, 0x1003).value = 0x18;
+    offset(h, 0x1004).value = 0x01;
+    offset(h, 0x1005).value = 0x38;
+    offset(h, 0x1006).value = 0x04;
+    offset(h, 0x1007).value = 0x2D;
+    offset(h, 0x1008).value = 0x58;
+    offset(h, 0x1009).value = 0x00;
+    offset(h, 0x100A).value = 0x2C;
+    offset(h, 0x100B).value = 0x00;
+    offset(h, 0x100C).value = 0x04;
+    offset(h, 0x100D).value = 0x05;
+    offset(h, 0x1011).value = 0x0C;
+    offset(h, 0x1012).value = 0x20;
+    offset(h, 0x1013).value = 0x01;
+    offset(h, 0x1014).value = 0x0B;
+    offset(h, 0x1015).value = 0x16;
+    offset(h, 0x1016).value = 0x21;
+    offset(h, 0x1019).value = 0x60;
+    offset(h, 0x101A).value = 0x28;
+    offset(h, 0x101B).value = 0x04;
+    offset(h, 0x101C).value = 0x10;
+    fence();
+
+    hdmi_program_hdcp_video_polarity();
+    offset(h, 0x4002).value = 0xFF;
+    fence();
+    hdmi_clear_overflow();
+    exit;
+};
+
+void dw_hdmi_init = () -> {
+    mmio<uint32> h = 0xFFEF540000;
+
+    offset(h, 0x0180).value = 0xFF;
+    offset(h, 0x0181).value = 0xFF;
+    offset(h, 0x0182).value = 0xFF;
+    offset(h, 0x0183).value = 0xFF;
+    offset(h, 0x0184).value = 0xFF;
+    offset(h, 0x0185).value = 0xFF;
+    offset(h, 0x0186).value = 0xFF;
+    offset(h, 0x0187).value = 0xFF;
+    offset(h, 0x0188).value = 0xFF;
+    offset(h, 0x01FF).value = 0x03;
+    fence();
+
+    hdmi_program_video_path(h);
+
+    offset(h, 0x3000).value = 0x36;
+    fence();
+
+    offset(h, 0x4005).value = 0x01;
+    fence();
+    delay_us(200);
+    offset(h, 0x4005).value = 0x00;
+    fence();
+    delay_us(50000);
+
+    offset(h, 0x4007).value = 0x01;
+    fence();
+
+    offset(h, 0x3001).value = 0x20;
+    fence();
+    delay_us(100);
+    offset(h, 0x3020).value = 0x69;
+    fence();
+    delay_us(100);
+    offset(h, 0x3001).value = 0x00;
+    fence();
+    delay_us(1000);
+
+    hdmi_seed_phy_window(h);
+    delay_us(1000);
+
+    offset(h, 0x0108).value = 0xFF;
+    fence();
+    hdmi_diag0 = offset(h, 0x3020).value & 0xFF;
+    hdmi_diag1 = offset(h, 0x3029).value & 0xFF;
+    hdmi_diag2 = offset(h, 0x4001).value & 0xFF;
+
+    hdmi_phy_i2cm_write(0x06, 0x0001);
+    hdmi_phy_i2cm_write(0x10, 0x2080);
+    hdmi_phy_i2cm_write(0x11, 0x020A);
+    hdmi_phy_i2cm_write(0x19, 0x0007);
+    hdmi_phy_i2cm_write(0x0E, 0x01A0);
+    hdmi_phy_i2cm_write(0x09, 0x8088);
+    fence();
+
+    offset(h, 0x3000).value = 0x2E;
+    fence();
+
+    int32 lock_wait = 0;
+    while(() -> lock_wait < 200 && (offset(h, 0x3004).value & 0x01) == 0, () -> {
+        delay_us(1000);
+        lock_wait = lock_wait + 1;
+    });
+
+    if((offset(h, 0x3004).value & 0x01) == 0, () -> {
+        offset(h, 0x3000).value = 0x36;
+        fence();
+        delay_us(5000);
+
+        offset(h, 0x4005).value = 0x01;
+        fence();
+        delay_us(200);
+        offset(h, 0x4005).value = 0x00;
+        fence();
+        delay_us(10000);
+
+        offset(h, 0x4007).value = 0x01;
+        fence();
+
+        offset(h, 0x3001).value = 0x20;
+        fence();
+        delay_us(100);
+        offset(h, 0x3020).value = 0x69;
+        fence();
+        delay_us(100);
+        offset(h, 0x3001).value = 0x00;
+        fence();
+        delay_us(1000);
+
+        offset(h, 0x0108).value = 0xFF;
+        fence();
+
+        hdmi_phy_i2cm_write(0x06, 0x0001);
+        hdmi_phy_i2cm_write(0x10, 0x2080);
+        hdmi_phy_i2cm_write(0x11, 0x020A);
+        hdmi_phy_i2cm_write(0x19, 0x0007);
+        hdmi_phy_i2cm_write(0x0E, 0x01A0);
+        hdmi_phy_i2cm_write(0x09, 0x8088);
+        fence();
+
+        offset(h, 0x3000).value = 0x2E;
+        fence();
+    });
+
+    int32 final_wait = 0;
+    while(() -> final_wait < 1000 && (offset(h, 0x3004).value & 0x01) == 0, () -> {
+        delay_us(1000);
+        final_wait = final_wait + 1;
+    });
+
+    uint32 phystat = offset(h, 0x3004).value & 0xFF;
+
+    hdmi_program_video_path_final(h);
+
+    hdmi_diag1 = phystat;
+    exit;
+};

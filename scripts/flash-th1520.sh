@@ -2,14 +2,14 @@
 # scripts/flash-th1520.sh
 #
 # Automated flash workflow for BeagleV-Ahead (TH1520).
-# Usage: [SERIAL=/dev/ttyUSB0] bash scripts/flash-th1520.sh
+# Usage: [SERIAL=/dev/ttyUSB0] [LOGFILE=/tmp/th1520-serial.log] bash scripts/flash-th1520.sh
 #
 # Steps performed automatically:
-#   1. Waits for the U-Boot prompt (power cycle the board after starting)
+#   1. Power-cycle board after starting; script interrupts autoboot and waits for the U-Boot prompt
 #   2. Sends "loady 0x04000000"
 #   3. Opens a new terminal window running "make flash MACHINE=th1520"
 #   4. Waits for the Y-Modem transfer to complete
-#   5. Sends "bootelf 0x04000000" and drops into interactive picocom
+#   5. Sends "go 0x04000000" and drops into interactive picocom
 #
 # Dependencies: expect  picocom  lrzsz (sb)
 #   sudo apt-get install expect picocom lrzsz
@@ -17,6 +17,7 @@
 set -euo pipefail
 
 SERIAL="${SERIAL:-/dev/ttyUSB0}"
+LOGFILE="${LOGFILE:-}"
 LOAD_ADDR="0x04000000"
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
@@ -71,24 +72,41 @@ esac
 echo "Configuring $SERIAL at 115200 8N1, no flow control ..."
 stty -F "$SERIAL" 115200 raw cs8 -parenb -cstopb -echo -crtscts
 
-echo "Power cycle the board now. Waiting for U-Boot prompt (up to 60 s) ..."
+if [[ -n "$LOGFILE" ]]; then
+    mkdir -p "$(dirname "$LOGFILE")"
+    echo "Serial log will be written to $LOGFILE"
+fi
+
+echo "Power cycle the board now. Waiting for autoboot or the U-Boot prompt (up to 60 s) ..."
 echo
 
 # ── expect session ────────────────────────────────────────────────────
 expect - <<EXPECT_SCRIPT
 log_user 1
 set timeout 60
+set autoboot_interrupted 0
 
-spawn picocom -b 115200 --flow n $SERIAL
+if { "$LOGFILE" ne "" } {
+    spawn picocom -b 115200 --flow n --logfile "$LOGFILE" "$SERIAL"
+} else {
+    spawn picocom -b 115200 --flow n "$SERIAL"
+}
 
-# Wait for U-Boot prompt
+# Wait for U-Boot prompt, interrupting autoboot if needed.
 expect {
+    -re {Hit any key to stop autoboot:} {
+        if { !\$autoboot_interrupted } {
+            puts "\n\[barnegat\] Autoboot detected — sending space to stop it ..."
+            send " "
+            set autoboot_interrupted 1
+        }
+        exp_continue
+    }
     -re {(C910 Light#|=>)\s} {
         puts "\n\[barnegat\] U-Boot prompt detected — sending loady ..."
     }
     timeout {
         puts "\n\[barnegat\] Timed out waiting for U-Boot prompt."
-        puts "Make sure you interrupted autoboot, then retry."
         exit 1
     }
 }
@@ -111,7 +129,7 @@ expect {
 set timeout 120
 expect {
     "Total Size" {
-        puts "\n\[barnegat\] Transfer complete — booting ELF ..."
+        puts "\n\[barnegat\] Transfer complete — jumping to flat binary ..."
     }
     timeout {
         puts "\n\[barnegat\] Y-Modem transfer timed out."
@@ -119,7 +137,7 @@ expect {
     }
 }
 
-send "bootelf $LOAD_ADDR\r"
+send "go $LOAD_ADDR\r"
 
 interact
 EXPECT_SCRIPT

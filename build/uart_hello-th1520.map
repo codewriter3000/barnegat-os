@@ -4,9 +4,6 @@ Discarded input sections
  .comment       0x0000000000000000       0x20 build/runtime_boot-th1520.o
  .note.GNU-stack
                 0x0000000000000000        0x0 build/runtime_boot-th1520.o
- .comment       0x0000000000000000       0x20 build/hdmi_fb-th1520.o
- .note.GNU-stack
-                0x0000000000000000        0x0 build/hdmi_fb-th1520.o
  .note.GNU-stack
                 0x0000000000000000        0x0 build/uart_hello-th1520.o
 
@@ -20,64 +17,277 @@ Linker script and memory map
 
                 0x0000000004000000                . = ORIGIN (ram)
 
-.text           0x0000000004000000     0x387c
+.text           0x0000000004000000    0x11562
  *(.text.start)
- .text.start    0x0000000004000000       0xb8 build/start-th1520.o
+ .text.start    0x0000000004000000      0x19a build/start-th1520.o
                 0x0000000004000000                _start_baremetal
+                0x000000000400011e                __calynda_rt_boot_probe
  *(.text .text.*)
- .text          0x00000000040000b8        0x0 build/start-th1520.o
- .text          0x00000000040000b8      0x6ba build/runtime_boot-th1520.o
-                0x0000000004000448                __calynda_rt_member_load
-                0x000000000400053a                __calynda_rt_index_load
-                0x0000000004000600                __calynda_rt_array_literal
-                0x0000000004000628                __calynda_rt_array_car
-                0x000000000400065e                __calynda_rt_array_cdr
-                0x00000000040006b8                __calynda_rt_string_cdr
-                0x0000000004000702                __calynda_rt_store_index
- .text          0x0000000004000772     0x3086 build/hdmi_fb-th1520.o
-                0x0000000004001764                hdmi_fb_demo
-                0x000000000400319a                hdmi_hello_world
- .text          0x00000000040037f8       0x84 build/uart_hello-th1520.o
-                0x00000000040037f8                calynda_unit_hdmi_hello_world
-                0x0000000004003808                calynda_unit_run
-                0x000000000400383c                calynda_unit_boot
-                0x0000000004003870                _start
+ .text          0x000000000400019a        0x0 build/start-th1520.o
+ .text          0x000000000400019a     0x1392 build/runtime_boot-th1520.o
+                0x00000000040002fa                __calynda_rt_debug_word
+                0x0000000004000350                __calynda_rt_debug_pair
+                0x00000000040003f6                __calynda_rt_boot_probe_c
+                0x0000000004000586                __calynda_rt_debug_object
+                0x0000000004000d36                __calynda_rt_member_load
+                0x0000000004000e2c                __calynda_rt_index_load
+                0x0000000004000ef8                __calynda_rt_array_literal
+                0x0000000004000f20                __calynda_rt_array_car
+                0x0000000004000f72                __calynda_rt_array_cdr
+                0x0000000004000ff4                __calynda_rt_string_cdr
+                0x000000000400103e                __calynda_rt_store_index
+                0x00000000040010ca                __calynda_rt_closure_new
+                0x00000000040010fa                calynda_rt_callable_dispatch
+                0x000000000400112a                __calynda_rt_call_callable
+                0x0000000004001174                __calynda_rt_cell_alloc
+                0x00000000040011b4                __calynda_rt_cell_read
+                0x00000000040011cc                __calynda_rt_cell_write
+                0x00000000040011f0                __calynda_rt_nlr_push
+                0x0000000004001280                __calynda_rt_nlr_invoke
+                0x00000000040012b0                __calynda_rt_nlr_check_pop
+                0x0000000004001316                __calynda_rt_nlr_get_value
+                0x0000000004001338                __calynda_deref
+                0x000000000400135c                __calynda_deref_sized
+                0x0000000004001386                __calynda_mmio_deref
+                0x00000000040013aa                __calynda_mmio_deref_sized
+                0x00000000040013d4                __calynda_addr
+                0x00000000040013ea                __calynda_offset
+                0x000000000400140e                __calynda_offset_stride
+                0x000000000400143a                __calynda_store
+                0x0000000004001464                __calynda_mmio_store
+                0x000000000400148e                __calynda_store_sized
+                0x00000000040014be                __calynda_mmio_store_sized
+                0x00000000040014ee                __calynda_rt_fence
+                0x0000000004001500                __calynda_rt_cache_clean
+                0x000000000400151a                __calynda_rt_cache_final
+ .text          0x000000000400152c    0x10036 build/uart_hello-th1520.o
+                0x000000000400152c                calynda_unit_if
+                0x00000000040015ae                calynda_unit_while_nlr0
+                0x0000000004001614                calynda_unit_while_lambda1
+                0x0000000004001638                calynda_unit_while
+                0x0000000004001666                calynda_unit_RGB
+                0x00000000040016b8                calynda_unit_fb_in_bounds
+                0x0000000004001770                calynda_unit_fb_write_pixel
+                0x0000000004001806                calynda_unit_fb_rect_span_lambda2
+                0x000000000400185e                calynda_unit_fb_rect_span_nlr3
+                0x0000000004001934                calynda_unit_fb_rect_span
+                0x000000000400195e                calynda_unit_fb_rect_lambda4
+                0x00000000040019dc                calynda_unit_fb_rect_nlr5
+                0x0000000004001b06                calynda_unit_fb_rect
+                0x0000000004001b3a                calynda_unit_fb_fill
+                0x0000000004001ba6                calynda_unit_thead_dcache_clean_range_lambda6
+                0x0000000004001c24                calynda_unit_thead_dcache_clean_range_nlr7
+                0x0000000004001cea                calynda_unit_thead_dcache_clean_range
+                0x0000000004001f76                calynda_unit_fb_border
+                0x000000000400211e                calynda_unit_fb_draw_char_top
+                0x0000000004002186                calynda_unit_fb_draw_char_middle
+                0x00000000040021fe                calynda_unit_fb_draw_char_bottom
+                0x0000000004002276                calynda_unit_fb_draw_char_left
+                0x00000000040022de                calynda_unit_fb_draw_char_left_lower
+                0x0000000004002356                calynda_unit_fb_draw_char_right
+                0x00000000040023ce                calynda_unit_fb_draw_char_right_upper
+                0x0000000004002446                calynda_unit_fb_draw_char_right_lower
+                0x00000000040024ce                calynda_unit_fb_draw_char_center
+                0x0000000004002546                calynda_unit_fb_draw_probe_letter_nlr8
+                0x00000000040025ca                calynda_unit_fb_draw_probe_letter_lambda9
+                0x00000000040025ee                calynda_unit_fb_draw_probe_letter_nlr10
+                0x0000000004002682                calynda_unit_fb_draw_probe_letter_lambda11
+                0x00000000040026a6                calynda_unit_fb_draw_probe_letter_nlr12
+                0x000000000400271a                calynda_unit_fb_draw_probe_letter_lambda13
+                0x000000000400273e                calynda_unit_fb_draw_probe_letter_nlr14
+                0x00000000040027c2                calynda_unit_fb_draw_probe_letter_lambda15
+                0x00000000040027e6                calynda_unit_fb_draw_probe_letter_nlr16
+                0x000000000400286a                calynda_unit_fb_draw_probe_letter_lambda17
+                0x000000000400288e                calynda_unit_fb_draw_probe_letter_nlr18
+                0x0000000004002902                calynda_unit_fb_draw_probe_letter_lambda19
+                0x0000000004002926                calynda_unit_fb_draw_probe_letter_nlr20
+                0x00000000040029ba                calynda_unit_fb_draw_probe_letter_lambda21
+                0x00000000040029de                calynda_unit_fb_draw_probe_letter_nlr22
+                0x0000000004002a52                calynda_unit_fb_draw_probe_letter_lambda23
+                0x0000000004002a76                calynda_unit_fb_draw_probe_letter
+                0x0000000004003760                calynda_unit_fb_draw_probe_digit_nlr24
+                0x00000000040037e4                calynda_unit_fb_draw_probe_digit_lambda25
+                0x0000000004003808                calynda_unit_fb_draw_probe_digit_nlr26
+                0x000000000400386c                calynda_unit_fb_draw_probe_digit_lambda27
+                0x0000000004003890                calynda_unit_fb_draw_probe_digit_nlr28
+                0x0000000004003924                calynda_unit_fb_draw_probe_digit_lambda29
+                0x0000000004003948                calynda_unit_fb_draw_probe_digit_nlr30
+                0x00000000040039cc                calynda_unit_fb_draw_probe_digit_lambda31
+                0x00000000040039f0                calynda_unit_fb_draw_probe_digit
+                0x000000000400406a                calynda_unit_fb_draw_probe_label
+                0x00000000040040e4                calynda_unit_fb_draw_row_markers_lambda32
+                0x0000000004004162                calynda_unit_fb_draw_row_markers_nlr33
+                0x000000000400437e                calynda_unit_fb_draw_row_markers
+                0x00000000040045c0                calynda_unit_fb_draw_col_markers_lambda34
+                0x000000000400463e                calynda_unit_fb_draw_col_markers_nlr35
+                0x000000000400485e                calynda_unit_fb_draw_col_markers
+                0x0000000004004aa0                calynda_unit_fb_draw_probe_cell
+                0x0000000004004f88                calynda_unit_fb_layout_probe_row_lambda36
+                0x0000000004004fe0                calynda_unit_fb_layout_probe_row_nlr37
+                0x00000000040050da                calynda_unit_fb_layout_probe_row
+                0x00000000040052b2                calynda_unit_fb_layout_probe_lambda38
+                0x0000000004005330                calynda_unit_fb_layout_probe_nlr39
+                0x0000000004005564                calynda_unit_fb_layout_probe
+                0x0000000004005a90                calynda_unit_delay_us
+                0x0000000004005aa6                calynda_unit_dpu0_pll_configure_1080p60_lambda40
+                0x0000000004005bdc                calynda_unit_dpu0_pll_configure_1080p60_nlr41
+                0x0000000004005c7a                calynda_unit_dpu0_pll_configure_1080p60
+                0x0000000004006718                calynda_unit_dpu1_pll_configure_1080p60_lambda42
+                0x000000000400684e                calynda_unit_dpu1_pll_configure_1080p60_nlr43
+                0x00000000040068ec                calynda_unit_dpu1_pll_configure_1080p60
+                0x000000000400738a                calynda_unit_vosys_clk_enable
+                0x0000000004007d3e                calynda_unit_forRange_lambda44
+                0x0000000004007dcc                calynda_unit_forRange
+                0x0000000004007e1c                calynda_unit_hdmi_phy_i2cm_write_once_lambda45
+                0x0000000004007ece                calynda_unit_hdmi_phy_i2cm_write_once_nlr46_nlr47
+                0x0000000004008066                calynda_unit_hdmi_phy_i2cm_write_once_nlr46_lambda48
+                0x00000000040080cc                calynda_unit_hdmi_phy_i2cm_write_once_nlr46
+                0x000000000400845c                calynda_unit_hdmi_phy_i2cm_write_once
+                0x0000000004008b5e                calynda_unit_hdmi_phy_i2cm_write_attempt_nlr49
+                0x0000000004008bb6                calynda_unit_hdmi_phy_i2cm_write_attempt_lambda50
+                0x0000000004008bda                calynda_unit_hdmi_phy_i2cm_write_attempt
+                0x0000000004008f0c                calynda_unit_hdmi_phy_i2cm_write
+                0x0000000004008f52                calynda_unit_hdmi_program_identity_csc_lambda51_lambda52
+                0x00000000040091ee                calynda_unit_hdmi_program_identity_csc_lambda51
+                0x000000000400925c                calynda_unit_hdmi_program_identity_csc
+                0x000000000400942a                calynda_unit_hdmi_clear_overflow_lambda53
+                0x00000000040094b4                calynda_unit_hdmi_clear_overflow
+                0x0000000004009796                calynda_unit_hdmi_program_hdcp_video_polarity
+                0x00000000040098c0                calynda_unit_hdmi_program_video_path
+                0x000000000400ae5c                calynda_unit_hdmi_seed_phy_window
+                0x000000000400b6a2                calynda_unit_hdmi_program_video_path_final
+                0x000000000400cc60                calynda_unit_dw_hdmi_init_lambda54
+                0x000000000400cd78                calynda_unit_dw_hdmi_init_nlr55
+                0x000000000400ce18                calynda_unit_dw_hdmi_init_nlr56
+                0x000000000400d7b6                calynda_unit_dw_hdmi_init_lambda57
+                0x000000000400d7da                calynda_unit_dw_hdmi_init_lambda58
+                0x000000000400d8f2                calynda_unit_dw_hdmi_init_nlr59
+                0x000000000400d992                calynda_unit_dw_hdmi_init
+                0x000000000400f2f6                calynda_unit_dc8200_init
+                0x0000000004010a14                calynda_unit_scratch_mark
+                0x0000000004010a80                calynda_unit_hold_scanout
+                0x0000000004010a84                calynda_unit_hdmi_hello_world
+                0x0000000004010d26                calynda_unit_run
+                0x0000000004010d5a                calynda_unit___mir_module_init
+                0x0000000004010e7a                calynda_unit_boot
+                0x0000000004010eba                _start
+                0x0000000004010ec6                calynda_closure_while_nlr0
+                0x0000000004010ee2                calynda_closure_while_lambda1
+                0x0000000004010efe                calynda_closure_fb_rect_span_lambda2
+                0x0000000004010f1a                calynda_closure_fb_rect_span_nlr3
+                0x0000000004010f36                calynda_closure_fb_rect_lambda4
+                0x0000000004010f52                calynda_closure_fb_rect_nlr5
+                0x0000000004010f6e                calynda_closure_thead_dcache_clean_range_lambda6
+                0x0000000004010f8a                calynda_closure_thead_dcache_clean_range_nlr7
+                0x0000000004010fa6                calynda_closure_fb_draw_probe_letter_nlr8
+                0x0000000004010fc2                calynda_closure_fb_draw_probe_letter_lambda9
+                0x0000000004010fde                calynda_closure_fb_draw_probe_letter_nlr10
+                0x0000000004010ffa                calynda_closure_fb_draw_probe_letter_lambda11
+                0x0000000004011016                calynda_closure_fb_draw_probe_letter_nlr12
+                0x0000000004011032                calynda_closure_fb_draw_probe_letter_lambda13
+                0x000000000401104e                calynda_closure_fb_draw_probe_letter_nlr14
+                0x000000000401106a                calynda_closure_fb_draw_probe_letter_lambda15
+                0x0000000004011086                calynda_closure_fb_draw_probe_letter_nlr16
+                0x00000000040110a2                calynda_closure_fb_draw_probe_letter_lambda17
+                0x00000000040110be                calynda_closure_fb_draw_probe_letter_nlr18
+                0x00000000040110da                calynda_closure_fb_draw_probe_letter_lambda19
+                0x00000000040110f6                calynda_closure_fb_draw_probe_letter_nlr20
+                0x0000000004011112                calynda_closure_fb_draw_probe_letter_lambda21
+                0x000000000401112e                calynda_closure_fb_draw_probe_letter_nlr22
+                0x000000000401114a                calynda_closure_fb_draw_probe_letter_lambda23
+                0x0000000004011166                calynda_closure_fb_draw_probe_digit_nlr24
+                0x0000000004011182                calynda_closure_fb_draw_probe_digit_lambda25
+                0x000000000401119e                calynda_closure_fb_draw_probe_digit_nlr26
+                0x00000000040111ba                calynda_closure_fb_draw_probe_digit_lambda27
+                0x00000000040111d6                calynda_closure_fb_draw_probe_digit_nlr28
+                0x00000000040111f2                calynda_closure_fb_draw_probe_digit_lambda29
+                0x000000000401120e                calynda_closure_fb_draw_probe_digit_nlr30
+                0x000000000401122a                calynda_closure_fb_draw_probe_digit_lambda31
+                0x0000000004011246                calynda_closure_fb_draw_row_markers_lambda32
+                0x0000000004011262                calynda_closure_fb_draw_row_markers_nlr33
+                0x000000000401127e                calynda_closure_fb_draw_col_markers_lambda34
+                0x000000000401129a                calynda_closure_fb_draw_col_markers_nlr35
+                0x00000000040112b6                calynda_closure_fb_layout_probe_row_lambda36
+                0x00000000040112d2                calynda_closure_fb_layout_probe_row_nlr37
+                0x00000000040112ee                calynda_closure_fb_layout_probe_lambda38
+                0x000000000401130a                calynda_closure_fb_layout_probe_nlr39
+                0x0000000004011326                calynda_closure_dpu0_pll_configure_1080p60_lambda40
+                0x0000000004011342                calynda_closure_dpu0_pll_configure_1080p60_nlr41
+                0x000000000401135e                calynda_closure_dpu1_pll_configure_1080p60_lambda42
+                0x000000000401137a                calynda_closure_dpu1_pll_configure_1080p60_nlr43
+                0x0000000004011396                calynda_closure_forRange_lambda44
+                0x00000000040113b2                calynda_closure_hdmi_phy_i2cm_write_once_lambda45
+                0x00000000040113ce                calynda_closure_hdmi_phy_i2cm_write_once_nlr46_nlr47
+                0x00000000040113ea                calynda_closure_hdmi_phy_i2cm_write_once_nlr46_lambda48
+                0x0000000004011406                calynda_closure_hdmi_phy_i2cm_write_once_nlr46
+                0x0000000004011422                calynda_closure_hdmi_phy_i2cm_write_attempt_nlr49
+                0x000000000401143e                calynda_closure_hdmi_phy_i2cm_write_attempt_lambda50
+                0x000000000401145a                calynda_closure_hdmi_program_identity_csc_lambda51_lambda52
+                0x000000000401147a                calynda_closure_hdmi_program_identity_csc_lambda51
+                0x000000000401149a                calynda_closure_hdmi_clear_overflow_lambda53
+                0x00000000040114ba                calynda_closure_dw_hdmi_init_lambda54
+                0x00000000040114d6                calynda_closure_dw_hdmi_init_nlr55
+                0x00000000040114f2                calynda_closure_dw_hdmi_init_nlr56
+                0x000000000401150e                calynda_closure_dw_hdmi_init_lambda57
+                0x000000000401152a                calynda_closure_dw_hdmi_init_lambda58
+                0x0000000004011546                calynda_closure_dw_hdmi_init_nlr59
 
-.rodata         0x0000000004003880      0x5c4
+.rodata         0x0000000004011570      0x1e0
  *(.rodata .rodata.*)
- .rodata        0x0000000004003880      0x5c4 build/hdmi_fb-th1520.o
+ .rodata        0x0000000004011570       0x11 build/runtime_boot-th1520.o
+ *fill*         0x0000000004011581        0x7 
+ .rodata        0x0000000004011588      0x1c8 build/uart_hello-th1520.o
 
-.rela.dyn       0x0000000004003e48        0x0
+.rela.dyn       0x0000000004011750        0x0
  .rela.text.start
-                0x0000000004003e48        0x0 build/start-th1520.o
+                0x0000000004011750        0x0 build/start-th1520.o
 
-.data           0x0000000004003e50        0x0
+.data           0x0000000004011750       0x98
  *(.data .data.*)
- .data          0x0000000004003e50        0x0 build/start-th1520.o
- .data          0x0000000004003e50        0x0 build/runtime_boot-th1520.o
- .data          0x0000000004003e50        0x0 build/hdmi_fb-th1520.o
- .data          0x0000000004003e50        0x0 build/uart_hello-th1520.o
+ .data          0x0000000004011750        0x0 build/start-th1520.o
+ .data          0x0000000004011750        0x0 build/runtime_boot-th1520.o
+ .data          0x0000000004011750       0x98 build/uart_hello-th1520.o
+                0x0000000004011750                calynda_global_PROBE_COLS
+                0x0000000004011758                calynda_global_HDMI_IDENTITY_CSC
+                0x0000000004011760                calynda_global_HDMI_CSC_MSB_BASE
+                0x0000000004011768                calynda_global_HDMI_CSC_LSB_BASE
+                0x0000000004011770                calynda_global_FB_WIDTH
+                0x0000000004011778                calynda_global_FB_HEIGHT
+                0x0000000004011780                calynda_global_THEAD_CMO_STRIDE
+                0x0000000004011788                calynda_global_hdmi_diag0
+                0x0000000004011790                calynda_global_hdmi_diag1
+                0x0000000004011798                calynda_global_hdmi_diag2
+                0x00000000040117a0                calynda_global_FB_PHYS_ADDR
+                0x00000000040117a8                calynda_global_FB_PHYS
+                0x00000000040117b0                calynda_global_FB_STRIDE_BYTES
+                0x00000000040117b8                calynda_global_FB_SIZE_BYTES
+                0x00000000040117c0                calynda_global_AP_CLKGEN_BASE
+                0x00000000040117c8                calynda_global_VOSYS_CLK_GATE_BASE
+                0x00000000040117d0                calynda_global_HDMI_TX_BASE
+                0x00000000040117d8                calynda_global_I2CM_ATTEMPTS
+                0x00000000040117e0                calynda_global_I2CM_RETRY_DELAY_US
 
-.bss            0x0000000004003e50    0x10008
-                0x0000000004003e50                __bss_start = .
+.sdata          0x00000000040117e8        0x8
+ .sdata         0x00000000040117e8        0x8 build/runtime_boot-th1520.o
+
+.bss            0x00000000040117f0    0x1040c
+                0x00000000040117f0                __bss_start = .
  *(.bss .bss.*)
- .bss           0x0000000004003e50        0x0 build/start-th1520.o
- .bss           0x0000000004003e50    0x10008 build/runtime_boot-th1520.o
- .bss           0x0000000004013e58        0x0 build/hdmi_fb-th1520.o
- .bss           0x0000000004013e58        0x0 build/uart_hello-th1520.o
+ .bss           0x00000000040117f0        0x0 build/start-th1520.o
+ .bss           0x00000000040117f0    0x1040c build/runtime_boot-th1520.o
+ .bss           0x0000000004021bfc        0x0 build/uart_hello-th1520.o
  *(COMMON)
-                0x0000000004013e58                __bss_end = .
-                0x0000000004013e60                . = ALIGN (0x10)
-                0x0000000004013e60                __stack_bottom = .
-                0x0000000004023e60                . = (. + 0x10000)
-                0x0000000004023e60                __stack_top = .
+                0x0000000004021bfc                __bss_end = .
+                0x0000000004021c00                . = ALIGN (0x10)
+                0x0000000004021c00                __stack_bottom = .
+                0x0000000004031c00                . = (. + 0x10000)
+                0x0000000004031c00                __stack_top = .
 
 /DISCARD/
  *(.note.GNU-stack)
  *(.comment)
 LOAD build/start-th1520.o
 LOAD build/runtime_boot-th1520.o
-LOAD build/hdmi_fb-th1520.o
 LOAD build/uart_hello-th1520.o
 OUTPUT(build/uart_hello-th1520.elf elf64-littleriscv)
 
@@ -88,6 +298,4 @@ OUTPUT(build/uart_hello-th1520.elf elf64-littleriscv)
  .riscv.attributes
                 0x0000000000000055       0x53 build/runtime_boot-th1520.o
  .riscv.attributes
-                0x00000000000000a8       0x53 build/hdmi_fb-th1520.o
- .riscv.attributes
-                0x00000000000000fb       0x51 build/uart_hello-th1520.o
+                0x00000000000000a8       0x51 build/uart_hello-th1520.o

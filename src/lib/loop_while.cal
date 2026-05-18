@@ -1,0 +1,10 @@
+package lib.loop_while;
+
+import lib.conditional_if;
+
+void while = (var condition, |var body) -> {
+    if(condition(), () -> {
+        body();
+        while(condition, body);
+    });
+};
