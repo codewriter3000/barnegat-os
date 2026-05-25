@@ -64,6 +64,18 @@ make build MACHINE=th1520
 
 That produces `build/uart_hello-th1520.bin` for the current U-Boot flow on the board.
 
+Build modes:
+
+- `BUILD_MODE=release` is the default. It disables UART trace injection and other bring-up probes while keeping the runtime helper replacements and code-size optimizations enabled.
+- `BUILD_MODE=debug` re-enables the current TH1520 bring-up breadcrumbs, scratch/UART probe path, and sanitizer trace injection.
+
+Examples:
+
+```sh
+make build MACHINE=th1520 BUILD_MODE=release
+make build MACHINE=th1520 BUILD_MODE=debug
+```
+
 Run it in QEMU:
 
 ```sh
@@ -109,9 +121,9 @@ sudo apt-get install lrzsz
    ```
 4. In a second terminal on the host, run:
    ```sh
-   make flash MACHINE=th1520
+   make flash MACHINE=th1520 PROGRAM=<program>
    ```
-   This sends `build/uart_hello-th1520.bin` via Y-Modem to `/dev/ttyUSB0`. Override the device with `SERIAL=/dev/ttyACM0` if needed.
+   This sends `build/<program>-th1520.bin` via Y-Modem to `/dev/ttyUSB0`. Override the device with `SERIAL=/dev/ttyACM0` if needed.
 5. Once the transfer completes, back in U-Boot:
    ```
    go 0x04000000
@@ -119,11 +131,22 @@ sudo apt-get install lrzsz
 
 Output appears in the same serial terminal immediately after `go 0x04000000`.
 
+On this workspace host, do not use `sudo` for the flash step. The current user already has access to `/dev/ttyUSB0`.
+
+Examples:
+
+```sh
+make flash MACHINE=th1520 PROGRAM=uart_hello
+make flash MACHINE=th1520 PROGRAM=screen_demo
+```
+
 For TH1520 debug-heavy runs, the bare-metal runtime also emits compact UART trace tokens and mirrors a limited event ring into scratch DRAM at `0x05001000`. The helper script below decodes those tokens and maps any embedded addresses back to the nearest ELF symbols:
 
 ```sh
 python3 scripts/decode_th1520_trace.py --elf build/uart_hello-th1520.elf 'ABCDEFG012V000000000400E770!0000000004000730'
 ```
+
+This trace path is only present in `BUILD_MODE=debug`. Release builds intentionally omit these UART trace markers and other bring-up probes by default.
 
 Current token classes are:
 
@@ -135,11 +158,16 @@ Current token classes are:
 
 For the current HDMI bring-up architecture, reproduction steps, and known hardware-specific constraints, see `docs/th1520-hdmi-bringup.md`.
 
+For a per-function reference covering every TH1520 I/O routine under `src/machines/th1520/lib/io`, see `docs/th1520-io-reference.md`.
+
+For the current list of helpers that are moved out of Calynda codegen and the corresponding compiler optimization proposals, see `docs/calynda-codegen-optimizations.md`.
+
 `make boot-th1520 MACHINE=th1520` prints instructions for the SD card and TFTP alternatives if you prefer those.
 
 ## Layout
 
 - `src/uart_hello.cal`: bare-metal Calynda sample — prints `Hello World` via recursive `uart_print_at`
+- `src/screen_demo.cal`: opt-in TH1520 framebuffer demo — boots the HDMI path and animates a pair of rectangle objects on screen
 - `src/lib/io/stdlib.cal`: shared helper module (currently a stub; machine-specific drivers live under `src/machines/`)
 - `src/machines/virt/lib/io/uart.cal`: UART driver for the QEMU `virt` machine (16550 at `0x10000000`)
 - `src/machines/th1520/lib/io/uart.cal`: UART driver for the BeagleV-Ahead (DW APB at `0xFFE7014000`)
@@ -177,4 +205,10 @@ If you want a different program, place another `.cal` file in `src/` and select 
 ```sh
 make PROGRAM=my_program build
 make PROGRAM=my_program run
+```
+
+The TH1520 moving-object demo added by the screen/probe split can be built explicitly with:
+
+```sh
+make PROGRAM=screen_demo build MACHINE=th1520
 ```

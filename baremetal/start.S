@@ -1,7 +1,12 @@
 .section .text.start
 .globl _start_baremetal
 
+#ifndef CALYNDA_BRINGUP_DEBUG
+#define CALYNDA_BRINGUP_DEBUG 0
+#endif
+
 _start_baremetal:
+#if CALYNDA_BRINGUP_DEBUG
     li   t0, 0xFFE7014000
 1:
     lw   t1, 0x14(t0)
@@ -9,6 +14,7 @@ _start_baremetal:
     beqz t1, 1b
     li   t1, 'A'
     sw   t1, 0(t0)
+#endif
 
     /* ----------------------------------------------------------------
      * Disable S-mode MMU so all addresses are physical from here on.
@@ -17,6 +23,14 @@ _start_baremetal:
     sfence.vma
     fence.i
 
+#if defined(MACHINE_TH1520) && CALYNDA_BRINGUP_DEBUG
+    li   t3, 0x05000060
+    li   t4, 0xA1000001
+    sw   t4, 0(t3)
+    fence
+#endif
+
+#if CALYNDA_BRINGUP_DEBUG
     li   t0, 0xFFE7014000
 2:
     lw   t1, 0x14(t0)
@@ -29,6 +43,7 @@ _start_baremetal:
     li   t2, 0xA1000001
     sw   t2, 0(t1)
     fence
+#endif
 
     /* ----------------------------------------------------------------
      * Prologue — save ALL state U-Boot needs restored.
@@ -75,6 +90,14 @@ _start_baremetal:
     j    3b
 2:
 
+#if defined(MACHINE_TH1520) && CALYNDA_BRINGUP_DEBUG
+    li   t3, 0x05000064
+    li   t4, 0xA1000002
+    sw   t4, 0(t3)
+    fence
+#endif
+
+#if CALYNDA_BRINGUP_DEBUG
     li   t0, 0xFFE7014000
 4:
     lw   t1, 0x14(t0)
@@ -95,8 +118,23 @@ _start_baremetal:
     beqz t1, 5b
     li   t1, 'D'
     sw   t1, 0(t0)
+#endif
+
+#if defined(MACHINE_TH1520) && CALYNDA_BRINGUP_DEBUG
+    li   t3, 0x05000068
+    li   t4, 0xA1000003
+    sw   t4, 0(t3)
+    fence
+#endif
 
     call __calynda_rt_boot_probe
+
+#if defined(MACHINE_TH1520) && CALYNDA_BRINGUP_DEBUG
+    li   t3, 0x0500006C
+    li   t4, 0xA1000004
+    sw   t4, 0(t3)
+    fence
+#endif
 
     /* ----------------------------------------------------------------
      * Epilogue — restore in reverse order; sp MUST be last.
@@ -115,6 +153,7 @@ _start_baremetal:
 
 .globl __calynda_rt_boot_probe
 __calynda_rt_boot_probe:
+#if CALYNDA_BRINGUP_DEBUG
     li   t0, 0xFFE7014000
 6:
     lw   t1, 0x14(t0)
@@ -122,9 +161,11 @@ __calynda_rt_boot_probe:
     beqz t1, 6b
     li   t1, 'E'
     sw   t1, 0(t0)
+#endif
 
     call __calynda_rt_boot_probe_c
 
+#if CALYNDA_BRINGUP_DEBUG
     li   t0, 0xFFE7014000
 7:
     lw   t1, 0x14(t0)
@@ -132,6 +173,7 @@ __calynda_rt_boot_probe:
     beqz t1, 7b
     li   t1, 'I'
     sw   t1, 0(t0)
+#endif
     ret
 
 /* ----------------------------------------------------------------
@@ -144,6 +186,7 @@ __calynda_rt_boot_probe:
  * ---------------------------------------------------------------- */
 .align 4
 _trap_handler:
+#ifdef MACHINE_TH1520
     /* Write trap sentinel + sepc to scratch DRAM — safe, no MMIO. */
     li   t0, 0x05000010
     li   t1, 0xDEAD0001
@@ -153,6 +196,7 @@ _trap_handler:
     srli t1, t1, 32
     sw   t1, 8(t0)         /* sepc high 32 bits */
     fence
+#endif
 .Ltrap_spin:
     wfi
     j    .Ltrap_spin

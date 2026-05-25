@@ -1,16 +1,7 @@
 package lib.loop;
 
-void while = (var condition, |var body) -> {
-    if(condition(), () -> {
-         body();
-         while(condition, body);
-    });
-};
-
-void forRange = (int32 init, int32 end, var body) -> {
-    var doBody = () -> { body(init); forRange(init + 1, end, body); return 0; };
-    var _r = init >= end ? 0 : doBody();
-};
+import lib.loop_range;
+import lib.loop_while;
 
 void forPairs = (arr<?> arr1, arr<?> arr2, |var body) -> {
     int i1 = 0;
@@ -20,5 +11,13 @@ void forPairs = (arr<?> arr1, arr<?> arr2, |var body) -> {
         body(arr1[i1], arr2[i2]);
         i1 = i1 + 1;
         i2 = i2 + 1;
+    });
+};
+
+void forLinear = (arr<?> items, |var body) -> {
+    int i = 0;
+    while(() -> i < items.length, () -> {
+        body(items[i]);
+        i = i + 1;
     });
 };

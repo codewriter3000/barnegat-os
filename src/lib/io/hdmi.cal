@@ -3,3 +3,7 @@ package app;
 int32 hdmi_hello_world = () -> {
     return 0;
 };
+
+int32 hdmi_screen_demo = () -> {
+    return hdmi_hello_world();
+};

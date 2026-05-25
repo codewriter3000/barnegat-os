@@ -257,6 +257,7 @@ void dw_hdmi_init = () -> {
     fence();
 
     hdmi_program_video_path(h);
+    delay_us(1000);
 
     offset(h, 0x3000).value = 0x36;
     fence();
@@ -297,6 +298,7 @@ void dw_hdmi_init = () -> {
     hdmi_phy_i2cm_write(0x0E, 0x01A0);
     hdmi_phy_i2cm_write(0x09, 0x8088);
     fence();
+    delay_us(1000);
 
     offset(h, 0x3000).value = 0x2E;
     fence();
@@ -342,6 +344,7 @@ void dw_hdmi_init = () -> {
         hdmi_phy_i2cm_write(0x0E, 0x01A0);
         hdmi_phy_i2cm_write(0x09, 0x8088);
         fence();
+        delay_us(1000);
 
         offset(h, 0x3000).value = 0x2E;
         fence();
@@ -355,6 +358,7 @@ void dw_hdmi_init = () -> {
 
     uint32 phystat = offset(h, 0x3004).value & 0xFF;
 
+    delay_us(5000);
     hdmi_program_video_path_final(h);
 
     hdmi_diag1 = phystat;

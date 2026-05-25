@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import re
 import sys
 
@@ -65,6 +66,8 @@ HDMI_PHY_WRITE_ONCE_TRACE_PLAN = [
     ("call calynda_unit_while", "u"),
 ]
 
+RELEASE_SETTLE_ITERATIONS = 200000
+
 
 def emit_symbol_load(indent: str, register: str, symbol: str) -> list[str]:
     return [
@@ -117,6 +120,17 @@ def emit_trace_block(indent: str, marker: str) -> list[str]:
         f"{indent}beqz t6, {label}",
         f"{indent}li t6, {ascii_code}",
         f"{indent}sw t6, 0(t5)",
+    ]
+
+
+def emit_settle_block(indent: str, marker: str, iterations: int) -> list[str]:
+    ascii_code = ord(marker)
+    label = f".Lcalynda_hdmi_settle_{ascii_code}_loop"
+    return [
+        f"{indent}li t5, {iterations}",
+        f"{label}:",
+        f"{indent}addi t5, t5, -1",
+        f"{indent}bnez t5, {label}",
     ]
 
 
@@ -178,6 +192,35 @@ def instrument_symbol_trace(lines: list[str], symbol: str, plan: list[tuple[str,
     return output
 
 
+def instrument_symbol_settle(lines: list[str], symbol: str, plan: list[tuple[str, str]], iterations: int) -> list[str]:
+    output: list[str] = []
+    in_symbol = False
+    plan_index = 0
+
+    for line in lines:
+        stripped = line.strip()
+
+        if stripped == f"{symbol}:":
+            in_symbol = True
+            plan_index = 0
+            output.append(line)
+            continue
+
+        if in_symbol and stripped.startswith(".globl "):
+            in_symbol = False
+
+        if in_symbol and plan_index < len(plan):
+            target_call, marker = plan[plan_index]
+            if stripped == target_call:
+                indent = line[: len(line) - len(line.lstrip())]
+                output.extend(emit_settle_block(indent, marker, iterations))
+                plan_index += 1
+
+        output.append(line)
+
+    return output
+
+
 def instrument_symbol_entry(lines: list[str], symbol: str, marker: str) -> list[str]:
     output: list[str] = []
 
@@ -212,7 +255,28 @@ def replace_symbol_body(lines: list[str], symbol: str, new_body: list[str]) -> l
     return output
 
 
-ITERATIVE_FOR_RANGE_BODY = [
+def sectionize_functions(lines: list[str]) -> list[str]:
+    output: list[str] = []
+    index = 0
+
+    while index < len(lines):
+        line = lines[index]
+        stripped = line.strip()
+
+        if stripped.startswith(".globl "):
+            symbol = stripped.split(maxsplit=1)[1]
+            next_line = lines[index + 1].strip() if index + 1 < len(lines) else ""
+
+            if next_line == f"{symbol}:" and not symbol.startswith("calynda_global_"):
+                output.append(f'.section .text.{symbol},"ax"')
+
+        output.append(line)
+        index += 1
+
+    return output
+
+
+ITERATIVE_FOR_RANGE_BODY_DEBUG = [
     "    addi sp, sp, -56",
     "    sd ra, 48(sp)",
     "    sd s0, 40(sp)",
@@ -246,6 +310,36 @@ ITERATIVE_FOR_RANGE_BODY = [
     "    ld s0, 40(sp)",
     "    ld ra, 48(sp)",
     "    addi sp, sp, 56",
+    "    ret",
+]
+
+
+ITERATIVE_FOR_RANGE_BODY_RELEASE = [
+    "    addi sp, sp, -40",
+    "    sd ra, 32(sp)",
+    "    sd s0, 24(sp)",
+    "    addi s0, sp, 40",
+    "    sd a0, 16(sp)",
+    "    sd a1, 8(sp)",
+    "    sd a2, 0(sp)",
+    ".Lcalynda_iter_forRange_loop:",
+    "    ld t0, 16(sp)",
+    "    ld t1, 8(sp)",
+    "    bge t0, t1, .Lcalynda_iter_forRange_done",
+    "    sd t0, -8(s0)",
+    "    ld a0, 0(sp)",
+    "    li a1, 1",
+    "    addi a2, s0, -8",
+    "    call __calynda_rt_call_callable",
+    "    ld t0, 16(sp)",
+    "    addi t0, t0, 1",
+    "    sd t0, 16(sp)",
+    "    j .Lcalynda_iter_forRange_loop",
+    ".Lcalynda_iter_forRange_done:",
+    "    li a0, 0",
+    "    ld s0, 24(sp)",
+    "    ld ra, 32(sp)",
+    "    addi sp, sp, 40",
     "    ret",
 ]
 
@@ -323,12 +417,160 @@ FB_RECT_BODY = [
 ]
 
 
-def main() -> int:
-    if len(sys.argv) != 3:
-        print("usage: sanitize_calynda_asm.py <input.s> <output.s>", file=sys.stderr)
-        return 64
+FB_DRAW_PROBE_LABEL_BODY = [
+    "    addi sp, sp, -16",
+    "    sd ra, 8(sp)",
+    "    call __calynda_rt_draw_probe_label",
+    "    li a0, 0",
+    "    ld ra, 8(sp)",
+    "    addi sp, sp, 16",
+    "    ret",
+]
 
-    input_path, output_path = sys.argv[1], sys.argv[2]
+
+SCRATCH_MARK_BODY = [
+    "    addi sp, sp, -16",
+    "    sd ra, 8(sp)",
+    "    call __calynda_rt_scratch_mark",
+    "    li a0, 0",
+    "    ld ra, 8(sp)",
+    "    addi sp, sp, 16",
+    "    ret",
+]
+
+
+DCACHE_CLEAN_RANGE_BODY = [
+    "    addi sp, sp, -16",
+    "    sd ra, 8(sp)",
+    "    call __calynda_rt_cache_clean_range",
+    "    li a0, 0",
+    "    ld ra, 8(sp)",
+    "    addi sp, sp, 16",
+    "    ret",
+]
+
+
+FB_BORDER_BODY = [
+    "    addi sp, sp, -16",
+    "    sd ra, 8(sp)",
+    "    call __calynda_rt_fb_border",
+    "    li a0, 0",
+    "    ld ra, 8(sp)",
+    "    addi sp, sp, 16",
+    "    ret",
+]
+
+
+FB_DRAW_ROW_MARKERS_BODY = [
+    "    addi sp, sp, -16",
+    "    sd ra, 8(sp)",
+    "    call __calynda_rt_fb_draw_row_markers",
+    "    li a0, 0",
+    "    ld ra, 8(sp)",
+    "    addi sp, sp, 16",
+    "    ret",
+]
+
+
+FB_DRAW_COL_MARKERS_BODY = [
+    "    addi sp, sp, -16",
+    "    sd ra, 8(sp)",
+    "    call __calynda_rt_fb_draw_col_markers",
+    "    li a0, 0",
+    "    ld ra, 8(sp)",
+    "    addi sp, sp, 16",
+    "    ret",
+]
+
+
+HDMI_PROGRAM_IDENTITY_CSC_BODY = [
+    "    addi sp, sp, -16",
+    "    sd ra, 8(sp)",
+    "    call __calynda_rt_hdmi_program_identity_csc",
+    "    li a0, 0",
+    "    ld ra, 8(sp)",
+    "    addi sp, sp, 16",
+    "    ret",
+]
+
+
+HDMI_CLEAR_OVERFLOW_BODY = [
+    "    addi sp, sp, -16",
+    "    sd ra, 8(sp)",
+    "    call __calynda_rt_hdmi_clear_overflow",
+    "    li a0, 0",
+    "    ld ra, 8(sp)",
+    "    addi sp, sp, 16",
+    "    ret",
+]
+
+
+SCREEN_DRAW_OBJECT_BODY = [
+    "    addi sp, sp, -16",
+    "    sd ra, 8(sp)",
+    "    call __calynda_rt_screen_draw_object",
+    "    li a0, 0",
+    "    ld ra, 8(sp)",
+    "    addi sp, sp, 16",
+    "    ret",
+]
+
+
+SCREEN_CLEAR_OBJECT_BODY = [
+    "    addi sp, sp, -16",
+    "    sd ra, 8(sp)",
+    "    call __calynda_rt_screen_clear_object",
+    "    li a0, 0",
+    "    ld ra, 8(sp)",
+    "    addi sp, sp, 16",
+    "    ret",
+]
+
+
+SCREEN_MAKE_TEXT_BODY = [
+    "    addi sp, sp, -16",
+    "    sd ra, 8(sp)",
+    "    call __calynda_rt_screen_make_text",
+    "    ld ra, 8(sp)",
+    "    addi sp, sp, 16",
+    "    ret",
+]
+
+
+SCREEN_DEMO_HOLD_BODY = [
+    "    addi sp, sp, -16",
+    "    sd ra, 8(sp)",
+    "    call __calynda_rt_screen_demo_hold",
+    "    li a0, 0",
+    "    ld ra, 8(sp)",
+    "    addi sp, sp, 16",
+    "    ret",
+]
+
+CONTROLLER_DEMO_HOLD_BODY = [
+    "    addi sp, sp, -16",
+    "    sd ra, 8(sp)",
+    "    call __calynda_rt_controller_demo_hold",
+    "    li a0, 0",
+    "    ld ra, 8(sp)",
+    "    addi sp, sp, 16",
+    "    ret",
+]
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--build-mode", choices=("release", "debug"), default="release")
+    parser.add_argument("input_path")
+    parser.add_argument("output_path")
+    return parser.parse_args()
+
+
+def main() -> int:
+    args = parse_args()
+    input_path = args.input_path
+    output_path = args.output_path
+    bringup_debug = args.build_mode == "debug"
 
     with open(input_path, "r", encoding="utf-8") as input_file:
         lines = input_file.readlines()
@@ -337,28 +579,46 @@ def main() -> int:
     for line in lines:
         output_lines.extend(sanitize_line(line))
 
-    output_lines = instrument_hdmi_trace(output_lines)
-    output_lines = instrument_symbol_trace(output_lines,
-                                           "calynda_unit_fb_layout_probe",
-                                           FB_LAYOUT_TRACE_PLAN)
-    output_lines = instrument_symbol_entry(output_lines,
-                                           "calynda_unit_dw_hdmi_init",
-                                           "v")
-    output_lines = instrument_symbol_trace(output_lines,
-                                           "calynda_unit_dw_hdmi_init",
-                                           DW_HDMI_TRACE_PLAN)
-    output_lines = instrument_symbol_trace(output_lines,
-                                           "calynda_unit_hdmi_program_video_path",
-                                           HDMI_VIDEO_PATH_TRACE_PLAN)
-    output_lines = instrument_symbol_trace(output_lines,
-                                           "calynda_unit_hdmi_program_video_path_final",
-                                           HDMI_VIDEO_PATH_FINAL_TRACE_PLAN)
-    output_lines = instrument_symbol_trace(output_lines,
-                                           "calynda_unit_hdmi_phy_i2cm_write_once",
-                                           HDMI_PHY_WRITE_ONCE_TRACE_PLAN)
+    if bringup_debug:
+        output_lines = instrument_hdmi_trace(output_lines)
+        output_lines = instrument_symbol_trace(output_lines,
+                                               "calynda_unit_fb_layout_probe",
+                                               FB_LAYOUT_TRACE_PLAN)
+        output_lines = instrument_symbol_entry(output_lines,
+                                               "calynda_unit_dw_hdmi_init",
+                                               "v")
+        output_lines = instrument_symbol_trace(output_lines,
+                                               "calynda_unit_dw_hdmi_init",
+                                               DW_HDMI_TRACE_PLAN)
+        output_lines = instrument_symbol_trace(output_lines,
+                                               "calynda_unit_hdmi_program_video_path",
+                                               HDMI_VIDEO_PATH_TRACE_PLAN)
+        output_lines = instrument_symbol_trace(output_lines,
+                                               "calynda_unit_hdmi_program_video_path_final",
+                                               HDMI_VIDEO_PATH_FINAL_TRACE_PLAN)
+        output_lines = instrument_symbol_trace(output_lines,
+                                               "calynda_unit_hdmi_phy_i2cm_write_once",
+                                               HDMI_PHY_WRITE_ONCE_TRACE_PLAN)
+    else:
+        output_lines = instrument_symbol_settle(output_lines,
+                                                "calynda_unit_dw_hdmi_init",
+                                                DW_HDMI_TRACE_PLAN,
+                                                RELEASE_SETTLE_ITERATIONS)
+        output_lines = instrument_symbol_settle(output_lines,
+                                                "calynda_unit_hdmi_program_video_path",
+                                                HDMI_VIDEO_PATH_TRACE_PLAN,
+                                                RELEASE_SETTLE_ITERATIONS)
+        output_lines = instrument_symbol_settle(output_lines,
+                                                "calynda_unit_hdmi_program_video_path_final",
+                                                HDMI_VIDEO_PATH_FINAL_TRACE_PLAN,
+                                                RELEASE_SETTLE_ITERATIONS)
+        output_lines = instrument_symbol_settle(output_lines,
+                                                "calynda_unit_hdmi_phy_i2cm_write_once",
+                                                HDMI_PHY_WRITE_ONCE_TRACE_PLAN,
+                                                RELEASE_SETTLE_ITERATIONS)
     output_lines = replace_symbol_body(output_lines,
                                        "calynda_unit_forRange",
-                                       ITERATIVE_FOR_RANGE_BODY)
+                                       ITERATIVE_FOR_RANGE_BODY_DEBUG if bringup_debug else ITERATIVE_FOR_RANGE_BODY_RELEASE)
     output_lines = replace_symbol_body(output_lines,
                                        "calynda_unit_while",
                                        ITERATIVE_WHILE_BODY)
@@ -368,6 +628,46 @@ def main() -> int:
     output_lines = replace_symbol_body(output_lines,
                                        "calynda_unit_fb_rect",
                                        FB_RECT_BODY)
+    output_lines = replace_symbol_body(output_lines,
+                                       "calynda_unit_scratch_mark",
+                                       SCRATCH_MARK_BODY)
+    output_lines = replace_symbol_body(output_lines,
+                                       "calynda_unit_thead_dcache_clean_range",
+                                       DCACHE_CLEAN_RANGE_BODY)
+    output_lines = replace_symbol_body(output_lines,
+                                       "calynda_unit_fb_border",
+                                       FB_BORDER_BODY)
+    output_lines = replace_symbol_body(output_lines,
+                                       "calynda_unit_fb_draw_row_markers",
+                                       FB_DRAW_ROW_MARKERS_BODY)
+    output_lines = replace_symbol_body(output_lines,
+                                       "calynda_unit_fb_draw_col_markers",
+                                       FB_DRAW_COL_MARKERS_BODY)
+    output_lines = replace_symbol_body(output_lines,
+                                       "calynda_unit_hdmi_program_identity_csc",
+                                       HDMI_PROGRAM_IDENTITY_CSC_BODY)
+    output_lines = replace_symbol_body(output_lines,
+                                       "calynda_unit_hdmi_clear_overflow",
+                                       HDMI_CLEAR_OVERFLOW_BODY)
+    output_lines = replace_symbol_body(output_lines,
+                                       "calynda_unit_screen_draw_object",
+                                       SCREEN_DRAW_OBJECT_BODY)
+    output_lines = replace_symbol_body(output_lines,
+                                       "calynda_unit_screen_clear_object",
+                                       SCREEN_CLEAR_OBJECT_BODY)
+    output_lines = replace_symbol_body(output_lines,
+                                       "calynda_unit_screen_make_text",
+                                       SCREEN_MAKE_TEXT_BODY)
+    output_lines = replace_symbol_body(output_lines,
+                                       "calynda_unit_fb_draw_probe_label",
+                                       FB_DRAW_PROBE_LABEL_BODY)
+    output_lines = replace_symbol_body(output_lines,
+                                       "calynda_unit_screen_demo_hold",
+                                       SCREEN_DEMO_HOLD_BODY)
+    output_lines = replace_symbol_body(output_lines,
+                                       "calynda_unit_controller_demo_hold",
+                                       CONTROLLER_DEMO_HOLD_BODY)
+    output_lines = sectionize_functions(output_lines)
 
     with open(output_path, "w", encoding="utf-8") as output_file:
         for line in output_lines:

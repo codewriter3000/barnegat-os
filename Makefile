@@ -9,6 +9,19 @@ QEMU := qemu-system-riscv64
 # Use MACHINE=virt (default) for QEMU, or MACHINE=th1520 for BeagleV-Ahead.
 MACHINE ?= virt
 
+# BUILD_MODE selects whether board bring-up probes are compiled in.
+# release: disable UART trace injection and scratch/UART bring-up probes.
+# debug: keep existing bring-up breadcrumbs and sanitizer trace injection.
+BUILD_MODE ?= release
+
+ifeq ($(BUILD_MODE),debug)
+BRINGUP_DEBUG := 1
+else ifeq ($(BUILD_MODE),release)
+BRINGUP_DEBUG := 0
+else
+$(error BUILD_MODE must be 'release' or 'debug')
+endif
+
 # Serial device for 'make flash' (Y-Modem transfer to BeagleV-Ahead).
 SERIAL ?= /dev/ttyUSB0
 
@@ -20,6 +33,7 @@ CALYNDA_SOURCES := $(shell find $(SRC_ROOT) -type f -name '*.cal' ! -path '$(SRC
                    $(shell find $(MACHINE_SRC) -type f -name '*.cal' 2>/dev/null | sort)
 BUILD_DIR := build
 BUILD_STAMP := $(BUILD_DIR)/.dir
+MODE_STAMP := $(BUILD_DIR)/.mode-$(MACHINE)-$(BUILD_MODE)
 MERGE_SCRIPT := scripts/merge_calynda_sources.sh
 ASM_SANITIZER := scripts/sanitize_calynda_asm.py
 MERGED_SRC := $(BUILD_DIR)/$(PROGRAM)-$(MACHINE).merged.cal
@@ -28,6 +42,8 @@ START_OBJ := $(BUILD_DIR)/start-$(MACHINE).o
 RUNTIME_SRC := baremetal/runtime_boot.c
 RUNTIME_OBJ := $(if $(wildcard $(RUNTIME_SRC)),$(BUILD_DIR)/runtime_boot-$(MACHINE).o)
 HDMI_OBJ    :=
+USB_HID_SRC := baremetal/usb_hid.c
+USB_HID_OBJ := $(if $(filter th1520,$(MACHINE)),$(BUILD_DIR)/usb_hid-$(MACHINE).o)
 PROGRAM_OBJ := $(BUILD_DIR)/$(PROGRAM)-$(MACHINE).o
 ELF := $(BUILD_DIR)/$(PROGRAM)-$(MACHINE).elf
 BIN := $(BUILD_DIR)/$(PROGRAM)-$(MACHINE).bin
@@ -35,7 +51,8 @@ MAP := $(BUILD_DIR)/$(PROGRAM)-$(MACHINE).map
 DISASM := $(BUILD_DIR)/$(PROGRAM)-$(MACHINE).disasm
 
 ARCH_FLAGS := -march=rv64gc -mabi=lp64d -mcmodel=medany
-COMMON_FLAGS := $(ARCH_FLAGS) -ffreestanding -fno-pic -fno-pie
+COMMON_FLAGS := $(ARCH_FLAGS) -Os -ffreestanding -fno-pic -fno-pie -ffunction-sections -fdata-sections
+MACHINE_DEFINES := $(if $(filter th1520,$(MACHINE)),-DMACHINE_TH1520) -DCALYNDA_BRINGUP_DEBUG=$(BRINGUP_DEBUG)
 LINKER_SCRIPT := baremetal/riscv64-$(MACHINE).ld
 QEMU_BASE_FLAGS := -machine virt -cpu rv64 -m 128M -bios none -monitor none
 QEMU_SERIAL_FLAGS := -serial stdio
@@ -59,28 +76,35 @@ $(BUILD_STAMP):
 	mkdir -p $(BUILD_DIR)
 	touch $@
 
+$(MODE_STAMP): | $(BUILD_STAMP)
+	rm -f $(BUILD_DIR)/.mode-$(MACHINE)-release $(BUILD_DIR)/.mode-$(MACHINE)-debug
+	touch $@
+
 $(MERGED_SRC): $(ENTRY_SRC) $(CALYNDA_SOURCES) $(MERGE_SCRIPT) | $(BUILD_STAMP)
 	bash $(MERGE_SCRIPT) $(SRC_ROOT) $(MACHINE_SRC) $(ENTRY_SRC) $@
 
-$(ASM): $(MERGED_SRC) $(ASM_SANITIZER) | $(BUILD_STAMP)
+$(ASM): $(MERGED_SRC) $(ASM_SANITIZER) $(MODE_STAMP) | $(BUILD_STAMP)
 	$(CALYNDA) asm --target riscv64 $< > $@.raw
-	python3 $(ASM_SANITIZER) $@.raw $@
+	python3 $(ASM_SANITIZER) --build-mode $(BUILD_MODE) $@.raw $@
 	rm -f $@.raw
 
-$(START_OBJ): baremetal/start.S | $(BUILD_STAMP)
-	$(CC) $(COMMON_FLAGS) $(if $(filter th1520,$(MACHINE)),-DMACHINE_TH1520) -c $< -o $@
+$(START_OBJ): baremetal/start.S $(MODE_STAMP) | $(BUILD_STAMP)
+	$(CC) $(COMMON_FLAGS) $(MACHINE_DEFINES) -c $< -o $@
 
-$(BUILD_DIR)/runtime_boot-$(MACHINE).o: $(RUNTIME_SRC) | $(BUILD_STAMP)
-	$(CC) $(COMMON_FLAGS) $(if $(filter th1520,$(MACHINE)),-DMACHINE_TH1520) -I baremetal -c $< -o $@
+$(BUILD_DIR)/runtime_boot-$(MACHINE).o: $(RUNTIME_SRC) $(MODE_STAMP) | $(BUILD_STAMP)
+	$(CC) $(COMMON_FLAGS) $(MACHINE_DEFINES) -I baremetal -c $< -o $@
 
 $(BUILD_DIR)/hdmi_fb-$(MACHINE).o: baremetal/hdmi_fb.c | $(BUILD_STAMP)
 	$(CC) $(COMMON_FLAGS) -I baremetal -c $< -o $@
 
+$(BUILD_DIR)/usb_hid-$(MACHINE).o: $(USB_HID_SRC) $(MODE_STAMP) | $(BUILD_STAMP)
+	$(CC) $(COMMON_FLAGS) $(MACHINE_DEFINES) -I baremetal -c $< -o $@
+
 $(PROGRAM_OBJ): $(ASM) | $(BUILD_STAMP)
 	$(CC) $(COMMON_FLAGS) -c $< -o $@
 
-$(ELF): $(START_OBJ) $(RUNTIME_OBJ) $(HDMI_OBJ) $(PROGRAM_OBJ) $(LINKER_SCRIPT)
-	$(CC) $(ARCH_FLAGS) -nostdlib -nostartfiles -static -Wl,--build-id=none -Wl,-T,$(LINKER_SCRIPT) -Wl,-Map,$(MAP) $(START_OBJ) $(RUNTIME_OBJ) $(HDMI_OBJ) $(PROGRAM_OBJ) -o $@
+$(ELF): $(START_OBJ) $(RUNTIME_OBJ) $(HDMI_OBJ) $(USB_HID_OBJ) $(PROGRAM_OBJ) $(LINKER_SCRIPT)
+	$(CC) $(ARCH_FLAGS) -nostdlib -nostartfiles -static -Wl,--build-id=none -Wl,--gc-sections -Wl,-T,$(LINKER_SCRIPT) -Wl,-Map,$(MAP) $(START_OBJ) $(RUNTIME_OBJ) $(HDMI_OBJ) $(USB_HID_OBJ) $(PROGRAM_OBJ) -o $@
 
 $(BIN): $(ELF)
 	$(OBJCOPY) -O binary $< $@
@@ -123,7 +147,7 @@ boot-th1520: $(BIN)
 	@echo ""
 	@echo "Option A — USB serial Y-Modem (you are already connected):"
 	@echo "  1. In U-Boot, type:  loady 0x04000000"
-	@echo "  2. On the host, run: make flash MACHINE=th1520"
+	@echo "  2. On the host, run: make flash MACHINE=th1520 PROGRAM=$(PROGRAM)"
 	@echo "  3. In U-Boot, type:  go 0x04000000"
 	@echo ""
 	@echo "Option B — SD card (FAT partition):"

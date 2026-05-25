@@ -1,0 +1,79 @@
+package app;
+
+type ScreenObject = arr<?>;
+
+uint32 RGB = (uint32 r, uint32 g, uint32 b) -> {
+    return (r << 16) | (g << 8) | b;
+};
+
+ScreenObject screen_make_object = (int32 x, int32 y, int32 vx, int32 vy, uint32 color) -> {
+    return [0, x, y, 168, 32, vx, vy, color, 0];
+};
+
+int32 run = manual() -> {
+    ScreenObject heysyd_00 = screen_make_object(24, 48, -5, -5, RGB(0x00, 0x40, 0x80));
+    ScreenObject heysyd_01 = screen_make_object(196, 48, -4, -5, RGB(0x00, 0x40, 0xC0));
+    ScreenObject heysyd_02 = screen_make_object(368, 48, -3, -5, RGB(0x00, 0x40, 0xFF));
+    ScreenObject heysyd_03 = screen_make_object(540, 48, -2, -5, RGB(0x00, 0x80, 0x40));
+    ScreenObject heysyd_04 = screen_make_object(712, 48, -1, -5, RGB(0x00, 0x80, 0xC0));
+    ScreenObject heysyd_05 = screen_make_object(884, 48, 1, -5, RGB(0x00, 0x80, 0xFF));
+    ScreenObject heysyd_06 = screen_make_object(1056, 48, 2, -5, RGB(0x00, 0xC0, 0x40));
+    ScreenObject heysyd_07 = screen_make_object(1228, 48, 3, -5, RGB(0x00, 0xC0, 0x80));
+    ScreenObject heysyd_08 = screen_make_object(1400, 48, 4, -5, RGB(0x00, 0xC0, 0xFF));
+    ScreenObject heysyd_09 = screen_make_object(1572, 48, 5, -5, RGB(0x00, 0xFF, 0x40));
+    ScreenObject heysyd_10 = screen_make_object(24, 204, -5, -3, RGB(0x00, 0xFF, 0x80));
+    ScreenObject heysyd_11 = screen_make_object(196, 204, -4, -3, RGB(0x00, 0xFF, 0xC0));
+    ScreenObject heysyd_12 = screen_make_object(368, 204, -3, -3, RGB(0x40, 0x00, 0x80));
+    ScreenObject heysyd_13 = screen_make_object(540, 204, -2, -3, RGB(0x40, 0x00, 0xC0));
+    ScreenObject heysyd_14 = screen_make_object(712, 204, -1, -3, RGB(0x40, 0x00, 0xFF));
+    ScreenObject heysyd_15 = screen_make_object(884, 204, 1, -3, RGB(0x40, 0x80, 0x00));
+    ScreenObject heysyd_16 = screen_make_object(1056, 204, 2, -3, RGB(0x40, 0x80, 0xC0));
+    ScreenObject heysyd_17 = screen_make_object(1228, 204, 3, -3, RGB(0x40, 0x80, 0xFF));
+    ScreenObject heysyd_18 = screen_make_object(1400, 204, 4, -3, RGB(0x40, 0xC0, 0x00));
+    ScreenObject heysyd_19 = screen_make_object(1572, 204, 5, -3, RGB(0x40, 0xC0, 0x80));
+    ScreenObject heysyd_20 = screen_make_object(24, 360, -5, -1, RGB(0x40, 0xC0, 0xFF));
+    ScreenObject heysyd_21 = screen_make_object(196, 360, -4, -1, RGB(0x40, 0xFF, 0x00));
+    ScreenObject heysyd_22 = screen_make_object(368, 360, -3, -1, RGB(0x40, 0xFF, 0x80));
+    ScreenObject heysyd_23 = screen_make_object(540, 360, -2, -1, RGB(0x40, 0xFF, 0xC0));
+    ScreenObject heysyd_24 = screen_make_object(712, 360, -1, -1, RGB(0x80, 0x00, 0x40));
+    ScreenObject heysyd_25 = screen_make_object(884, 360, 1, -1, RGB(0x80, 0x00, 0xC0));
+    ScreenObject heysyd_26 = screen_make_object(1056, 360, 2, -1, RGB(0x80, 0x00, 0xFF));
+    ScreenObject heysyd_27 = screen_make_object(1228, 360, 3, -1, RGB(0x80, 0x40, 0x00));
+    ScreenObject heysyd_28 = screen_make_object(1400, 360, 4, -1, RGB(0x80, 0x40, 0xC0));
+    ScreenObject heysyd_29 = screen_make_object(1572, 360, 5, -1, RGB(0x80, 0x40, 0xFF));
+    ScreenObject heysyd_30 = screen_make_object(24, 516, -5, 1, RGB(0x80, 0xC0, 0x00));
+    ScreenObject heysyd_31 = screen_make_object(196, 516, -4, 1, RGB(0x80, 0xC0, 0x40));
+    ScreenObject heysyd_32 = screen_make_object(368, 516, -3, 1, RGB(0x80, 0xC0, 0xFF));
+    ScreenObject heysyd_33 = screen_make_object(540, 516, -2, 1, RGB(0x80, 0xFF, 0x00));
+    ScreenObject heysyd_34 = screen_make_object(712, 516, -1, 1, RGB(0x80, 0xFF, 0x40));
+    ScreenObject heysyd_35 = screen_make_object(884, 516, 1, 1, RGB(0x80, 0xFF, 0xC0));
+    ScreenObject heysyd_36 = screen_make_object(1056, 516, 2, 1, RGB(0xC0, 0x00, 0x40));
+    ScreenObject heysyd_37 = screen_make_object(1228, 516, 3, 1, RGB(0xC0, 0x00, 0x80));
+    ScreenObject heysyd_38 = screen_make_object(1400, 516, 4, 1, RGB(0xC0, 0x00, 0xFF));
+    ScreenObject heysyd_39 = screen_make_object(1572, 516, 5, 1, RGB(0xC0, 0x40, 0x00));
+    ScreenObject heysyd_40 = screen_make_object(24, 672, -5, 3, RGB(0xC0, 0x40, 0x80));
+    ScreenObject heysyd_41 = screen_make_object(196, 672, -4, 3, RGB(0xC0, 0x40, 0xFF));
+    ScreenObject heysyd_42 = screen_make_object(368, 672, -3, 3, RGB(0xC0, 0x80, 0x00));
+    ScreenObject heysyd_43 = screen_make_object(540, 672, -2, 3, RGB(0xC0, 0x80, 0x40));
+    ScreenObject heysyd_44 = screen_make_object(712, 672, -1, 3, RGB(0xC0, 0x80, 0xFF));
+    ScreenObject heysyd_45 = screen_make_object(884, 672, 1, 3, RGB(0xC0, 0xFF, 0x00));
+    ScreenObject heysyd_46 = screen_make_object(1056, 672, 2, 3, RGB(0xC0, 0xFF, 0x40));
+    ScreenObject heysyd_47 = screen_make_object(1228, 672, 3, 3, RGB(0xC0, 0xFF, 0x80));
+    ScreenObject heysyd_48 = screen_make_object(1400, 672, 4, 3, RGB(0xFF, 0x00, 0x40));
+    ScreenObject heysyd_49 = screen_make_object(1572, 672, 5, 3, RGB(0xFF, 0x00, 0x80));
+    ScreenObject heysyd_50 = screen_make_object(24, 828, -5, 5, RGB(0xFF, 0x00, 0xC0));
+    ScreenObject heysyd_51 = screen_make_object(196, 828, -4, 5, RGB(0xFF, 0x40, 0x00));
+    ScreenObject heysyd_52 = screen_make_object(368, 828, -3, 5, RGB(0xFF, 0x40, 0x80));
+    ScreenObject heysyd_53 = screen_make_object(540, 828, -2, 5, RGB(0xFF, 0x40, 0xC0));
+    ScreenObject heysyd_54 = screen_make_object(712, 828, -1, 5, RGB(0xFF, 0x80, 0x00));
+    ScreenObject heysyd_55 = screen_make_object(884, 828, 1, 5, RGB(0xFF, 0x80, 0x40));
+    ScreenObject heysyd_56 = screen_make_object(1056, 828, 2, 5, RGB(0xFF, 0x80, 0xC0));
+    ScreenObject heysyd_57 = screen_make_object(1228, 828, 3, 5, RGB(0xFF, 0xC0, 0x00));
+    ScreenObject heysyd_58 = screen_make_object(1400, 828, 4, 5, RGB(0xFF, 0xC0, 0x40));
+    ScreenObject heysyd_59 = screen_make_object(1572, 828, 5, 5, RGB(0xFF, 0xC0, 0x80));
+
+    arr<?> sceneObjects = [heysyd_00, heysyd_01, heysyd_02, heysyd_03, heysyd_04, heysyd_05, heysyd_06, heysyd_07, heysyd_08, heysyd_09, heysyd_10, heysyd_11, heysyd_12, heysyd_13, heysyd_14, heysyd_15, heysyd_16, heysyd_17, heysyd_18, heysyd_19, heysyd_20, heysyd_21, heysyd_22, heysyd_23, heysyd_24, heysyd_25, heysyd_26, heysyd_27, heysyd_28, heysyd_29, heysyd_30, heysyd_31, heysyd_32, heysyd_33, heysyd_34, heysyd_35, heysyd_36, heysyd_37, heysyd_38, heysyd_39, heysyd_40, heysyd_41, heysyd_42, heysyd_43, heysyd_44, heysyd_45, heysyd_46, heysyd_47, heysyd_48, heysyd_49, heysyd_50, heysyd_51, heysyd_52, heysyd_53, heysyd_54, heysyd_55, heysyd_56, heysyd_57, heysyd_58, heysyd_59];
+    return sceneObjects.length;
+};
+
+boot -> run();

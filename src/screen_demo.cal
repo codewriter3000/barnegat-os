@@ -1,0 +1,9 @@
+package app;
+
+import lib.io.hdmi;
+
+int32 run = manual() -> {
+    return hdmi_screen_demo();
+};
+
+boot -> run();

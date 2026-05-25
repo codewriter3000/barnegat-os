@@ -10,16 +10,12 @@ static final uint64 FB_STRIDE_BYTES = 0x00001E00;
 static final uint64 FB_SIZE_BYTES = 0x007E9000;
 static final uint64 THEAD_CMO_STRIDE = 32;
 
-static final int32[8] PROBE_COLS = [
-    0x00FFFFFF,
-    0x00FFFF00,
-    0x0000FFFF,
-    0x0000FF00,
-    0x00FF00FF,
-    0x00FF4040,
-    0x003060FF,
-    0x00808080
-];
+static final int32 SCREEN_OBJECT_KIND_RECT = 0;
+static final int32 SCREEN_OBJECT_KIND_TEXT = 1;
+static final int32 SCREEN_TEXT_CHAR_ADVANCE = 24;
+static final int32 SCREEN_TEXT_HEIGHT = 32;
+
+type ScreenObject = arr<?>;
 
 uint32 RGB = (uint32 r, uint32 g, uint32 b) -> {
     return (r << 16) | (g << 8) | b;
@@ -87,201 +83,100 @@ void fb_border = (int32 x0, int32 y0, int32 x1, int32 y1, uint32 color, int32 th
     exit;
 };
 
-void fb_draw_char_top = (int32 px, int32 py, uint32 color) -> {
-    fb_rect(px, py, px + 27, py + 3, color);
+ScreenObject screen_make_rect = (int32 x, int32 y, int32 width, int32 height, int32 vx, int32 vy, uint32 color) -> {
+    return [0, x, y, width, height, vx, vy, color, 0];
+};
+
+int32 screen_text_width = (string text) -> {
+    return text.length == 0 ? 1 : text.length * SCREEN_TEXT_CHAR_ADVANCE;
+};
+
+ScreenObject screen_make_text = (int32 x, int32 y, int32 vx, int32 vy, uint32 color, string text) -> {
+    return screen_make_rect(x, y, screen_text_width(text), SCREEN_TEXT_HEIGHT, vx, vy, color);
+};
+
+int32 screen_object_kind = (ScreenObject object) -> {
+    return int32(object[0]);
+};
+
+int32 screen_object_x = (ScreenObject object) -> {
+    return int32(object[1]);
+};
+
+int32 screen_object_y = (ScreenObject object) -> {
+    return int32(object[2]);
+};
+
+int32 screen_object_width = (ScreenObject object) -> {
+    return int32(object[3]);
+};
+
+int32 screen_object_height = (ScreenObject object) -> {
+    return int32(object[4]);
+};
+
+int32 screen_object_vx = (ScreenObject object) -> {
+    return int32(object[5]);
+};
+
+int32 screen_object_vy = (ScreenObject object) -> {
+    return int32(object[6]);
+};
+
+uint32 screen_object_color = (ScreenObject object) -> {
+    return uint32(object[7]);
+};
+
+ScreenObject screen_object_with_state = (ScreenObject object, int32 x, int32 y, int32 vx, int32 vy) -> {
+    return [
+        screen_object_kind(object),
+        x,
+        y,
+        screen_object_width(object),
+        screen_object_height(object),
+        vx,
+        vy,
+        screen_object_color(object),
+        object[8]
+    ];
+};
+
+ScreenObject screen_object_set_velocity = (ScreenObject object, int32 vx, int32 vy) -> {
+    return screen_object_with_state(object, screen_object_x(object), screen_object_y(object), vx, vy);
+};
+
+ScreenObject screen_move_object = (ScreenObject object, int32 dx, int32 dy) -> {
+    return screen_object_with_state(
+        object,
+        screen_object_x(object) + dx,
+        screen_object_y(object) + dy,
+        screen_object_vx(object),
+        screen_object_vy(object)
+    );
+};
+
+ScreenObject screen_step_object = (ScreenObject object) -> {
+    return screen_move_object(object, screen_object_vx(object), screen_object_vy(object));
+};
+
+void screen_draw_object = (ScreenObject object) -> {
+    fb_rect(
+        screen_object_x(object),
+        screen_object_y(object),
+        screen_object_x(object) + screen_object_width(object) - 1,
+        screen_object_y(object) + screen_object_height(object) - 1,
+        screen_object_color(object)
+    );
     exit;
 };
 
-void fb_draw_char_middle = (int32 px, int32 py, uint32 color) -> {
-    fb_rect(px, py + 14, px + 27, py + 17, color);
-    exit;
-};
-
-void fb_draw_char_bottom = (int32 px, int32 py, uint32 color) -> {
-    fb_rect(px, py + 28, px + 27, py + 31, color);
-    exit;
-};
-
-void fb_draw_char_left = (int32 px, int32 py, uint32 color) -> {
-    fb_rect(px, py, px + 3, py + 31, color);
-    exit;
-};
-
-void fb_draw_char_left_lower = (int32 px, int32 py, uint32 color) -> {
-    fb_rect(px, py + 16, px + 3, py + 31, color);
-    exit;
-};
-
-void fb_draw_char_right = (int32 px, int32 py, uint32 color) -> {
-    fb_rect(px + 24, py, px + 27, py + 31, color);
-    exit;
-};
-
-void fb_draw_char_right_upper = (int32 px, int32 py, uint32 color) -> {
-    fb_rect(px + 24, py, px + 27, py + 17, color);
-    exit;
-};
-
-void fb_draw_char_right_lower = (int32 px, int32 py, uint32 color) -> {
-    fb_rect(px + 24, py + 14, px + 27, py + 31, color);
-    exit;
-};
-
-void fb_draw_char_center = (int32 px, int32 py, uint32 color) -> {
-    fb_rect(px + 12, py, px + 15, py + 31, color);
-    exit;
-};
-
-void fb_draw_probe_letter = (int32 px, int32 py, int32 col, uint32 color) -> {
-    if(col == 0, () -> {
-        fb_draw_char_left(px, py, color);
-        fb_draw_char_right(px, py, color);
-        fb_draw_char_top(px, py, color);
-        fb_draw_char_middle(px, py, color);
-    });
-    if(col == 1, () -> {
-        fb_draw_char_left(px, py, color);
-        fb_draw_char_right(px, py, color);
-        fb_draw_char_top(px, py, color);
-        fb_draw_char_middle(px, py, color);
-        fb_draw_char_bottom(px, py, color);
-    });
-    if(col == 2, () -> {
-        fb_draw_char_left(px, py, color);
-        fb_draw_char_top(px, py, color);
-        fb_draw_char_bottom(px, py, color);
-    });
-    if(col == 3, () -> {
-        fb_draw_char_left(px, py, color);
-        fb_draw_char_right(px, py, color);
-        fb_draw_char_top(px, py, color);
-        fb_draw_char_bottom(px, py, color);
-    });
-    if(col == 4, () -> {
-        fb_draw_char_left(px, py, color);
-        fb_draw_char_top(px, py, color);
-        fb_draw_char_middle(px, py, color);
-        fb_draw_char_bottom(px, py, color);
-    });
-    if(col == 5, () -> {
-        fb_draw_char_left(px, py, color);
-        fb_draw_char_top(px, py, color);
-        fb_draw_char_middle(px, py, color);
-    });
-    if(col == 6, () -> {
-        fb_draw_char_left(px, py, color);
-        fb_draw_char_top(px, py, color);
-        fb_draw_char_middle(px, py, color);
-        fb_draw_char_bottom(px, py, color);
-        fb_draw_char_right_lower(px, py, color);
-    });
-    if(col == 7, () -> {
-        fb_draw_char_left(px, py, color);
-        fb_draw_char_right(px, py, color);
-        fb_draw_char_middle(px, py, color);
-    });
-    exit;
-};
-
-void fb_draw_probe_digit = (int32 px, int32 py, int32 row, uint32 color) -> {
-    if(row == 0, () -> {
-        fb_draw_char_left(px, py, color);
-        fb_draw_char_right(px, py, color);
-        fb_draw_char_top(px, py, color);
-        fb_draw_char_bottom(px, py, color);
-    });
-    if(row == 1, () -> {
-        fb_draw_char_center(px, py, color);
-        fb_draw_char_bottom(px, py, color);
-    });
-    if(row == 2, () -> {
-        fb_draw_char_top(px, py, color);
-        fb_draw_char_middle(px, py, color);
-        fb_draw_char_bottom(px, py, color);
-        fb_draw_char_right_upper(px, py, color);
-        fb_draw_char_left_lower(px, py, color);
-    });
-    if(row == 3, () -> {
-        fb_draw_char_top(px, py, color);
-        fb_draw_char_middle(px, py, color);
-        fb_draw_char_bottom(px, py, color);
-        fb_draw_char_right(px, py, color);
-    });
-    exit;
-};
-
-void fb_draw_probe_label = (int32 px, int32 py, int32 col, int32 row, uint32 color) -> {
-    fb_draw_probe_letter(px, py, col, color);
-    fb_draw_probe_digit(px + 32, py, row, color);
-    exit;
-};
-
-void fb_draw_row_markers = (int32 x0, int32 x1, int32 y0, int32 row) -> {
-    int32 marker = 0;
-    int32 marker_count = row + 1;
-
-    while(() -> marker < marker_count, () -> {
-        fb_rect(x0 + 18, y0 + 18 + marker * 16, x1 - 18, y0 + 25 + marker * 16, RGB(0, 0, 0));
-        marker = marker + 1;
-    });
-
-    exit;
-};
-
-void fb_draw_col_markers = (int32 x0, int32 y0, int32 y1, int32 col) -> {
-    int32 marker = 0;
-    int32 marker_count = col + 1;
-
-    while(() -> marker < marker_count, () -> {
-        fb_rect(x0 + 18 + marker * 16, y0 + 72, x0 + 25 + marker * 16, y1 - 18, RGB(0, 0, 0));
-        marker = marker + 1;
-    });
-
-    exit;
-};
-
-void fb_draw_probe_cell = (int32 row, int32 col, int32 cols, int32 rows, int32 cell_w, int32 cell_h) -> {
-    int32 x0 = col * cell_w;
-    int32 y0 = row * cell_h;
-    int32 x1 = col == cols - 1 ? (FB_WIDTH - 1) : ((col + 1) * cell_w - 1);
-    int32 y1 = row == rows - 1 ? (FB_HEIGHT - 1) : ((row + 1) * cell_h - 1);
-    int32 label_px = x0 + (cell_w - 64) / 2;
-    int32 label_py = y0 + (cell_h - 32) / 2;
-
-    fb_rect(x0 + 4, y0 + 4, x1 - 4, y1 - 4, uint32(PROBE_COLS[col]));
-    fb_border(x0, y0, x1, y1, RGB(0xFF, 0xFF, 0xFF), 2);
-    fb_draw_row_markers(x0, x1, y0, row);
-    fb_draw_col_markers(x0, y0, y1, col);
-    fb_rect(label_px - 10, label_py - 10, label_px + 73, label_py + 41, RGB(0, 0, 0));
-    fb_draw_probe_label(label_px, label_py, col, row, RGB(0xFF, 0xFF, 0xFF));
-    exit;
-};
-
-void fb_layout_probe_row = (int32 row, int32 cols, int32 rows, int32 cell_w, int32 cell_h) -> {
-    int32 col = 0;
-
-    while(() -> col < cols, () -> {
-        fb_draw_probe_cell(row, col, cols, rows, cell_w, cell_h);
-        col = col + 1;
-    });
-
-    exit;
-};
-
-void fb_layout_probe = () -> {
-    int32 cols = 8;
-    int32 rows = 4;
-    int32 cell_w = FB_WIDTH / cols;
-    int32 cell_h = FB_HEIGHT / rows;
-    int32 row = 0;
-
-    fb_fill(RGB(0x10, 0x10, 0x10));
-    fb_border(0, 0, FB_WIDTH - 1, FB_HEIGHT - 1, RGB(0xFF, 0xFF, 0xFF), 4);
-
-    while(() -> row < rows, () -> {
-        fb_layout_probe_row(row, cols, rows, cell_w, cell_h);
-        row = row + 1;
-    });
-
+void screen_clear_object = (ScreenObject object, uint32 color) -> {
+    fb_rect(
+        screen_object_x(object),
+        screen_object_y(object),
+        screen_object_x(object) + screen_object_width(object) - 1,
+        screen_object_y(object) + screen_object_height(object) - 1,
+        color
+    );
     exit;
 };

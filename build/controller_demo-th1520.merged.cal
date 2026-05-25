@@ -1,4 +1,4 @@
-// merged from src/uart_hello.cal
+// merged from src/controller_demo.cal
 package app;
 
 
@@ -109,7 +109,7 @@ void fb_border = (int32 x0, int32 y0, int32 x1, int32 y1, uint32 color, int32 th
 };
 
 ScreenObject screen_make_rect = (int32 x, int32 y, int32 width, int32 height, int32 vx, int32 vy, uint32 color) -> {
-    return [SCREEN_OBJECT_KIND_RECT, x, y, width, height, vx, vy, color, 0];
+    return [0, x, y, width, height, vx, vy, color, 0];
 };
 
 int32 screen_text_width = (string text) -> {
@@ -969,6 +969,29 @@ void dc8200_init = () -> {
 };
 
 
+// merged from src/lib/loop.cal
+
+
+void forPairs = (arr<?> arr1, arr<?> arr2, |var body) -> {
+    int i1 = 0;
+    int i2 = 0;
+    if(arr1.length != arr2.length, () -> { throw "Arrays must be the same length."; });
+    while(() -> i1 < arr1.length && i2 < arr2.length, () -> {
+        body(arr1[i1], arr2[i2]);
+        i1 = i1 + 1;
+        i2 = i2 + 1;
+    });
+};
+
+void forLinear = (arr<?> items, |var body) -> {
+    int i = 0;
+    while(() -> i < items.length, () -> {
+        body(items[i]);
+        i = i + 1;
+    });
+};
+
+
 static final int32 HDMI_PLL_SETTLE_DELAY_US = 5000;
 static final int32 HDMI_POST_PHY_SETTLE_DELAY_US = 20000;
 static final int32 HDMI_POST_SCANOUT_ENABLE_DELAY_US = 50000;
@@ -1010,24 +1033,95 @@ ScreenObject screen_demo_step_bounds = (ScreenObject object) -> {
     return screen_step_object(bounded);
 };
 
-void screen_demo_frame = (ScreenObject object_a, ScreenObject object_b) -> {
-    fb_fill(RGB(0x10, 0x14, 0x1C));
-    screen_draw_object(object_a);
-    screen_draw_object(object_b);
+void screen_demo_frame = (arr<?> sceneObjects) -> {
+    fb_fill(RGB(0x00, 0x00, 0x00));
+    forLinear(sceneObjects, (var group) -> {
+        forLinear(group, (ScreenObject object) -> {
+            screen_draw_object(object);
+        });
+    });
     thead_dcache_clean_range(0x04200000, 0x007E9000);
     exit;
 };
 
-int32 screen_demo_hold = (ScreenObject object_a, ScreenObject object_b) -> {
-    screen_demo_frame(object_a, object_b);
-    delay_us(2500);
-    return screen_demo_hold(screen_demo_step_bounds(object_a), screen_demo_step_bounds(object_b));
+int32 screen_demo_hold = (arr<?> sceneObjects) -> {
+    screen_demo_frame(sceneObjects);
+    return hold_scanout();
 };
 
-int32 hdmi_screen_demo = () -> {
-    ScreenObject object_a = screen_make_rect(120, 96, 144, 96, 9, 6, RGB(0x0F, 0x62, 0xFE));
-    ScreenObject object_b = screen_make_rect(1440, 720, 168, 72, -7, -5, RGB(0xDA, 0x1E, 0x28));
+arr<?> screen_demo_heysyd = () -> {
+    ScreenObject heysyd_00 = screen_make_text(24, 48, -5, -5, RGB(0x00, 0x40, 0x80), "HEY SYD");
+    ScreenObject heysyd_01 = screen_make_text(196, 48, -4, -5, RGB(0x00, 0x40, 0xC0), "HEY SYD");
+    ScreenObject heysyd_02 = screen_make_text(368, 48, -3, -5, RGB(0x00, 0x40, 0xFF), "HEY SYD");
+    ScreenObject heysyd_03 = screen_make_text(540, 48, -2, -5, RGB(0x00, 0x80, 0x40), "HEY SYD");
+    ScreenObject heysyd_04 = screen_make_text(712, 48, -1, -5, RGB(0x00, 0x80, 0xC0), "HEY SYD");
+    ScreenObject heysyd_05 = screen_make_text(884, 48, 1, -5, RGB(0x00, 0x80, 0xFF), "HEY SYD");
+    ScreenObject heysyd_06 = screen_make_text(1056, 48, 2, -5, RGB(0x00, 0xC0, 0x40), "HEY SYD");
+    ScreenObject heysyd_07 = screen_make_text(1228, 48, 3, -5, RGB(0x00, 0xC0, 0x80), "HEY SYD");
+    ScreenObject heysyd_08 = screen_make_text(1400, 48, 4, -5, RGB(0x00, 0xC0, 0xFF), "HEY SYD");
+    ScreenObject heysyd_09 = screen_make_text(1572, 48, 5, -5, RGB(0x00, 0xFF, 0x40), "HEY SYD");
+    ScreenObject heysyd_10 = screen_make_text(24, 204, -5, -3, RGB(0x00, 0xFF, 0x80), "HEY SYD");
+    ScreenObject heysyd_11 = screen_make_text(196, 204, -4, -3, RGB(0x00, 0xFF, 0xC0), "HEY SYD");
+    ScreenObject heysyd_12 = screen_make_text(368, 204, -3, -3, RGB(0x40, 0x00, 0x80), "HEY SYD");
+    ScreenObject heysyd_13 = screen_make_text(540, 204, -2, -3, RGB(0x40, 0x00, 0xC0), "HEY SYD");
+    ScreenObject heysyd_14 = screen_make_text(712, 204, -1, -3, RGB(0x40, 0x00, 0xFF), "HEY SYD");
+    ScreenObject heysyd_15 = screen_make_text(884, 204, 1, -3, RGB(0x40, 0x80, 0x00), "HEY SYD");
+    ScreenObject heysyd_16 = screen_make_text(1056, 204, 2, -3, RGB(0x40, 0x80, 0xC0), "HEY SYD");
+    ScreenObject heysyd_17 = screen_make_text(1228, 204, 3, -3, RGB(0x40, 0x80, 0xFF), "HEY SYD");
+    ScreenObject heysyd_18 = screen_make_text(1400, 204, 4, -3, RGB(0x40, 0xC0, 0x00), "HEY SYD");
+    ScreenObject heysyd_19 = screen_make_text(1572, 204, 5, -3, RGB(0x40, 0xC0, 0x80), "HEY SYD");
+    ScreenObject heysyd_20 = screen_make_text(24, 360, -5, -1, RGB(0x40, 0xC0, 0xFF), "HEY SYD");
+    ScreenObject heysyd_21 = screen_make_text(196, 360, -4, -1, RGB(0x40, 0xFF, 0x00), "HEY SYD");
+    ScreenObject heysyd_22 = screen_make_text(368, 360, -3, -1, RGB(0x40, 0xFF, 0x80), "HEY SYD");
+    ScreenObject heysyd_23 = screen_make_text(540, 360, -2, -1, RGB(0x40, 0xFF, 0xC0), "HEY SYD");
+    ScreenObject heysyd_24 = screen_make_text(712, 360, -1, -1, RGB(0x80, 0x00, 0x40), "HEY SYD");
+    ScreenObject heysyd_25 = screen_make_text(884, 360, 1, -1, RGB(0x80, 0x00, 0xC0), "HEY SYD");
+    ScreenObject heysyd_26 = screen_make_text(1056, 360, 2, -1, RGB(0x80, 0x00, 0xFF), "HEY SYD");
+    ScreenObject heysyd_27 = screen_make_text(1228, 360, 3, -1, RGB(0x80, 0x40, 0x00), "HEY SYD");
+    ScreenObject heysyd_28 = screen_make_text(1400, 360, 4, -1, RGB(0x80, 0x40, 0xC0), "HEY SYD");
+    ScreenObject heysyd_29 = screen_make_text(1572, 360, 5, -1, RGB(0x80, 0x40, 0xFF), "HEY SYD");
+    ScreenObject heysyd_30 = screen_make_text(24, 516, -5, 1, RGB(0x80, 0xC0, 0x00), "HEY SYD");
+    ScreenObject heysyd_31 = screen_make_text(196, 516, -4, 1, RGB(0x80, 0xC0, 0x40), "HEY SYD");
+    ScreenObject heysyd_32 = screen_make_text(368, 516, -3, 1, RGB(0x80, 0xC0, 0xFF), "HEY SYD");
+    ScreenObject heysyd_33 = screen_make_text(540, 516, -2, 1, RGB(0x80, 0xFF, 0x00), "HEY SYD");
+    ScreenObject heysyd_34 = screen_make_text(712, 516, -1, 1, RGB(0x80, 0xFF, 0x40), "HEY SYD");
+    ScreenObject heysyd_35 = screen_make_text(884, 516, 1, 1, RGB(0x80, 0xFF, 0xC0), "HEY SYD");
+    ScreenObject heysyd_36 = screen_make_text(1056, 516, 2, 1, RGB(0xC0, 0x00, 0x40), "HEY SYD");
+    ScreenObject heysyd_37 = screen_make_text(1228, 516, 3, 1, RGB(0xC0, 0x00, 0x80), "HEY SYD");
+    ScreenObject heysyd_38 = screen_make_text(1400, 516, 4, 1, RGB(0xC0, 0x00, 0xFF), "HEY SYD");
+    ScreenObject heysyd_39 = screen_make_text(1572, 516, 5, 1, RGB(0xC0, 0x40, 0x00), "HEY SYD");
+    ScreenObject heysyd_40 = screen_make_text(24, 672, -5, 3, RGB(0xC0, 0x40, 0x80), "HEY SYD");
+    ScreenObject heysyd_41 = screen_make_text(196, 672, -4, 3, RGB(0xC0, 0x40, 0xFF), "HEY SYD");
+    ScreenObject heysyd_42 = screen_make_text(368, 672, -3, 3, RGB(0xC0, 0x80, 0x00), "HEY SYD");
+    ScreenObject heysyd_43 = screen_make_text(540, 672, -2, 3, RGB(0xC0, 0x80, 0x40), "HEY SYD");
+    ScreenObject heysyd_44 = screen_make_text(712, 672, -1, 3, RGB(0xC0, 0x80, 0xFF), "HEY SYD");
+    ScreenObject heysyd_45 = screen_make_text(884, 672, 1, 3, RGB(0xC0, 0xFF, 0x00), "HEY SYD");
+    ScreenObject heysyd_46 = screen_make_text(1056, 672, 2, 3, RGB(0xC0, 0xFF, 0x40), "HEY SYD");
+    ScreenObject heysyd_47 = screen_make_text(1228, 672, 3, 3, RGB(0xC0, 0xFF, 0x80), "HEY SYD");
+    ScreenObject heysyd_48 = screen_make_text(1400, 672, 4, 3, RGB(0xFF, 0x00, 0x40), "HEY SYD");
+    ScreenObject heysyd_49 = screen_make_text(1572, 672, 5, 3, RGB(0xFF, 0x00, 0x80), "HEY SYD");
+    ScreenObject heysyd_50 = screen_make_text(24, 828, -5, 5, RGB(0xFF, 0x00, 0xC0), "HEY SYD");
+    ScreenObject heysyd_51 = screen_make_text(196, 828, -4, 5, RGB(0xFF, 0x40, 0x00), "HEY SYD");
+    ScreenObject heysyd_52 = screen_make_text(368, 828, -3, 5, RGB(0xFF, 0x40, 0x80), "HEY SYD");
+    ScreenObject heysyd_53 = screen_make_text(540, 828, -2, 5, RGB(0xFF, 0x40, 0xC0), "HEY SYD");
+    ScreenObject heysyd_54 = screen_make_text(712, 828, -1, 5, RGB(0xFF, 0x80, 0x00), "HEY SYD");
+    ScreenObject heysyd_55 = screen_make_text(884, 828, 1, 5, RGB(0xFF, 0x80, 0x40), "HEY SYD");
+    ScreenObject heysyd_56 = screen_make_text(1056, 828, 2, 5, RGB(0xFF, 0x80, 0xC0), "HEY SYD");
+    ScreenObject heysyd_57 = screen_make_text(1228, 828, 3, 5, RGB(0xFF, 0xC0, 0x00), "HEY SYD");
+    ScreenObject heysyd_58 = screen_make_text(1400, 828, 4, 5, RGB(0xFF, 0xC0, 0x40), "HEY SYD");
+    ScreenObject heysyd_59 = screen_make_text(1572, 828, 5, 5, RGB(0xFF, 0xC0, 0x80), "HEY SYD");
 
+    arr<?> group = [heysyd_00, heysyd_01, heysyd_02, heysyd_03, heysyd_04, heysyd_05, heysyd_06, heysyd_07, heysyd_08, heysyd_09,
+    heysyd_10, heysyd_11, heysyd_12, heysyd_13, heysyd_14, heysyd_15, heysyd_16, heysyd_17, heysyd_18, heysyd_19,
+    heysyd_20, heysyd_21, heysyd_22, heysyd_23, heysyd_24, heysyd_25, heysyd_26, heysyd_27, heysyd_28, heysyd_29,
+    heysyd_30, heysyd_31, heysyd_32, heysyd_33, heysyd_34, heysyd_35, heysyd_36, heysyd_37, heysyd_38, heysyd_39,
+    heysyd_40, heysyd_41, heysyd_42, heysyd_43, heysyd_44, heysyd_45, heysyd_46, heysyd_47, heysyd_48, heysyd_49,
+    heysyd_50, heysyd_51, heysyd_52, heysyd_53, heysyd_54, heysyd_55, heysyd_56, heysyd_57, heysyd_58, heysyd_59];
+    
+    return group;
+};
+
+int32 loop = (arr<?> sceneObjects) -> {
     //scratch_mark(0, 0xAA100001);
 
     vosys_clk_enable();
@@ -1039,7 +1133,7 @@ int32 hdmi_screen_demo = () -> {
     //scratch_mark(2, 0xAA100003);
     delay_us(HDMI_PLL_SETTLE_DELAY_US);
 
-    screen_demo_frame(object_a, object_b);
+    screen_demo_frame(sceneObjects);
     //scratch_mark(3, 0xAA100004);
 
     dw_hdmi_init();
@@ -1048,7 +1142,15 @@ int32 hdmi_screen_demo = () -> {
     dc8200_init();
     //scratch_mark(8, 0xAA100006);
     delay_us(HDMI_POST_SCANOUT_ENABLE_DELAY_US);
-    return screen_demo_hold(object_a, object_b);
+    return screen_demo_hold(sceneObjects);
+};
+
+int32 hdmi_screen_demo = () -> {
+    arr<?> sceneObjects = [
+        screen_demo_heysyd()
+    ];
+
+    return loop(sceneObjects);
 };
 
 int32 hdmi_hello_world = () -> {
@@ -1082,10 +1184,33 @@ int32 hdmi_hello_world = () -> {
     return hold_scanout();
 };
 
+int32 controller_demo_hold = () -> {
+    return hold_scanout();
+};
+
+int32 hdmi_controller_demo = () -> {
+    vosys_clk_enable();
+    delay_us(500);
+
+    dpu0_pll_configure_1080p60();
+    dpu1_pll_configure_1080p60();
+    delay_us(HDMI_PLL_SETTLE_DELAY_US);
+
+    fb_fill(RGB(0x00, 0x00, 0x00));
+    fence();
+    thead_dcache_clean_range(0x04200000, 0x007E9000);
+
+    dw_hdmi_init();
+    delay_us(HDMI_POST_PHY_SETTLE_DELAY_US);
+    dc8200_init();
+    delay_us(HDMI_POST_SCANOUT_ENABLE_DELAY_US);
+    return controller_demo_hold();
+};
+
 
 
 int32 run = manual() -> {
-    return hdmi_hello_world();
+    return hdmi_controller_demo();
 };
 
 boot -> run();

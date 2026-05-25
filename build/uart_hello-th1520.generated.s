@@ -1,4 +1,5 @@
 .text
+.section .text.calynda_unit_if,"ax"
 .globl calynda_unit_if
 calynda_unit_if:
     addi sp, sp, -16
@@ -46,6 +47,7 @@ calynda_unit_if:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_while_nlr0,"ax"
 .globl calynda_unit_while_nlr0
 calynda_unit_while_nlr0:
     addi sp, sp, -16
@@ -80,6 +82,7 @@ calynda_unit_while_nlr0:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_while_lambda1,"ax"
 .globl calynda_unit_while_lambda1
 calynda_unit_while_lambda1:
     addi sp, sp, -16
@@ -96,6 +99,7 @@ calynda_unit_while_lambda1:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_while,"ax"
 .globl calynda_unit_while
 calynda_unit_while:
     addi sp, sp, -48
@@ -121,6 +125,7 @@ calynda_unit_while:
     ld ra, 40(sp)
     addi sp, sp, 48
     ret
+.section .text.calynda_unit_RGB,"ax"
 .globl calynda_unit_RGB
 calynda_unit_RGB:
     addi sp, sp, -16
@@ -150,6 +155,7 @@ calynda_unit_RGB:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_in_bounds,"ax"
 .globl calynda_unit_fb_in_bounds
 calynda_unit_fb_in_bounds:
     addi sp, sp, -16
@@ -217,6 +223,7 @@ calynda_unit_fb_in_bounds:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_write_pixel,"ax"
 .globl calynda_unit_fb_write_pixel
 calynda_unit_fb_write_pixel:
     addi sp, sp, -16
@@ -264,6 +271,7 @@ calynda_unit_fb_write_pixel:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_rect_span_lambda2,"ax"
 .globl calynda_unit_fb_rect_span_lambda2
 calynda_unit_fb_rect_span_lambda2:
     addi sp, sp, -16
@@ -294,6 +302,7 @@ calynda_unit_fb_rect_span_lambda2:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_rect_span_nlr3,"ax"
 .globl calynda_unit_fb_rect_span_nlr3
 calynda_unit_fb_rect_span_nlr3:
     addi sp, sp, -16
@@ -357,6 +366,7 @@ calynda_unit_fb_rect_span_nlr3:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_rect_span,"ax"
 .globl calynda_unit_fb_rect_span
 calynda_unit_fb_rect_span:
     li t4, 0x04200000
@@ -375,6 +385,7 @@ calynda_unit_fb_rect_span:
 .Lcalynda_fb_rect_span_done:
     li a0, 0
     ret
+.section .text.calynda_unit_fb_rect_lambda4,"ax"
 .globl calynda_unit_fb_rect_lambda4
 calynda_unit_fb_rect_lambda4:
     addi sp, sp, -16
@@ -415,6 +426,7 @@ calynda_unit_fb_rect_lambda4:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_rect_nlr5,"ax"
 .globl calynda_unit_fb_rect_nlr5
 calynda_unit_fb_rect_nlr5:
     addi sp, sp, -16
@@ -500,6 +512,7 @@ calynda_unit_fb_rect_nlr5:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_rect,"ax"
 .globl calynda_unit_fb_rect
 calynda_unit_fb_rect:
     mv t0, a1
@@ -524,6 +537,7 @@ calynda_unit_fb_rect:
 .Lcalynda_fb_rect_done:
     li a0, 0
     ret
+.section .text.calynda_unit_fb_fill,"ax"
 .globl calynda_unit_fb_fill
 calynda_unit_fb_fill:
     addi sp, sp, -16
@@ -559,6 +573,7 @@ calynda_unit_fb_fill:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_thead_dcache_clean_range_lambda6,"ax"
 .globl calynda_unit_thead_dcache_clean_range_lambda6
 calynda_unit_thead_dcache_clean_range_lambda6:
     addi sp, sp, -16
@@ -599,6 +614,7 @@ calynda_unit_thead_dcache_clean_range_lambda6:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_thead_dcache_clean_range_nlr7,"ax"
 .globl calynda_unit_thead_dcache_clean_range_nlr7
 calynda_unit_thead_dcache_clean_range_nlr7:
     addi sp, sp, -16
@@ -657,8 +673,29 @@ calynda_unit_thead_dcache_clean_range_nlr7:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_thead_dcache_clean_range,"ax"
 .globl calynda_unit_thead_dcache_clean_range
 calynda_unit_thead_dcache_clean_range:
+    addi sp, sp, -16
+    sd ra, 8(sp)
+    call __calynda_rt_cache_clean_range
+    li a0, 0
+    ld ra, 8(sp)
+    addi sp, sp, 16
+    ret
+.section .text.calynda_unit_fb_border,"ax"
+.globl calynda_unit_fb_border
+calynda_unit_fb_border:
+    addi sp, sp, -16
+    sd ra, 8(sp)
+    call __calynda_rt_fb_border
+    li a0, 0
+    ld ra, 8(sp)
+    addi sp, sp, 16
+    ret
+.section .text.calynda_unit_screen_make_rect,"ax"
+.globl calynda_unit_screen_make_rect
+calynda_unit_screen_make_rect:
     addi sp, sp, -16
     sd ra, 8(sp)
     sd s0, 0(sp)
@@ -668,145 +705,36 @@ calynda_unit_thead_dcache_clean_range:
     sd s1, -32(s0)
     sd a0, -24(s0)
     sd a1, -32(s0)
-    li s1, 1
-    la t2, calynda_global_THEAD_CMO_STRIDE
-    ld t2, 0(t2)
-    sub t2, t2, s1
-    mv t1, t2
-    not t1, t1
+    sd a2, -40(s0)
+    sd a3, -48(s0)
+    sd a4, -56(s0)
+    sd a5, -64(s0)
+    sd a6, -72(s0)
+    la t0, calynda_global_SCREEN_OBJECT_KIND_RECT
+    sd t0, -144(s0)
     ld t0, -24(s0)
-    and t3, t0, t1
-    mv a0, t3
-    sd t1, -112(s0)
-    sd t2, -120(s0)
-    sd t3, -128(s0)
-    sd t4, -136(s0)
-    sd t5, -144(s0)
-    sd t6, -152(s0)
-    call __calynda_rt_cell_alloc
-    ld t6, -152(s0)
-    ld t5, -144(s0)
-    ld t4, -136(s0)
-    ld t3, -128(s0)
-    ld t2, -120(s0)
-    ld t1, -112(s0)
-    mv t4, a0
-    sd t4, -40(s0)
-    ld t0, -24(s0)
-    ld s1, -32(s0)
-    add t5, t0, s1
-    mv a0, t5
-    sd t1, -112(s0)
-    sd t2, -120(s0)
-    sd t3, -128(s0)
-    sd t4, -136(s0)
-    sd t5, -144(s0)
-    sd t6, -152(s0)
-    call __calynda_rt_cell_alloc
-    ld t6, -152(s0)
-    ld t5, -144(s0)
-    ld t4, -136(s0)
-    ld t3, -128(s0)
-    ld t2, -120(s0)
-    ld t1, -112(s0)
-    mv t6, a0
-    sd t6, -48(s0)
-    sd t1, -112(s0)
-    sd t2, -120(s0)
-    sd t3, -128(s0)
-    sd t4, -136(s0)
-    sd t5, -144(s0)
-    sd t6, -152(s0)
-    call __calynda_rt_nlr_push
-    ld t6, -152(s0)
-    ld t5, -144(s0)
-    ld t4, -136(s0)
-    ld t3, -128(s0)
-    ld t2, -120(s0)
-    ld t1, -112(s0)
-    mv t0, a0
-    sd t0, -64(s0)
-    ld t0, -64(s0)
-    sd t0, -56(s0)
+    sd t0, -136(s0)
+    ld t0, -32(s0)
+    sd t0, -128(s0)
     ld t0, -40(s0)
-    sd t0, -104(s0)
+    sd t0, -120(s0)
     ld t0, -48(s0)
-    sd t0, -96(s0)
-    addi a2, s0, -104
-    la a0, calynda_closure_thead_dcache_clean_range_lambda6
-    li a1, 2
-    sd t1, -112(s0)
-    sd t2, -120(s0)
-    sd t3, -128(s0)
-    sd t4, -136(s0)
-    sd t5, -144(s0)
-    sd t6, -152(s0)
-    call __calynda_rt_closure_new
-    ld t6, -152(s0)
-    ld t5, -144(s0)
-    ld t4, -136(s0)
-    ld t3, -128(s0)
-    ld t2, -120(s0)
-    ld t1, -112(s0)
-    mv t0, a0
-    sd t0, -72(s0)
+    sd t0, -112(s0)
     ld t0, -56(s0)
     sd t0, -104(s0)
-    ld t0, -40(s0)
+    ld t0, -64(s0)
     sd t0, -96(s0)
-    addi a2, s0, -104
-    la a0, calynda_closure_thead_dcache_clean_range_nlr7
-    li a1, 2
-    sd t1, -112(s0)
-    sd t2, -120(s0)
-    sd t3, -128(s0)
-    sd t4, -136(s0)
-    sd t5, -144(s0)
-    sd t6, -152(s0)
-    call __calynda_rt_closure_new
-    ld t6, -152(s0)
-    ld t5, -144(s0)
-    ld t4, -136(s0)
-    ld t3, -128(s0)
-    ld t2, -120(s0)
-    ld t1, -112(s0)
-    mv t0, a0
-    sd t0, -80(s0)
-    ld a0, -72(s0)
-    ld a1, -80(s0)
-    sd t1, -112(s0)
-    sd t2, -120(s0)
-    sd t3, -128(s0)
-    sd t4, -136(s0)
-    sd t5, -144(s0)
-    sd t6, -152(s0)
-    call calynda_unit_while
-    ld t6, -152(s0)
-    ld t5, -144(s0)
-    ld t4, -136(s0)
-    ld t3, -128(s0)
-    ld t2, -120(s0)
-    ld t1, -112(s0)
-    ld a0, -56(s0)
-    sd t1, -112(s0)
-    sd t2, -120(s0)
-    sd t3, -128(s0)
-    sd t4, -136(s0)
-    sd t5, -144(s0)
-    sd t6, -152(s0)
-    call __calynda_rt_nlr_check_pop
-    ld t6, -152(s0)
-    ld t5, -144(s0)
-    ld t4, -136(s0)
-    ld t3, -128(s0)
-    ld t2, -120(s0)
-    ld t1, -112(s0)
-    mv t0, a0
+    ld t0, -72(s0)
     sd t0, -88(s0)
-    ld t6, -88(s0)
-    bne t6, zero, .Lcalynda_unit_thead_dcache_clean_range_bb1
-    j .Lcalynda_unit_thead_dcache_clean_range_bb2
-.Lcalynda_unit_thead_dcache_clean_range_bb1:
+    li t0, 0
+    sd t0, -80(s0)
+    li a0, 9
+    addi a1, s0, -144
+    sd t1, -152(s0)
+    call __calynda_rt_array_literal
+    ld t1, -152(s0)
+    mv t1, a0
+    mv a0, t1
     addi sp, sp, 160
     ld t0, -24(s0)
     ld s1, -32(s0)
@@ -814,34 +742,362 @@ calynda_unit_thead_dcache_clean_range:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
-.Lcalynda_unit_thead_dcache_clean_range_bb2:
-    sd t1, -112(s0)
-    sd t2, -120(s0)
-    sd t3, -128(s0)
-    sd t4, -136(s0)
-    sd t5, -144(s0)
-    sd t6, -152(s0)
-    call __calynda_rt_cache_final
-    ld t6, -152(s0)
-    ld t5, -144(s0)
-    ld t4, -136(s0)
-    ld t3, -128(s0)
-    ld t2, -120(s0)
-    ld t1, -112(s0)
-    addi sp, sp, 160
-    ld t0, -24(s0)
-    ld s1, -32(s0)
-    ld s0, 0(sp)
-    ld ra, 8(sp)
-    addi sp, sp, 16
-    ret
-.globl calynda_unit_fb_border
-calynda_unit_fb_border:
+.section .text.calynda_unit_screen_text_width,"ax"
+.globl calynda_unit_screen_text_width
+calynda_unit_screen_text_width:
     addi sp, sp, -16
     sd ra, 8(sp)
     sd s0, 0(sp)
     addi s0, sp, 16
-    addi sp, sp, -128
+    addi sp, sp, -64
+    sd t0, -24(s0)
+    sd s1, -32(s0)
+    sd a0, -24(s0)
+    ld a0, -24(s0)
+    la a1, .Lsym_0
+    sd t1, -40(s0)
+    sd t2, -48(s0)
+    sd t3, -56(s0)
+    sd t4, -64(s0)
+    call __calynda_rt_member_load
+    ld t4, -64(s0)
+    ld t3, -56(s0)
+    ld t2, -48(s0)
+    ld t1, -40(s0)
+    mv t1, a0
+    li s1, 0
+    sub t2, t1, s1
+    seqz t2, t2
+    bne t2, zero, .Lcalynda_unit_screen_text_width_bb1
+    j .Lcalynda_unit_screen_text_width_bb2
+.Lcalynda_unit_screen_text_width_bb1:
+    li t0, 1
+    sd t0, -32(s0)
+    j .Lcalynda_unit_screen_text_width_bb3
+.Lcalynda_unit_screen_text_width_bb2:
+    ld a0, -24(s0)
+    la a1, .Lsym_0
+    sd t1, -40(s0)
+    sd t2, -48(s0)
+    sd t3, -56(s0)
+    sd t4, -64(s0)
+    call __calynda_rt_member_load
+    ld t4, -64(s0)
+    ld t3, -56(s0)
+    ld t2, -48(s0)
+    ld t1, -40(s0)
+    mv t3, a0
+    la t4, calynda_global_SCREEN_TEXT_CHAR_ADVANCE
+    ld t4, 0(t4)
+    mul t4, t3, t4
+    sd t4, -32(s0)
+    j .Lcalynda_unit_screen_text_width_bb3
+.Lcalynda_unit_screen_text_width_bb3:
+    ld a0, -32(s0)
+    addi sp, sp, 64
+    ld t0, -24(s0)
+    ld s1, -32(s0)
+    ld s0, 0(sp)
+    ld ra, 8(sp)
+    addi sp, sp, 16
+    ret
+.section .text.calynda_unit_screen_make_text,"ax"
+.globl calynda_unit_screen_make_text
+calynda_unit_screen_make_text:
+    addi sp, sp, -16
+    sd ra, 8(sp)
+    call __calynda_rt_screen_make_text
+    ld ra, 8(sp)
+    addi sp, sp, 16
+    ret
+.section .text.calynda_unit_screen_object_kind,"ax"
+.globl calynda_unit_screen_object_kind
+calynda_unit_screen_object_kind:
+    addi sp, sp, -16
+    sd ra, 8(sp)
+    sd s0, 0(sp)
+    addi s0, sp, 16
+    addi sp, sp, -48
+    sd t0, -24(s0)
+    sd s1, -32(s0)
+    sd a0, -24(s0)
+    ld a0, -24(s0)
+    li a1, 0
+    sd t1, -32(s0)
+    sd t2, -40(s0)
+    call __calynda_rt_index_load
+    ld t2, -40(s0)
+    ld t1, -32(s0)
+    mv t2, a0
+    mv a0, t2
+    li a1, 2
+    sd t1, -32(s0)
+    sd t2, -40(s0)
+    call __calynda_rt_cast_value
+    ld t2, -40(s0)
+    ld t1, -32(s0)
+    mv t1, a0
+    mv a0, t1
+    addi sp, sp, 48
+    ld t0, -24(s0)
+    ld s1, -32(s0)
+    ld s0, 0(sp)
+    ld ra, 8(sp)
+    addi sp, sp, 16
+    ret
+.section .text.calynda_unit_screen_object_x,"ax"
+.globl calynda_unit_screen_object_x
+calynda_unit_screen_object_x:
+    addi sp, sp, -16
+    sd ra, 8(sp)
+    sd s0, 0(sp)
+    addi s0, sp, 16
+    addi sp, sp, -48
+    sd t0, -24(s0)
+    sd s1, -32(s0)
+    sd a0, -24(s0)
+    ld a0, -24(s0)
+    li a1, 1
+    sd t1, -32(s0)
+    sd t2, -40(s0)
+    call __calynda_rt_index_load
+    ld t2, -40(s0)
+    ld t1, -32(s0)
+    mv t2, a0
+    mv a0, t2
+    li a1, 2
+    sd t1, -32(s0)
+    sd t2, -40(s0)
+    call __calynda_rt_cast_value
+    ld t2, -40(s0)
+    ld t1, -32(s0)
+    mv t1, a0
+    mv a0, t1
+    addi sp, sp, 48
+    ld t0, -24(s0)
+    ld s1, -32(s0)
+    ld s0, 0(sp)
+    ld ra, 8(sp)
+    addi sp, sp, 16
+    ret
+.section .text.calynda_unit_screen_object_y,"ax"
+.globl calynda_unit_screen_object_y
+calynda_unit_screen_object_y:
+    addi sp, sp, -16
+    sd ra, 8(sp)
+    sd s0, 0(sp)
+    addi s0, sp, 16
+    addi sp, sp, -48
+    sd t0, -24(s0)
+    sd s1, -32(s0)
+    sd a0, -24(s0)
+    ld a0, -24(s0)
+    li a1, 2
+    sd t1, -32(s0)
+    sd t2, -40(s0)
+    call __calynda_rt_index_load
+    ld t2, -40(s0)
+    ld t1, -32(s0)
+    mv t2, a0
+    mv a0, t2
+    li a1, 2
+    sd t1, -32(s0)
+    sd t2, -40(s0)
+    call __calynda_rt_cast_value
+    ld t2, -40(s0)
+    ld t1, -32(s0)
+    mv t1, a0
+    mv a0, t1
+    addi sp, sp, 48
+    ld t0, -24(s0)
+    ld s1, -32(s0)
+    ld s0, 0(sp)
+    ld ra, 8(sp)
+    addi sp, sp, 16
+    ret
+.section .text.calynda_unit_screen_object_width,"ax"
+.globl calynda_unit_screen_object_width
+calynda_unit_screen_object_width:
+    addi sp, sp, -16
+    sd ra, 8(sp)
+    sd s0, 0(sp)
+    addi s0, sp, 16
+    addi sp, sp, -48
+    sd t0, -24(s0)
+    sd s1, -32(s0)
+    sd a0, -24(s0)
+    ld a0, -24(s0)
+    li a1, 3
+    sd t1, -32(s0)
+    sd t2, -40(s0)
+    call __calynda_rt_index_load
+    ld t2, -40(s0)
+    ld t1, -32(s0)
+    mv t2, a0
+    mv a0, t2
+    li a1, 2
+    sd t1, -32(s0)
+    sd t2, -40(s0)
+    call __calynda_rt_cast_value
+    ld t2, -40(s0)
+    ld t1, -32(s0)
+    mv t1, a0
+    mv a0, t1
+    addi sp, sp, 48
+    ld t0, -24(s0)
+    ld s1, -32(s0)
+    ld s0, 0(sp)
+    ld ra, 8(sp)
+    addi sp, sp, 16
+    ret
+.section .text.calynda_unit_screen_object_height,"ax"
+.globl calynda_unit_screen_object_height
+calynda_unit_screen_object_height:
+    addi sp, sp, -16
+    sd ra, 8(sp)
+    sd s0, 0(sp)
+    addi s0, sp, 16
+    addi sp, sp, -48
+    sd t0, -24(s0)
+    sd s1, -32(s0)
+    sd a0, -24(s0)
+    ld a0, -24(s0)
+    li a1, 4
+    sd t1, -32(s0)
+    sd t2, -40(s0)
+    call __calynda_rt_index_load
+    ld t2, -40(s0)
+    ld t1, -32(s0)
+    mv t2, a0
+    mv a0, t2
+    li a1, 2
+    sd t1, -32(s0)
+    sd t2, -40(s0)
+    call __calynda_rt_cast_value
+    ld t2, -40(s0)
+    ld t1, -32(s0)
+    mv t1, a0
+    mv a0, t1
+    addi sp, sp, 48
+    ld t0, -24(s0)
+    ld s1, -32(s0)
+    ld s0, 0(sp)
+    ld ra, 8(sp)
+    addi sp, sp, 16
+    ret
+.section .text.calynda_unit_screen_object_vx,"ax"
+.globl calynda_unit_screen_object_vx
+calynda_unit_screen_object_vx:
+    addi sp, sp, -16
+    sd ra, 8(sp)
+    sd s0, 0(sp)
+    addi s0, sp, 16
+    addi sp, sp, -48
+    sd t0, -24(s0)
+    sd s1, -32(s0)
+    sd a0, -24(s0)
+    ld a0, -24(s0)
+    li a1, 5
+    sd t1, -32(s0)
+    sd t2, -40(s0)
+    call __calynda_rt_index_load
+    ld t2, -40(s0)
+    ld t1, -32(s0)
+    mv t2, a0
+    mv a0, t2
+    li a1, 2
+    sd t1, -32(s0)
+    sd t2, -40(s0)
+    call __calynda_rt_cast_value
+    ld t2, -40(s0)
+    ld t1, -32(s0)
+    mv t1, a0
+    mv a0, t1
+    addi sp, sp, 48
+    ld t0, -24(s0)
+    ld s1, -32(s0)
+    ld s0, 0(sp)
+    ld ra, 8(sp)
+    addi sp, sp, 16
+    ret
+.section .text.calynda_unit_screen_object_vy,"ax"
+.globl calynda_unit_screen_object_vy
+calynda_unit_screen_object_vy:
+    addi sp, sp, -16
+    sd ra, 8(sp)
+    sd s0, 0(sp)
+    addi s0, sp, 16
+    addi sp, sp, -48
+    sd t0, -24(s0)
+    sd s1, -32(s0)
+    sd a0, -24(s0)
+    ld a0, -24(s0)
+    li a1, 6
+    sd t1, -32(s0)
+    sd t2, -40(s0)
+    call __calynda_rt_index_load
+    ld t2, -40(s0)
+    ld t1, -32(s0)
+    mv t2, a0
+    mv a0, t2
+    li a1, 2
+    sd t1, -32(s0)
+    sd t2, -40(s0)
+    call __calynda_rt_cast_value
+    ld t2, -40(s0)
+    ld t1, -32(s0)
+    mv t1, a0
+    mv a0, t1
+    addi sp, sp, 48
+    ld t0, -24(s0)
+    ld s1, -32(s0)
+    ld s0, 0(sp)
+    ld ra, 8(sp)
+    addi sp, sp, 16
+    ret
+.section .text.calynda_unit_screen_object_color,"ax"
+.globl calynda_unit_screen_object_color
+calynda_unit_screen_object_color:
+    addi sp, sp, -16
+    sd ra, 8(sp)
+    sd s0, 0(sp)
+    addi s0, sp, 16
+    addi sp, sp, -48
+    sd t0, -24(s0)
+    sd s1, -32(s0)
+    sd a0, -24(s0)
+    ld a0, -24(s0)
+    li a1, 7
+    sd t1, -32(s0)
+    sd t2, -40(s0)
+    call __calynda_rt_index_load
+    ld t2, -40(s0)
+    ld t1, -32(s0)
+    mv t2, a0
+    mv a0, t2
+    li a1, 8
+    sd t1, -32(s0)
+    sd t2, -40(s0)
+    call __calynda_rt_cast_value
+    ld t2, -40(s0)
+    ld t1, -32(s0)
+    mv t1, a0
+    mv a0, t1
+    addi sp, sp, 48
+    ld t0, -24(s0)
+    ld s1, -32(s0)
+    ld s0, 0(sp)
+    ld ra, 8(sp)
+    addi sp, sp, 16
+    ret
+.section .text.calynda_unit_screen_object_with_state,"ax"
+.globl calynda_unit_screen_object_with_state
+calynda_unit_screen_object_with_state:
+    addi sp, sp, -16
+    sd ra, 8(sp)
+    sd s0, 0(sp)
+    addi s0, sp, 16
+    addi sp, sp, -176
     sd t0, -24(s0)
     sd s1, -32(s0)
     sd a0, -24(s0)
@@ -849,109 +1105,345 @@ calynda_unit_fb_border:
     sd a2, -40(s0)
     sd a3, -48(s0)
     sd a4, -56(s0)
-    sd a5, -64(s0)
+    ld a0, -24(s0)
+    sd t1, -136(s0)
+    sd t2, -144(s0)
+    sd t3, -152(s0)
+    sd t4, -160(s0)
+    sd t5, -168(s0)
+    sd t6, -176(s0)
+    call calynda_unit_screen_object_kind
+    ld t6, -176(s0)
+    ld t5, -168(s0)
+    ld t4, -160(s0)
+    ld t3, -152(s0)
+    ld t2, -144(s0)
+    ld t1, -136(s0)
+    mv t2, a0
+    ld a0, -24(s0)
+    sd t1, -136(s0)
+    sd t2, -144(s0)
+    sd t3, -152(s0)
+    sd t4, -160(s0)
+    sd t5, -168(s0)
+    sd t6, -176(s0)
+    call calynda_unit_screen_object_width
+    ld t6, -176(s0)
+    ld t5, -168(s0)
+    ld t4, -160(s0)
+    ld t3, -152(s0)
+    ld t2, -144(s0)
+    ld t1, -136(s0)
+    mv t3, a0
+    ld a0, -24(s0)
+    sd t1, -136(s0)
+    sd t2, -144(s0)
+    sd t3, -152(s0)
+    sd t4, -160(s0)
+    sd t5, -168(s0)
+    sd t6, -176(s0)
+    call calynda_unit_screen_object_height
+    ld t6, -176(s0)
+    ld t5, -168(s0)
+    ld t4, -160(s0)
+    ld t3, -152(s0)
+    ld t2, -144(s0)
+    ld t1, -136(s0)
+    mv t4, a0
+    ld a0, -24(s0)
+    sd t1, -136(s0)
+    sd t2, -144(s0)
+    sd t3, -152(s0)
+    sd t4, -160(s0)
+    sd t5, -168(s0)
+    sd t6, -176(s0)
+    call calynda_unit_screen_object_color
+    ld t6, -176(s0)
+    ld t5, -168(s0)
+    ld t4, -160(s0)
+    ld t3, -152(s0)
+    ld t2, -144(s0)
+    ld t1, -136(s0)
+    mv t5, a0
+    ld a0, -24(s0)
+    li a1, 8
+    sd t1, -136(s0)
+    sd t2, -144(s0)
+    sd t3, -152(s0)
+    sd t4, -160(s0)
+    sd t5, -168(s0)
+    sd t6, -176(s0)
+    call __calynda_rt_index_load
+    ld t6, -176(s0)
+    ld t5, -168(s0)
+    ld t4, -160(s0)
+    ld t3, -152(s0)
+    ld t2, -144(s0)
+    ld t1, -136(s0)
+    mv t6, a0
+    sd t2, -128(s0)
     ld t0, -32(s0)
-    ld s1, -64(s0)
-    add t1, t0, s1
-    li s1, 1
-    sub t2, t1, s1
-    ld a0, -24(s0)
-    ld a1, -32(s0)
-    ld a2, -40(s0)
-    mv a3, t2
-    ld a4, -56(s0)
-    sd t1, -88(s0)
-    sd t2, -96(s0)
-    sd t3, -104(s0)
-    sd t4, -112(s0)
-    sd t5, -120(s0)
-    sd t6, -128(s0)
-    call calynda_unit_fb_rect
-    ld t6, -128(s0)
-    ld t5, -120(s0)
-    ld t4, -112(s0)
-    ld t3, -104(s0)
-    ld t2, -96(s0)
-    ld t1, -88(s0)
-    ld t0, -48(s0)
-    ld s1, -64(s0)
-    sub t3, t0, s1
-    li s1, 1
-    add t4, t3, s1
-    ld a0, -24(s0)
-    mv a1, t4
-    ld a2, -40(s0)
-    ld a3, -48(s0)
-    ld a4, -56(s0)
-    sd t1, -88(s0)
-    sd t2, -96(s0)
-    sd t3, -104(s0)
-    sd t4, -112(s0)
-    sd t5, -120(s0)
-    sd t6, -128(s0)
-    call calynda_unit_fb_rect
-    ld t6, -128(s0)
-    ld t5, -120(s0)
-    ld t4, -112(s0)
-    ld t3, -104(s0)
-    ld t2, -96(s0)
-    ld t1, -88(s0)
-    ld t0, -24(s0)
-    ld s1, -64(s0)
-    add t5, t0, s1
-    li s1, 1
-    sub t6, t5, s1
-    ld a0, -24(s0)
-    ld a1, -32(s0)
-    mv a2, t6
-    ld a3, -48(s0)
-    ld a4, -56(s0)
-    sd t1, -88(s0)
-    sd t2, -96(s0)
-    sd t3, -104(s0)
-    sd t4, -112(s0)
-    sd t5, -120(s0)
-    sd t6, -128(s0)
-    call calynda_unit_fb_rect
-    ld t6, -128(s0)
-    ld t5, -120(s0)
-    ld t4, -112(s0)
-    ld t3, -104(s0)
-    ld t2, -96(s0)
-    ld t1, -88(s0)
+    sd t0, -120(s0)
     ld t0, -40(s0)
-    ld s1, -64(s0)
-    sub t0, t0, s1
-    sd t0, -72(s0)
-    ld t0, -72(s0)
-    li s1, 1
-    add t0, t0, s1
-    sd t0, -80(s0)
-    ld a0, -80(s0)
-    ld a1, -32(s0)
-    ld a2, -40(s0)
-    ld a3, -48(s0)
-    ld a4, -56(s0)
-    sd t1, -88(s0)
-    sd t2, -96(s0)
+    sd t0, -112(s0)
     sd t3, -104(s0)
-    sd t4, -112(s0)
-    sd t5, -120(s0)
-    sd t6, -128(s0)
-    call calynda_unit_fb_rect
-    ld t6, -128(s0)
-    ld t5, -120(s0)
-    ld t4, -112(s0)
-    ld t3, -104(s0)
-    ld t2, -96(s0)
-    ld t1, -88(s0)
-    addi sp, sp, 128
+    sd t4, -96(s0)
+    ld t0, -48(s0)
+    sd t0, -88(s0)
+    ld t0, -56(s0)
+    sd t0, -80(s0)
+    sd t5, -72(s0)
+    sd t6, -64(s0)
+    li a0, 9
+    addi a1, s0, -128
+    sd t1, -136(s0)
+    sd t2, -144(s0)
+    sd t3, -152(s0)
+    sd t4, -160(s0)
+    sd t5, -168(s0)
+    sd t6, -176(s0)
+    call __calynda_rt_array_literal
+    ld t6, -176(s0)
+    ld t5, -168(s0)
+    ld t4, -160(s0)
+    ld t3, -152(s0)
+    ld t2, -144(s0)
+    ld t1, -136(s0)
+    mv t1, a0
+    mv a0, t1
+    addi sp, sp, 176
     ld t0, -24(s0)
     ld s1, -32(s0)
     ld s0, 0(sp)
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_screen_object_set_velocity,"ax"
+.globl calynda_unit_screen_object_set_velocity
+calynda_unit_screen_object_set_velocity:
+    addi sp, sp, -16
+    sd ra, 8(sp)
+    sd s0, 0(sp)
+    addi s0, sp, 16
+    addi sp, sp, -64
+    sd t0, -24(s0)
+    sd s1, -32(s0)
+    sd a0, -24(s0)
+    sd a1, -32(s0)
+    sd a2, -40(s0)
+    ld a0, -24(s0)
+    sd t1, -48(s0)
+    sd t2, -56(s0)
+    sd t3, -64(s0)
+    call calynda_unit_screen_object_x
+    ld t3, -64(s0)
+    ld t2, -56(s0)
+    ld t1, -48(s0)
+    mv t2, a0
+    ld a0, -24(s0)
+    sd t1, -48(s0)
+    sd t2, -56(s0)
+    sd t3, -64(s0)
+    call calynda_unit_screen_object_y
+    ld t3, -64(s0)
+    ld t2, -56(s0)
+    ld t1, -48(s0)
+    mv t3, a0
+    ld a0, -24(s0)
+    mv a1, t2
+    mv a2, t3
+    ld a3, -32(s0)
+    ld a4, -40(s0)
+    sd t1, -48(s0)
+    sd t2, -56(s0)
+    sd t3, -64(s0)
+    call calynda_unit_screen_object_with_state
+    ld t3, -64(s0)
+    ld t2, -56(s0)
+    ld t1, -48(s0)
+    mv t1, a0
+    mv a0, t1
+    addi sp, sp, 64
+    ld t0, -24(s0)
+    ld s1, -32(s0)
+    ld s0, 0(sp)
+    ld ra, 8(sp)
+    addi sp, sp, 16
+    ret
+.section .text.calynda_unit_screen_move_object,"ax"
+.globl calynda_unit_screen_move_object
+calynda_unit_screen_move_object:
+    addi sp, sp, -16
+    sd ra, 8(sp)
+    sd s0, 0(sp)
+    addi s0, sp, 16
+    addi sp, sp, -96
+    sd t0, -24(s0)
+    sd s1, -32(s0)
+    sd a0, -24(s0)
+    sd a1, -32(s0)
+    sd a2, -40(s0)
+    ld a0, -24(s0)
+    sd t1, -56(s0)
+    sd t2, -64(s0)
+    sd t3, -72(s0)
+    sd t4, -80(s0)
+    sd t5, -88(s0)
+    sd t6, -96(s0)
+    call calynda_unit_screen_object_x
+    ld t6, -96(s0)
+    ld t5, -88(s0)
+    ld t4, -80(s0)
+    ld t3, -72(s0)
+    ld t2, -64(s0)
+    ld t1, -56(s0)
+    mv t2, a0
+    ld s1, -32(s0)
+    add t3, t2, s1
+    ld a0, -24(s0)
+    sd t1, -56(s0)
+    sd t2, -64(s0)
+    sd t3, -72(s0)
+    sd t4, -80(s0)
+    sd t5, -88(s0)
+    sd t6, -96(s0)
+    call calynda_unit_screen_object_y
+    ld t6, -96(s0)
+    ld t5, -88(s0)
+    ld t4, -80(s0)
+    ld t3, -72(s0)
+    ld t2, -64(s0)
+    ld t1, -56(s0)
+    mv t4, a0
+    ld s1, -40(s0)
+    add t5, t4, s1
+    ld a0, -24(s0)
+    sd t1, -56(s0)
+    sd t2, -64(s0)
+    sd t3, -72(s0)
+    sd t4, -80(s0)
+    sd t5, -88(s0)
+    sd t6, -96(s0)
+    call calynda_unit_screen_object_vx
+    ld t6, -96(s0)
+    ld t5, -88(s0)
+    ld t4, -80(s0)
+    ld t3, -72(s0)
+    ld t2, -64(s0)
+    ld t1, -56(s0)
+    mv t6, a0
+    ld a0, -24(s0)
+    sd t1, -56(s0)
+    sd t2, -64(s0)
+    sd t3, -72(s0)
+    sd t4, -80(s0)
+    sd t5, -88(s0)
+    sd t6, -96(s0)
+    call calynda_unit_screen_object_vy
+    ld t6, -96(s0)
+    ld t5, -88(s0)
+    ld t4, -80(s0)
+    ld t3, -72(s0)
+    ld t2, -64(s0)
+    ld t1, -56(s0)
+    mv t0, a0
+    sd t0, -48(s0)
+    ld a0, -24(s0)
+    mv a1, t3
+    mv a2, t5
+    mv a3, t6
+    ld a4, -48(s0)
+    sd t1, -56(s0)
+    sd t2, -64(s0)
+    sd t3, -72(s0)
+    sd t4, -80(s0)
+    sd t5, -88(s0)
+    sd t6, -96(s0)
+    call calynda_unit_screen_object_with_state
+    ld t6, -96(s0)
+    ld t5, -88(s0)
+    ld t4, -80(s0)
+    ld t3, -72(s0)
+    ld t2, -64(s0)
+    ld t1, -56(s0)
+    mv t1, a0
+    mv a0, t1
+    addi sp, sp, 96
+    ld t0, -24(s0)
+    ld s1, -32(s0)
+    ld s0, 0(sp)
+    ld ra, 8(sp)
+    addi sp, sp, 16
+    ret
+.section .text.calynda_unit_screen_step_object,"ax"
+.globl calynda_unit_screen_step_object
+calynda_unit_screen_step_object:
+    addi sp, sp, -16
+    sd ra, 8(sp)
+    sd s0, 0(sp)
+    addi s0, sp, 16
+    addi sp, sp, -48
+    sd t0, -24(s0)
+    sd s1, -32(s0)
+    sd a0, -24(s0)
+    ld a0, -24(s0)
+    sd t1, -32(s0)
+    sd t2, -40(s0)
+    sd t3, -48(s0)
+    call calynda_unit_screen_object_vx
+    ld t3, -48(s0)
+    ld t2, -40(s0)
+    ld t1, -32(s0)
+    mv t2, a0
+    ld a0, -24(s0)
+    sd t1, -32(s0)
+    sd t2, -40(s0)
+    sd t3, -48(s0)
+    call calynda_unit_screen_object_vy
+    ld t3, -48(s0)
+    ld t2, -40(s0)
+    ld t1, -32(s0)
+    mv t3, a0
+    ld a0, -24(s0)
+    mv a1, t2
+    mv a2, t3
+    sd t1, -32(s0)
+    sd t2, -40(s0)
+    sd t3, -48(s0)
+    call calynda_unit_screen_move_object
+    ld t3, -48(s0)
+    ld t2, -40(s0)
+    ld t1, -32(s0)
+    mv t1, a0
+    mv a0, t1
+    addi sp, sp, 48
+    ld t0, -24(s0)
+    ld s1, -32(s0)
+    ld s0, 0(sp)
+    ld ra, 8(sp)
+    addi sp, sp, 16
+    ret
+.section .text.calynda_unit_screen_draw_object,"ax"
+.globl calynda_unit_screen_draw_object
+calynda_unit_screen_draw_object:
+    addi sp, sp, -16
+    sd ra, 8(sp)
+    call __calynda_rt_screen_draw_object
+    li a0, 0
+    ld ra, 8(sp)
+    addi sp, sp, 16
+    ret
+.section .text.calynda_unit_screen_clear_object,"ax"
+.globl calynda_unit_screen_clear_object
+calynda_unit_screen_clear_object:
+    addi sp, sp, -16
+    sd ra, 8(sp)
+    call __calynda_rt_screen_clear_object
+    li a0, 0
+    ld ra, 8(sp)
+    addi sp, sp, 16
+    ret
+.section .text.calynda_unit_fb_draw_char_top,"ax"
 .globl calynda_unit_fb_draw_char_top
 calynda_unit_fb_draw_char_top:
     addi sp, sp, -16
@@ -987,6 +1479,7 @@ calynda_unit_fb_draw_char_top:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_char_middle,"ax"
 .globl calynda_unit_fb_draw_char_middle
 calynda_unit_fb_draw_char_middle:
     addi sp, sp, -16
@@ -1003,7 +1496,7 @@ calynda_unit_fb_draw_char_middle:
     li s1, 14
     add t1, t0, s1
     ld t0, -24(s0)
-    li s1, 27
+    li s1, 17
     add t2, t0, s1
     ld t0, -32(s0)
     li s1, 17
@@ -1027,6 +1520,7 @@ calynda_unit_fb_draw_char_middle:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_char_bottom,"ax"
 .globl calynda_unit_fb_draw_char_bottom
 calynda_unit_fb_draw_char_bottom:
     addi sp, sp, -16
@@ -1067,6 +1561,7 @@ calynda_unit_fb_draw_char_bottom:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_char_left,"ax"
 .globl calynda_unit_fb_draw_char_left
 calynda_unit_fb_draw_char_left:
     addi sp, sp, -16
@@ -1102,6 +1597,7 @@ calynda_unit_fb_draw_char_left:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_char_left_lower,"ax"
 .globl calynda_unit_fb_draw_char_left_lower
 calynda_unit_fb_draw_char_left_lower:
     addi sp, sp, -16
@@ -1142,6 +1638,7 @@ calynda_unit_fb_draw_char_left_lower:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_char_right,"ax"
 .globl calynda_unit_fb_draw_char_right
 calynda_unit_fb_draw_char_right:
     addi sp, sp, -16
@@ -1182,6 +1679,7 @@ calynda_unit_fb_draw_char_right:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_char_right_upper,"ax"
 .globl calynda_unit_fb_draw_char_right_upper
 calynda_unit_fb_draw_char_right_upper:
     addi sp, sp, -16
@@ -1222,6 +1720,7 @@ calynda_unit_fb_draw_char_right_upper:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_char_right_lower,"ax"
 .globl calynda_unit_fb_draw_char_right_lower
 calynda_unit_fb_draw_char_right_lower:
     addi sp, sp, -16
@@ -1267,6 +1766,7 @@ calynda_unit_fb_draw_char_right_lower:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_char_center,"ax"
 .globl calynda_unit_fb_draw_char_center
 calynda_unit_fb_draw_char_center:
     addi sp, sp, -16
@@ -1307,6 +1807,7 @@ calynda_unit_fb_draw_char_center:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_letter_nlr8,"ax"
 .globl calynda_unit_fb_draw_probe_letter_nlr8
 calynda_unit_fb_draw_probe_letter_nlr8:
     addi sp, sp, -16
@@ -1347,6 +1848,7 @@ calynda_unit_fb_draw_probe_letter_nlr8:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_letter_lambda9,"ax"
 .globl calynda_unit_fb_draw_probe_letter_lambda9
 calynda_unit_fb_draw_probe_letter_lambda9:
     addi sp, sp, -16
@@ -1363,6 +1865,7 @@ calynda_unit_fb_draw_probe_letter_lambda9:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_letter_nlr10,"ax"
 .globl calynda_unit_fb_draw_probe_letter_nlr10
 calynda_unit_fb_draw_probe_letter_nlr10:
     addi sp, sp, -16
@@ -1407,6 +1910,7 @@ calynda_unit_fb_draw_probe_letter_nlr10:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_letter_lambda11,"ax"
 .globl calynda_unit_fb_draw_probe_letter_lambda11
 calynda_unit_fb_draw_probe_letter_lambda11:
     addi sp, sp, -16
@@ -1423,6 +1927,7 @@ calynda_unit_fb_draw_probe_letter_lambda11:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_letter_nlr12,"ax"
 .globl calynda_unit_fb_draw_probe_letter_nlr12
 calynda_unit_fb_draw_probe_letter_nlr12:
     addi sp, sp, -16
@@ -1459,6 +1964,7 @@ calynda_unit_fb_draw_probe_letter_nlr12:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_letter_lambda13,"ax"
 .globl calynda_unit_fb_draw_probe_letter_lambda13
 calynda_unit_fb_draw_probe_letter_lambda13:
     addi sp, sp, -16
@@ -1475,6 +1981,7 @@ calynda_unit_fb_draw_probe_letter_lambda13:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_letter_nlr14,"ax"
 .globl calynda_unit_fb_draw_probe_letter_nlr14
 calynda_unit_fb_draw_probe_letter_nlr14:
     addi sp, sp, -16
@@ -1515,6 +2022,7 @@ calynda_unit_fb_draw_probe_letter_nlr14:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_letter_lambda15,"ax"
 .globl calynda_unit_fb_draw_probe_letter_lambda15
 calynda_unit_fb_draw_probe_letter_lambda15:
     addi sp, sp, -16
@@ -1531,6 +2039,7 @@ calynda_unit_fb_draw_probe_letter_lambda15:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_letter_nlr16,"ax"
 .globl calynda_unit_fb_draw_probe_letter_nlr16
 calynda_unit_fb_draw_probe_letter_nlr16:
     addi sp, sp, -16
@@ -1571,6 +2080,7 @@ calynda_unit_fb_draw_probe_letter_nlr16:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_letter_lambda17,"ax"
 .globl calynda_unit_fb_draw_probe_letter_lambda17
 calynda_unit_fb_draw_probe_letter_lambda17:
     addi sp, sp, -16
@@ -1587,6 +2097,7 @@ calynda_unit_fb_draw_probe_letter_lambda17:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_letter_nlr18,"ax"
 .globl calynda_unit_fb_draw_probe_letter_nlr18
 calynda_unit_fb_draw_probe_letter_nlr18:
     addi sp, sp, -16
@@ -1623,6 +2134,7 @@ calynda_unit_fb_draw_probe_letter_nlr18:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_letter_lambda19,"ax"
 .globl calynda_unit_fb_draw_probe_letter_lambda19
 calynda_unit_fb_draw_probe_letter_lambda19:
     addi sp, sp, -16
@@ -1639,6 +2151,7 @@ calynda_unit_fb_draw_probe_letter_lambda19:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_letter_nlr20,"ax"
 .globl calynda_unit_fb_draw_probe_letter_nlr20
 calynda_unit_fb_draw_probe_letter_nlr20:
     addi sp, sp, -16
@@ -1683,6 +2196,7 @@ calynda_unit_fb_draw_probe_letter_nlr20:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_letter_lambda21,"ax"
 .globl calynda_unit_fb_draw_probe_letter_lambda21
 calynda_unit_fb_draw_probe_letter_lambda21:
     addi sp, sp, -16
@@ -1699,6 +2213,7 @@ calynda_unit_fb_draw_probe_letter_lambda21:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_letter_nlr22,"ax"
 .globl calynda_unit_fb_draw_probe_letter_nlr22
 calynda_unit_fb_draw_probe_letter_nlr22:
     addi sp, sp, -16
@@ -1735,6 +2250,7 @@ calynda_unit_fb_draw_probe_letter_nlr22:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_letter_lambda23,"ax"
 .globl calynda_unit_fb_draw_probe_letter_lambda23
 calynda_unit_fb_draw_probe_letter_lambda23:
     addi sp, sp, -16
@@ -1751,6 +2267,7 @@ calynda_unit_fb_draw_probe_letter_lambda23:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_letter,"ax"
 .globl calynda_unit_fb_draw_probe_letter
 calynda_unit_fb_draw_probe_letter:
     addi sp, sp, -16
@@ -2642,6 +3159,7 @@ calynda_unit_fb_draw_probe_letter:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_digit_nlr24,"ax"
 .globl calynda_unit_fb_draw_probe_digit_nlr24
 calynda_unit_fb_draw_probe_digit_nlr24:
     addi sp, sp, -16
@@ -2682,6 +3200,7 @@ calynda_unit_fb_draw_probe_digit_nlr24:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_digit_lambda25,"ax"
 .globl calynda_unit_fb_draw_probe_digit_lambda25
 calynda_unit_fb_draw_probe_digit_lambda25:
     addi sp, sp, -16
@@ -2698,6 +3217,7 @@ calynda_unit_fb_draw_probe_digit_lambda25:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_digit_nlr26,"ax"
 .globl calynda_unit_fb_draw_probe_digit_nlr26
 calynda_unit_fb_draw_probe_digit_nlr26:
     addi sp, sp, -16
@@ -2730,6 +3250,7 @@ calynda_unit_fb_draw_probe_digit_nlr26:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_digit_lambda27,"ax"
 .globl calynda_unit_fb_draw_probe_digit_lambda27
 calynda_unit_fb_draw_probe_digit_lambda27:
     addi sp, sp, -16
@@ -2746,6 +3267,7 @@ calynda_unit_fb_draw_probe_digit_lambda27:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_digit_nlr28,"ax"
 .globl calynda_unit_fb_draw_probe_digit_nlr28
 calynda_unit_fb_draw_probe_digit_nlr28:
     addi sp, sp, -16
@@ -2790,6 +3312,7 @@ calynda_unit_fb_draw_probe_digit_nlr28:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_digit_lambda29,"ax"
 .globl calynda_unit_fb_draw_probe_digit_lambda29
 calynda_unit_fb_draw_probe_digit_lambda29:
     addi sp, sp, -16
@@ -2806,6 +3329,7 @@ calynda_unit_fb_draw_probe_digit_lambda29:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_digit_nlr30,"ax"
 .globl calynda_unit_fb_draw_probe_digit_nlr30
 calynda_unit_fb_draw_probe_digit_nlr30:
     addi sp, sp, -16
@@ -2846,6 +3370,7 @@ calynda_unit_fb_draw_probe_digit_nlr30:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_digit_lambda31,"ax"
 .globl calynda_unit_fb_draw_probe_digit_lambda31
 calynda_unit_fb_draw_probe_digit_lambda31:
     addi sp, sp, -16
@@ -2862,6 +3387,7 @@ calynda_unit_fb_draw_probe_digit_lambda31:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_digit,"ax"
 .globl calynda_unit_fb_draw_probe_digit
 calynda_unit_fb_draw_probe_digit:
     addi sp, sp, -16
@@ -3313,44 +3839,17 @@ calynda_unit_fb_draw_probe_digit:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_probe_label,"ax"
 .globl calynda_unit_fb_draw_probe_label
 calynda_unit_fb_draw_probe_label:
     addi sp, sp, -16
     sd ra, 8(sp)
-    sd s0, 0(sp)
-    addi s0, sp, 16
-    addi sp, sp, -64
-    sd t0, -24(s0)
-    sd s1, -32(s0)
-    sd a0, -24(s0)
-    sd a1, -32(s0)
-    sd a2, -40(s0)
-    sd a3, -48(s0)
-    sd a4, -56(s0)
-    ld a0, -24(s0)
-    ld a1, -32(s0)
-    ld a2, -40(s0)
-    ld a3, -56(s0)
-    sd t1, -64(s0)
-    call calynda_unit_fb_draw_probe_letter
-    ld t1, -64(s0)
-    ld t0, -24(s0)
-    li s1, 32
-    add t1, t0, s1
-    mv a0, t1
-    ld a1, -32(s0)
-    ld a2, -48(s0)
-    ld a3, -56(s0)
-    sd t1, -64(s0)
-    call calynda_unit_fb_draw_probe_digit
-    ld t1, -64(s0)
-    addi sp, sp, 64
-    ld t0, -24(s0)
-    ld s1, -32(s0)
-    ld s0, 0(sp)
+    call __calynda_rt_draw_probe_label
+    li a0, 0
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_row_markers_lambda32,"ax"
 .globl calynda_unit_fb_draw_row_markers_lambda32
 calynda_unit_fb_draw_row_markers_lambda32:
     addi sp, sp, -16
@@ -3391,6 +3890,7 @@ calynda_unit_fb_draw_row_markers_lambda32:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_row_markers_nlr33,"ax"
 .globl calynda_unit_fb_draw_row_markers_nlr33
 calynda_unit_fb_draw_row_markers_nlr33:
     addi sp, sp, -16
@@ -3543,167 +4043,17 @@ calynda_unit_fb_draw_row_markers_nlr33:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_row_markers,"ax"
 .globl calynda_unit_fb_draw_row_markers
 calynda_unit_fb_draw_row_markers:
     addi sp, sp, -16
     sd ra, 8(sp)
-    sd s0, 0(sp)
-    addi s0, sp, 16
-    addi sp, sp, -176
-    sd t0, -24(s0)
-    sd s1, -32(s0)
-    sd a0, -24(s0)
-    sd a1, -32(s0)
-    sd a2, -40(s0)
-    sd a3, -48(s0)
+    call __calynda_rt_fb_draw_row_markers
     li a0, 0
-    sd t1, -128(s0)
-    sd t2, -136(s0)
-    sd t3, -144(s0)
-    sd t4, -152(s0)
-    sd t5, -160(s0)
-    sd t6, -168(s0)
-    call __calynda_rt_cell_alloc
-    ld t6, -168(s0)
-    ld t5, -160(s0)
-    ld t4, -152(s0)
-    ld t3, -144(s0)
-    ld t2, -136(s0)
-    ld t1, -128(s0)
-    mv t1, a0
-    sd t1, -56(s0)
-    ld t0, -48(s0)
-    li s1, 1
-    add t2, t0, s1
-    mv a0, t2
-    sd t1, -128(s0)
-    sd t2, -136(s0)
-    sd t3, -144(s0)
-    sd t4, -152(s0)
-    sd t5, -160(s0)
-    sd t6, -168(s0)
-    call __calynda_rt_cell_alloc
-    ld t6, -168(s0)
-    ld t5, -160(s0)
-    ld t4, -152(s0)
-    ld t3, -144(s0)
-    ld t2, -136(s0)
-    ld t1, -128(s0)
-    mv t3, a0
-    sd t3, -64(s0)
-    sd t1, -128(s0)
-    sd t2, -136(s0)
-    sd t3, -144(s0)
-    sd t4, -152(s0)
-    sd t5, -160(s0)
-    sd t6, -168(s0)
-    call __calynda_rt_nlr_push
-    ld t6, -168(s0)
-    ld t5, -160(s0)
-    ld t4, -152(s0)
-    ld t3, -144(s0)
-    ld t2, -136(s0)
-    ld t1, -128(s0)
-    mv t4, a0
-    sd t4, -72(s0)
-    ld t0, -56(s0)
-    sd t0, -120(s0)
-    ld t0, -64(s0)
-    sd t0, -112(s0)
-    addi a2, s0, -120
-    la a0, calynda_closure_fb_draw_row_markers_lambda32
-    li a1, 2
-    sd t1, -128(s0)
-    sd t2, -136(s0)
-    sd t3, -144(s0)
-    sd t4, -152(s0)
-    sd t5, -160(s0)
-    sd t6, -168(s0)
-    call __calynda_rt_closure_new
-    ld t6, -168(s0)
-    ld t5, -160(s0)
-    ld t4, -152(s0)
-    ld t3, -144(s0)
-    ld t2, -136(s0)
-    ld t1, -128(s0)
-    mv t5, a0
-    ld t0, -72(s0)
-    sd t0, -120(s0)
-    ld t0, -24(s0)
-    sd t0, -112(s0)
-    ld t0, -40(s0)
-    sd t0, -104(s0)
-    ld t0, -56(s0)
-    sd t0, -96(s0)
-    ld t0, -32(s0)
-    sd t0, -88(s0)
-    addi a2, s0, -120
-    la a0, calynda_closure_fb_draw_row_markers_nlr33
-    li a1, 5
-    sd t1, -128(s0)
-    sd t2, -136(s0)
-    sd t3, -144(s0)
-    sd t4, -152(s0)
-    sd t5, -160(s0)
-    sd t6, -168(s0)
-    call __calynda_rt_closure_new
-    ld t6, -168(s0)
-    ld t5, -160(s0)
-    ld t4, -152(s0)
-    ld t3, -144(s0)
-    ld t2, -136(s0)
-    ld t1, -128(s0)
-    mv t6, a0
-    mv a0, t5
-    mv a1, t6
-    sd t1, -128(s0)
-    sd t2, -136(s0)
-    sd t3, -144(s0)
-    sd t4, -152(s0)
-    sd t5, -160(s0)
-    sd t6, -168(s0)
-    call calynda_unit_while
-    ld t6, -168(s0)
-    ld t5, -160(s0)
-    ld t4, -152(s0)
-    ld t3, -144(s0)
-    ld t2, -136(s0)
-    ld t1, -128(s0)
-    ld a0, -72(s0)
-    sd t1, -128(s0)
-    sd t2, -136(s0)
-    sd t3, -144(s0)
-    sd t4, -152(s0)
-    sd t5, -160(s0)
-    sd t6, -168(s0)
-    call __calynda_rt_nlr_check_pop
-    ld t6, -168(s0)
-    ld t5, -160(s0)
-    ld t4, -152(s0)
-    ld t3, -144(s0)
-    ld t2, -136(s0)
-    ld t1, -128(s0)
-    mv t0, a0
-    sd t0, -80(s0)
-    ld t6, -80(s0)
-    bne t6, zero, .Lcalynda_unit_fb_draw_row_markers_bb1
-    j .Lcalynda_unit_fb_draw_row_markers_bb2
-.Lcalynda_unit_fb_draw_row_markers_bb1:
-    addi sp, sp, 176
-    ld t0, -24(s0)
-    ld s1, -32(s0)
-    ld s0, 0(sp)
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
-.Lcalynda_unit_fb_draw_row_markers_bb2:
-    addi sp, sp, 176
-    ld t0, -24(s0)
-    ld s1, -32(s0)
-    ld s0, 0(sp)
-    ld ra, 8(sp)
-    addi sp, sp, 16
-    ret
+.section .text.calynda_unit_fb_draw_col_markers_lambda34,"ax"
 .globl calynda_unit_fb_draw_col_markers_lambda34
 calynda_unit_fb_draw_col_markers_lambda34:
     addi sp, sp, -16
@@ -3744,6 +4094,7 @@ calynda_unit_fb_draw_col_markers_lambda34:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_col_markers_nlr35,"ax"
 .globl calynda_unit_fb_draw_col_markers_nlr35
 calynda_unit_fb_draw_col_markers_nlr35:
     addi sp, sp, -16
@@ -3895,167 +4246,17 @@ calynda_unit_fb_draw_col_markers_nlr35:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_draw_col_markers,"ax"
 .globl calynda_unit_fb_draw_col_markers
 calynda_unit_fb_draw_col_markers:
     addi sp, sp, -16
     sd ra, 8(sp)
-    sd s0, 0(sp)
-    addi s0, sp, 16
-    addi sp, sp, -176
-    sd t0, -24(s0)
-    sd s1, -32(s0)
-    sd a0, -24(s0)
-    sd a1, -32(s0)
-    sd a2, -40(s0)
-    sd a3, -48(s0)
+    call __calynda_rt_fb_draw_col_markers
     li a0, 0
-    sd t1, -128(s0)
-    sd t2, -136(s0)
-    sd t3, -144(s0)
-    sd t4, -152(s0)
-    sd t5, -160(s0)
-    sd t6, -168(s0)
-    call __calynda_rt_cell_alloc
-    ld t6, -168(s0)
-    ld t5, -160(s0)
-    ld t4, -152(s0)
-    ld t3, -144(s0)
-    ld t2, -136(s0)
-    ld t1, -128(s0)
-    mv t1, a0
-    sd t1, -56(s0)
-    ld t0, -48(s0)
-    li s1, 1
-    add t2, t0, s1
-    mv a0, t2
-    sd t1, -128(s0)
-    sd t2, -136(s0)
-    sd t3, -144(s0)
-    sd t4, -152(s0)
-    sd t5, -160(s0)
-    sd t6, -168(s0)
-    call __calynda_rt_cell_alloc
-    ld t6, -168(s0)
-    ld t5, -160(s0)
-    ld t4, -152(s0)
-    ld t3, -144(s0)
-    ld t2, -136(s0)
-    ld t1, -128(s0)
-    mv t3, a0
-    sd t3, -64(s0)
-    sd t1, -128(s0)
-    sd t2, -136(s0)
-    sd t3, -144(s0)
-    sd t4, -152(s0)
-    sd t5, -160(s0)
-    sd t6, -168(s0)
-    call __calynda_rt_nlr_push
-    ld t6, -168(s0)
-    ld t5, -160(s0)
-    ld t4, -152(s0)
-    ld t3, -144(s0)
-    ld t2, -136(s0)
-    ld t1, -128(s0)
-    mv t4, a0
-    sd t4, -72(s0)
-    ld t0, -56(s0)
-    sd t0, -120(s0)
-    ld t0, -64(s0)
-    sd t0, -112(s0)
-    addi a2, s0, -120
-    la a0, calynda_closure_fb_draw_col_markers_lambda34
-    li a1, 2
-    sd t1, -128(s0)
-    sd t2, -136(s0)
-    sd t3, -144(s0)
-    sd t4, -152(s0)
-    sd t5, -160(s0)
-    sd t6, -168(s0)
-    call __calynda_rt_closure_new
-    ld t6, -168(s0)
-    ld t5, -160(s0)
-    ld t4, -152(s0)
-    ld t3, -144(s0)
-    ld t2, -136(s0)
-    ld t1, -128(s0)
-    mv t5, a0
-    ld t0, -72(s0)
-    sd t0, -120(s0)
-    ld t0, -24(s0)
-    sd t0, -112(s0)
-    ld t0, -56(s0)
-    sd t0, -104(s0)
-    ld t0, -32(s0)
-    sd t0, -96(s0)
-    ld t0, -40(s0)
-    sd t0, -88(s0)
-    addi a2, s0, -120
-    la a0, calynda_closure_fb_draw_col_markers_nlr35
-    li a1, 5
-    sd t1, -128(s0)
-    sd t2, -136(s0)
-    sd t3, -144(s0)
-    sd t4, -152(s0)
-    sd t5, -160(s0)
-    sd t6, -168(s0)
-    call __calynda_rt_closure_new
-    ld t6, -168(s0)
-    ld t5, -160(s0)
-    ld t4, -152(s0)
-    ld t3, -144(s0)
-    ld t2, -136(s0)
-    ld t1, -128(s0)
-    mv t6, a0
-    mv a0, t5
-    mv a1, t6
-    sd t1, -128(s0)
-    sd t2, -136(s0)
-    sd t3, -144(s0)
-    sd t4, -152(s0)
-    sd t5, -160(s0)
-    sd t6, -168(s0)
-    call calynda_unit_while
-    ld t6, -168(s0)
-    ld t5, -160(s0)
-    ld t4, -152(s0)
-    ld t3, -144(s0)
-    ld t2, -136(s0)
-    ld t1, -128(s0)
-    ld a0, -72(s0)
-    sd t1, -128(s0)
-    sd t2, -136(s0)
-    sd t3, -144(s0)
-    sd t4, -152(s0)
-    sd t5, -160(s0)
-    sd t6, -168(s0)
-    call __calynda_rt_nlr_check_pop
-    ld t6, -168(s0)
-    ld t5, -160(s0)
-    ld t4, -152(s0)
-    ld t3, -144(s0)
-    ld t2, -136(s0)
-    ld t1, -128(s0)
-    mv t0, a0
-    sd t0, -80(s0)
-    ld t6, -80(s0)
-    bne t6, zero, .Lcalynda_unit_fb_draw_col_markers_bb1
-    j .Lcalynda_unit_fb_draw_col_markers_bb2
-.Lcalynda_unit_fb_draw_col_markers_bb1:
-    addi sp, sp, 176
-    ld t0, -24(s0)
-    ld s1, -32(s0)
-    ld s0, 0(sp)
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
-.Lcalynda_unit_fb_draw_col_markers_bb2:
-    addi sp, sp, 176
-    ld t0, -24(s0)
-    ld s1, -32(s0)
-    ld s0, 0(sp)
-    ld ra, 8(sp)
-    addi sp, sp, 16
-    ret
+.section .text.calynda_unit_fb_draw_probe_cell,"ax"
 .globl calynda_unit_fb_draw_probe_cell
 calynda_unit_fb_draw_probe_cell:
     addi sp, sp, -16
@@ -4399,6 +4600,7 @@ calynda_unit_fb_draw_probe_cell:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_layout_probe_row_lambda36,"ax"
 .globl calynda_unit_fb_layout_probe_row_lambda36
 calynda_unit_fb_layout_probe_row_lambda36:
     addi sp, sp, -16
@@ -4429,6 +4631,7 @@ calynda_unit_fb_layout_probe_row_lambda36:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_layout_probe_row_nlr37,"ax"
 .globl calynda_unit_fb_layout_probe_row_nlr37
 calynda_unit_fb_layout_probe_row_nlr37:
     addi sp, sp, -16
@@ -4501,6 +4704,7 @@ calynda_unit_fb_layout_probe_row_nlr37:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_layout_probe_row,"ax"
 .globl calynda_unit_fb_layout_probe_row
 calynda_unit_fb_layout_probe_row:
     addi sp, sp, -16
@@ -4634,6 +4838,7 @@ calynda_unit_fb_layout_probe_row:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_layout_probe_lambda38,"ax"
 .globl calynda_unit_fb_layout_probe_lambda38
 calynda_unit_fb_layout_probe_lambda38:
     addi sp, sp, -16
@@ -4674,6 +4879,7 @@ calynda_unit_fb_layout_probe_lambda38:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_layout_probe_nlr39,"ax"
 .globl calynda_unit_fb_layout_probe_nlr39
 calynda_unit_fb_layout_probe_nlr39:
     addi sp, sp, -16
@@ -4828,6 +5034,7 @@ calynda_unit_fb_layout_probe_nlr39:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_fb_layout_probe,"ax"
 .globl calynda_unit_fb_layout_probe
 calynda_unit_fb_layout_probe:
     addi sp, sp, -16
@@ -4983,13 +5190,6 @@ calynda_unit_fb_layout_probe:
     sd t4, -232(s0)
     sd t5, -240(s0)
     sd t6, -248(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_97_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_97_wait
-    li t6, 97
-    sw t6, 0(t5)
     call calynda_unit_fb_fill
     ld t6, -248(s0)
     ld t5, -240(s0)
@@ -5037,13 +5237,6 @@ calynda_unit_fb_layout_probe:
     sd t4, -232(s0)
     sd t5, -240(s0)
     sd t6, -248(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_98_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_98_wait
-    li t6, 98
-    sw t6, 0(t5)
     call calynda_unit_fb_border
     ld t6, -248(s0)
     ld t5, -240(s0)
@@ -5081,13 +5274,6 @@ calynda_unit_fb_layout_probe:
     sd t4, -232(s0)
     sd t5, -240(s0)
     sd t6, -248(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_99_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_99_wait
-    li t6, 99
-    sw t6, 0(t5)
     call __calynda_rt_closure_new
     ld t6, -248(s0)
     ld t5, -240(s0)
@@ -5177,6 +5363,7 @@ calynda_unit_fb_layout_probe:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_delay_us,"ax"
 .globl calynda_unit_delay_us
 calynda_unit_delay_us:
 
@@ -5190,6 +5377,7 @@ calynda_unit_delay_us:
 2:
     li a0, 0
     ret
+.section .text.calynda_unit_dpu0_pll_configure_1080p60_lambda40,"ax"
 .globl calynda_unit_dpu0_pll_configure_1080p60_lambda40
 calynda_unit_dpu0_pll_configure_1080p60_lambda40:
     addi sp, sp, -16
@@ -5285,6 +5473,7 @@ calynda_unit_dpu0_pll_configure_1080p60_lambda40:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_dpu0_pll_configure_1080p60_nlr41,"ax"
 .globl calynda_unit_dpu0_pll_configure_1080p60_nlr41
 calynda_unit_dpu0_pll_configure_1080p60_nlr41:
     addi sp, sp, -16
@@ -5334,6 +5523,7 @@ calynda_unit_dpu0_pll_configure_1080p60_nlr41:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_dpu0_pll_configure_1080p60,"ax"
 .globl calynda_unit_dpu0_pll_configure_1080p60
 calynda_unit_dpu0_pll_configure_1080p60:
     addi sp, sp, -16
@@ -6060,6 +6250,7 @@ calynda_unit_dpu0_pll_configure_1080p60:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_dpu1_pll_configure_1080p60_lambda42,"ax"
 .globl calynda_unit_dpu1_pll_configure_1080p60_lambda42
 calynda_unit_dpu1_pll_configure_1080p60_lambda42:
     addi sp, sp, -16
@@ -6155,6 +6346,7 @@ calynda_unit_dpu1_pll_configure_1080p60_lambda42:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_dpu1_pll_configure_1080p60_nlr43,"ax"
 .globl calynda_unit_dpu1_pll_configure_1080p60_nlr43
 calynda_unit_dpu1_pll_configure_1080p60_nlr43:
     addi sp, sp, -16
@@ -6204,6 +6396,7 @@ calynda_unit_dpu1_pll_configure_1080p60_nlr43:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_dpu1_pll_configure_1080p60,"ax"
 .globl calynda_unit_dpu1_pll_configure_1080p60
 calynda_unit_dpu1_pll_configure_1080p60:
     addi sp, sp, -16
@@ -6930,6 +7123,7 @@ calynda_unit_dpu1_pll_configure_1080p60:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_vosys_clk_enable,"ax"
 .globl calynda_unit_vosys_clk_enable
 calynda_unit_vosys_clk_enable:
     addi sp, sp, -16
@@ -7601,6 +7795,7 @@ calynda_unit_vosys_clk_enable:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_forRange_lambda44,"ax"
 .globl calynda_unit_forRange_lambda44
 calynda_unit_forRange_lambda44:
     addi sp, sp, -16
@@ -7646,42 +7841,36 @@ calynda_unit_forRange_lambda44:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_forRange,"ax"
 .globl calynda_unit_forRange
 calynda_unit_forRange:
-    addi sp, sp, -56
-    sd ra, 48(sp)
-    sd s0, 40(sp)
-    addi s0, sp, 56
-    sd a0, 24(sp)
-    sd a1, 16(sp)
-    sd a2, 8(sp)
-    li a0, 'q'
-    ld a1, 8(sp)
-    ld a2, 24(sp)
-    call __calynda_rt_debug_pair
-    li a0, 'Q'
-    ld a1, 16(sp)
-    li a2, 0
-    call __calynda_rt_debug_pair
+    addi sp, sp, -40
+    sd ra, 32(sp)
+    sd s0, 24(sp)
+    addi s0, sp, 40
+    sd a0, 16(sp)
+    sd a1, 8(sp)
+    sd a2, 0(sp)
 .Lcalynda_iter_forRange_loop:
-    ld t0, 24(sp)
-    ld t1, 16(sp)
+    ld t0, 16(sp)
+    ld t1, 8(sp)
     bge t0, t1, .Lcalynda_iter_forRange_done
-    sd t0, 0(sp)
-    ld a0, 8(sp)
+    sd t0, -8(s0)
+    ld a0, 0(sp)
     li a1, 1
-    mv a2, sp
+    addi a2, s0, -8
     call __calynda_rt_call_callable
-    ld t0, 24(sp)
+    ld t0, 16(sp)
     addi t0, t0, 1
-    sd t0, 24(sp)
+    sd t0, 16(sp)
     j .Lcalynda_iter_forRange_loop
 .Lcalynda_iter_forRange_done:
     li a0, 0
-    ld s0, 40(sp)
-    ld ra, 48(sp)
-    addi sp, sp, 56
+    ld s0, 24(sp)
+    ld ra, 32(sp)
+    addi sp, sp, 40
     ret
+.section .text.calynda_unit_hdmi_phy_i2cm_write_once_lambda45,"ax"
 .globl calynda_unit_hdmi_phy_i2cm_write_once_lambda45
 calynda_unit_hdmi_phy_i2cm_write_once_lambda45:
     addi sp, sp, -16
@@ -7740,6 +7929,7 @@ calynda_unit_hdmi_phy_i2cm_write_once_lambda45:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_hdmi_phy_i2cm_write_once_nlr46_nlr47,"ax"
 .globl calynda_unit_hdmi_phy_i2cm_write_once_nlr46_nlr47
 calynda_unit_hdmi_phy_i2cm_write_once_nlr46_nlr47:
     addi sp, sp, -16
@@ -7859,6 +8049,7 @@ calynda_unit_hdmi_phy_i2cm_write_once_nlr46_nlr47:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_hdmi_phy_i2cm_write_once_nlr46_lambda48,"ax"
 .globl calynda_unit_hdmi_phy_i2cm_write_once_nlr46_lambda48
 calynda_unit_hdmi_phy_i2cm_write_once_nlr46_lambda48:
     addi sp, sp, -16
@@ -7893,6 +8084,7 @@ calynda_unit_hdmi_phy_i2cm_write_once_nlr46_lambda48:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_hdmi_phy_i2cm_write_once_nlr46,"ax"
 .globl calynda_unit_hdmi_phy_i2cm_write_once_nlr46
 calynda_unit_hdmi_phy_i2cm_write_once_nlr46:
     addi sp, sp, -16
@@ -8140,6 +8332,7 @@ calynda_unit_hdmi_phy_i2cm_write_once_nlr46:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_hdmi_phy_i2cm_write_once,"ax"
 .globl calynda_unit_hdmi_phy_i2cm_write_once
 calynda_unit_hdmi_phy_i2cm_write_once:
     addi sp, sp, -16
@@ -8531,13 +8724,10 @@ calynda_unit_hdmi_phy_i2cm_write_once:
     sd t4, -224(s0)
     sd t5, -232(s0)
     sd t6, -240(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_117_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_117_wait
-    li t6, 117
-    sw t6, 0(t5)
+    li t5, 200000
+.Lcalynda_hdmi_settle_117_loop:
+    addi t5, t5, -1
+    bnez t5, .Lcalynda_hdmi_settle_117_loop
     call calynda_unit_while
     ld t6, -240(s0)
     ld t5, -232(s0)
@@ -8614,6 +8804,7 @@ calynda_unit_hdmi_phy_i2cm_write_once:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_hdmi_phy_i2cm_write_attempt_nlr49,"ax"
 .globl calynda_unit_hdmi_phy_i2cm_write_attempt_nlr49
 calynda_unit_hdmi_phy_i2cm_write_attempt_nlr49:
     addi sp, sp, -16
@@ -8644,6 +8835,7 @@ calynda_unit_hdmi_phy_i2cm_write_attempt_nlr49:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_hdmi_phy_i2cm_write_attempt_lambda50,"ax"
 .globl calynda_unit_hdmi_phy_i2cm_write_attempt_lambda50
 calynda_unit_hdmi_phy_i2cm_write_attempt_lambda50:
     addi sp, sp, -16
@@ -8660,6 +8852,7 @@ calynda_unit_hdmi_phy_i2cm_write_attempt_lambda50:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_hdmi_phy_i2cm_write_attempt,"ax"
 .globl calynda_unit_hdmi_phy_i2cm_write_attempt
 calynda_unit_hdmi_phy_i2cm_write_attempt:
     addi sp, sp, -16
@@ -8887,6 +9080,7 @@ calynda_unit_hdmi_phy_i2cm_write_attempt:
     seqz t5, t5
     bne t5, zero, .Lcalynda_unit_hdmi_phy_i2cm_write_attempt_bb1
     j .Lcalynda_unit_hdmi_phy_i2cm_write_attempt_bb2
+.section .text.calynda_unit_hdmi_phy_i2cm_write,"ax"
 .globl calynda_unit_hdmi_phy_i2cm_write
 calynda_unit_hdmi_phy_i2cm_write:
     addi sp, sp, -16
@@ -8913,6 +9107,7 @@ calynda_unit_hdmi_phy_i2cm_write:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_hdmi_program_identity_csc_lambda51_lambda52,"ax"
 .globl calynda_unit_hdmi_program_identity_csc_lambda51_lambda52
 calynda_unit_hdmi_program_identity_csc_lambda51_lambda52:
     addi sp, sp, -16
@@ -9094,6 +9289,7 @@ calynda_unit_hdmi_program_identity_csc_lambda51_lambda52:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_hdmi_program_identity_csc_lambda51,"ax"
 .globl calynda_unit_hdmi_program_identity_csc_lambda51
 calynda_unit_hdmi_program_identity_csc_lambda51:
     addi sp, sp, -16
@@ -9130,135 +9326,17 @@ calynda_unit_hdmi_program_identity_csc_lambda51:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_hdmi_program_identity_csc,"ax"
 .globl calynda_unit_hdmi_program_identity_csc
 calynda_unit_hdmi_program_identity_csc:
     addi sp, sp, -16
     sd ra, 8(sp)
-    sd s0, 0(sp)
-    addi s0, sp, 16
-    addi sp, sp, -64
-    sd t0, -24(s0)
-    sd s1, -32(s0)
-    li t0, 0xFFEF540000
-    sd t0, -24(s0)
-    ld t0, -24(s0)
-    sd t0, -32(s0)
-    addi a2, s0, -32
-    la a0, calynda_closure_hdmi_program_identity_csc_lambda51
-    li a1, 1
-    sd t1, -40(s0)
-    sd t2, -48(s0)
-    sd t3, -56(s0)
-    sd t4, -64(s0)
-    call __calynda_rt_closure_new
-    ld t4, -64(s0)
-    ld t3, -56(s0)
-    ld t2, -48(s0)
-    ld t1, -40(s0)
-    mv t1, a0
+    call __calynda_rt_hdmi_program_identity_csc
     li a0, 0
-    li a1, 3
-    mv a2, t1
-    sd t1, -40(s0)
-    sd t2, -48(s0)
-    sd t3, -56(s0)
-    sd t4, -64(s0)
-    call calynda_unit_forRange
-    ld t4, -64(s0)
-    ld t3, -56(s0)
-    ld t2, -48(s0)
-    ld t1, -40(s0)
-    ld a0, -24(s0)
-    li a1, 0x4100
-    li a2, 4
-    sd t1, -40(s0)
-    sd t2, -48(s0)
-    sd t3, -56(s0)
-    sd t4, -64(s0)
-    call __calynda_offset_stride
-    ld t4, -64(s0)
-    ld t3, -56(s0)
-    ld t2, -48(s0)
-    ld t1, -40(s0)
-    mv t2, a0
-    mv a0, t2
-    li a1, 0x00
-    li a2, 4
-    sd t1, -40(s0)
-    sd t2, -48(s0)
-    sd t3, -56(s0)
-    sd t4, -64(s0)
-    call __calynda_mmio_store_sized
-    ld t4, -64(s0)
-    ld t3, -56(s0)
-    ld t2, -48(s0)
-    ld t1, -40(s0)
-    ld a0, -24(s0)
-    li a1, 0x4101
-    li a2, 4
-    sd t1, -40(s0)
-    sd t2, -48(s0)
-    sd t3, -56(s0)
-    sd t4, -64(s0)
-    call __calynda_offset_stride
-    ld t4, -64(s0)
-    ld t3, -56(s0)
-    ld t2, -48(s0)
-    ld t1, -40(s0)
-    mv t3, a0
-    mv a0, t3
-    li a1, 0x01
-    li a2, 4
-    sd t1, -40(s0)
-    sd t2, -48(s0)
-    sd t3, -56(s0)
-    sd t4, -64(s0)
-    call __calynda_mmio_store_sized
-    ld t4, -64(s0)
-    ld t3, -56(s0)
-    ld t2, -48(s0)
-    ld t1, -40(s0)
-    ld a0, -24(s0)
-    li a1, 0x4004
-    li a2, 4
-    sd t1, -40(s0)
-    sd t2, -48(s0)
-    sd t3, -56(s0)
-    sd t4, -64(s0)
-    call __calynda_offset_stride
-    ld t4, -64(s0)
-    ld t3, -56(s0)
-    ld t2, -48(s0)
-    ld t1, -40(s0)
-    mv t4, a0
-    mv a0, t4
-    li a1, 0x00
-    li a2, 4
-    sd t1, -40(s0)
-    sd t2, -48(s0)
-    sd t3, -56(s0)
-    sd t4, -64(s0)
-    call __calynda_mmio_store_sized
-    ld t4, -64(s0)
-    ld t3, -56(s0)
-    ld t2, -48(s0)
-    ld t1, -40(s0)
-    sd t1, -40(s0)
-    sd t2, -48(s0)
-    sd t3, -56(s0)
-    sd t4, -64(s0)
-    call __calynda_rt_fence
-    ld t4, -64(s0)
-    ld t3, -56(s0)
-    ld t2, -48(s0)
-    ld t1, -40(s0)
-    addi sp, sp, 64
-    ld t0, -24(s0)
-    ld s1, -32(s0)
-    ld s0, 0(sp)
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_hdmi_clear_overflow_lambda53,"ax"
 .globl calynda_unit_hdmi_clear_overflow_lambda53
 calynda_unit_hdmi_clear_overflow_lambda53:
     addi sp, sp, -16
@@ -9304,205 +9382,17 @@ calynda_unit_hdmi_clear_overflow_lambda53:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_hdmi_clear_overflow,"ax"
 .globl calynda_unit_hdmi_clear_overflow
 calynda_unit_hdmi_clear_overflow:
     addi sp, sp, -16
     sd ra, 8(sp)
-    sd s0, 0(sp)
-    addi s0, sp, 16
-    addi sp, sp, -112
-    sd t0, -24(s0)
-    sd s1, -32(s0)
-    li t0, 0xFFEF540000
-    sd t0, -24(s0)
-    ld a0, -24(s0)
-    li a1, 0x1000
-    li a2, 4
-    sd t1, -64(s0)
-    sd t2, -72(s0)
-    sd t3, -80(s0)
-    sd t4, -88(s0)
-    sd t5, -96(s0)
-    sd t6, -104(s0)
-    call __calynda_offset_stride
-    ld t6, -104(s0)
-    ld t5, -96(s0)
-    ld t4, -88(s0)
-    ld t3, -80(s0)
-    ld t2, -72(s0)
-    ld t1, -64(s0)
-    mv t2, a0
-    mv a0, t2
-    li a1, 4
-    sd t1, -64(s0)
-    sd t2, -72(s0)
-    sd t3, -80(s0)
-    sd t4, -88(s0)
-    sd t5, -96(s0)
-    sd t6, -104(s0)
-    call __calynda_mmio_deref_sized
-    ld t6, -104(s0)
-    ld t5, -96(s0)
-    ld t4, -88(s0)
-    ld t3, -80(s0)
-    ld t2, -72(s0)
-    ld t1, -64(s0)
-    mv t1, a0
-    li s1, 0xFF
-    and t3, t1, s1
-    mv a0, t3
-    sd t1, -64(s0)
-    sd t2, -72(s0)
-    sd t3, -80(s0)
-    sd t4, -88(s0)
-    sd t5, -96(s0)
-    sd t6, -104(s0)
-    call __calynda_rt_cell_alloc
-    ld t6, -104(s0)
-    ld t5, -96(s0)
-    ld t4, -88(s0)
-    ld t3, -80(s0)
-    ld t2, -72(s0)
-    ld t1, -64(s0)
-    mv t4, a0
-    sd t4, -32(s0)
-    ld a0, -24(s0)
-    li a1, 0x4002
-    li a2, 4
-    sd t1, -64(s0)
-    sd t2, -72(s0)
-    sd t3, -80(s0)
-    sd t4, -88(s0)
-    sd t5, -96(s0)
-    sd t6, -104(s0)
-    call __calynda_offset_stride
-    ld t6, -104(s0)
-    ld t5, -96(s0)
-    ld t4, -88(s0)
-    ld t3, -80(s0)
-    ld t2, -72(s0)
-    ld t1, -64(s0)
-    mv t5, a0
-    mv a0, t5
-    li a1, 0xFD
-    li a2, 4
-    sd t1, -64(s0)
-    sd t2, -72(s0)
-    sd t3, -80(s0)
-    sd t4, -88(s0)
-    sd t5, -96(s0)
-    sd t6, -104(s0)
-    call __calynda_mmio_store_sized
-    ld t6, -104(s0)
-    ld t5, -96(s0)
-    ld t4, -88(s0)
-    ld t3, -80(s0)
-    ld t2, -72(s0)
-    ld t1, -64(s0)
-    sd t1, -64(s0)
-    sd t2, -72(s0)
-    sd t3, -80(s0)
-    sd t4, -88(s0)
-    sd t5, -96(s0)
-    sd t6, -104(s0)
-    call __calynda_rt_fence
-    ld t6, -104(s0)
-    ld t5, -96(s0)
-    ld t4, -88(s0)
-    ld t3, -80(s0)
-    ld t2, -72(s0)
-    ld t1, -64(s0)
-    ld t0, -24(s0)
-    sd t0, -56(s0)
-    ld t0, -32(s0)
-    sd t0, -48(s0)
-    addi a2, s0, -56
-    la a0, calynda_closure_hdmi_clear_overflow_lambda53
-    li a1, 2
-    sd t1, -64(s0)
-    sd t2, -72(s0)
-    sd t3, -80(s0)
-    sd t4, -88(s0)
-    sd t5, -96(s0)
-    sd t6, -104(s0)
-    call __calynda_rt_closure_new
-    ld t6, -104(s0)
-    ld t5, -96(s0)
-    ld t4, -88(s0)
-    ld t3, -80(s0)
-    ld t2, -72(s0)
-    ld t1, -64(s0)
-    mv t6, a0
+    call __calynda_rt_hdmi_clear_overflow
     li a0, 0
-    li a1, 4
-    mv a2, t6
-    sd t1, -64(s0)
-    sd t2, -72(s0)
-    sd t3, -80(s0)
-    sd t4, -88(s0)
-    sd t5, -96(s0)
-    sd t6, -104(s0)
-    call calynda_unit_forRange
-    ld t6, -104(s0)
-    ld t5, -96(s0)
-    ld t4, -88(s0)
-    ld t3, -80(s0)
-    ld t2, -72(s0)
-    ld t1, -64(s0)
-    ld a0, -24(s0)
-    li a1, 0x4002
-    li a2, 4
-    sd t1, -64(s0)
-    sd t2, -72(s0)
-    sd t3, -80(s0)
-    sd t4, -88(s0)
-    sd t5, -96(s0)
-    sd t6, -104(s0)
-    call __calynda_offset_stride
-    ld t6, -104(s0)
-    ld t5, -96(s0)
-    ld t4, -88(s0)
-    ld t3, -80(s0)
-    ld t2, -72(s0)
-    ld t1, -64(s0)
-    mv t0, a0
-    sd t0, -40(s0)
-    ld a0, -40(s0)
-    li a1, 0xFF
-    li a2, 4
-    sd t1, -64(s0)
-    sd t2, -72(s0)
-    sd t3, -80(s0)
-    sd t4, -88(s0)
-    sd t5, -96(s0)
-    sd t6, -104(s0)
-    call __calynda_mmio_store_sized
-    ld t6, -104(s0)
-    ld t5, -96(s0)
-    ld t4, -88(s0)
-    ld t3, -80(s0)
-    ld t2, -72(s0)
-    ld t1, -64(s0)
-    sd t1, -64(s0)
-    sd t2, -72(s0)
-    sd t3, -80(s0)
-    sd t4, -88(s0)
-    sd t5, -96(s0)
-    sd t6, -104(s0)
-    call __calynda_rt_fence
-    ld t6, -104(s0)
-    ld t5, -96(s0)
-    ld t4, -88(s0)
-    ld t3, -80(s0)
-    ld t2, -72(s0)
-    ld t1, -64(s0)
-    addi sp, sp, 112
-    ld t0, -24(s0)
-    ld s1, -32(s0)
-    ld s0, 0(sp)
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_hdmi_program_hdcp_video_polarity,"ax"
 .globl calynda_unit_hdmi_program_hdcp_video_polarity
 calynda_unit_hdmi_program_hdcp_video_polarity:
     addi sp, sp, -16
@@ -9591,6 +9481,7 @@ calynda_unit_hdmi_program_hdcp_video_polarity:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_hdmi_program_video_path,"ax"
 .globl calynda_unit_hdmi_program_video_path
 calynda_unit_hdmi_program_video_path:
     addi sp, sp, -16
@@ -10119,13 +10010,10 @@ calynda_unit_hdmi_program_video_path:
     sd t4, -336(s0)
     sd t5, -344(s0)
     sd t6, -352(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_112_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_112_wait
-    li t6, 112
-    sw t6, 0(t5)
+    li t5, 200000
+.Lcalynda_hdmi_settle_112_loop:
+    addi t5, t5, -1
+    bnez t5, .Lcalynda_hdmi_settle_112_loop
     call calynda_unit_hdmi_program_identity_csc
     ld t6, -352(s0)
     ld t5, -344(s0)
@@ -11031,13 +10919,10 @@ calynda_unit_hdmi_program_video_path:
     sd t4, -336(s0)
     sd t5, -344(s0)
     sd t6, -352(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_113_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_113_wait
-    li t6, 113
-    sw t6, 0(t5)
+    li t5, 200000
+.Lcalynda_hdmi_settle_113_loop:
+    addi t5, t5, -1
+    bnez t5, .Lcalynda_hdmi_settle_113_loop
     call calynda_unit_hdmi_clear_overflow
     ld t6, -352(s0)
     ld t5, -344(s0)
@@ -11052,6 +10937,7 @@ calynda_unit_hdmi_program_video_path:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_hdmi_seed_phy_window,"ax"
 .globl calynda_unit_hdmi_seed_phy_window
 calynda_unit_hdmi_seed_phy_window:
     addi sp, sp, -16
@@ -11610,6 +11496,7 @@ calynda_unit_hdmi_seed_phy_window:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_hdmi_program_video_path_final,"ax"
 .globl calynda_unit_hdmi_program_video_path_final
 calynda_unit_hdmi_program_video_path_final:
     addi sp, sp, -16
@@ -12143,13 +12030,10 @@ calynda_unit_hdmi_program_video_path_final:
     sd t4, -328(s0)
     sd t5, -336(s0)
     sd t6, -344(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_114_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_114_wait
-    li t6, 114
-    sw t6, 0(t5)
+    li t5, 200000
+.Lcalynda_hdmi_settle_114_loop:
+    addi t5, t5, -1
+    bnez t5, .Lcalynda_hdmi_settle_114_loop
     call calynda_unit_hdmi_program_identity_csc
     ld t6, -344(s0)
     ld t5, -336(s0)
@@ -12992,13 +12876,10 @@ calynda_unit_hdmi_program_video_path_final:
     sd t4, -328(s0)
     sd t5, -336(s0)
     sd t6, -344(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_115_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_115_wait
-    li t6, 115
-    sw t6, 0(t5)
+    li t5, 200000
+.Lcalynda_hdmi_settle_115_loop:
+    addi t5, t5, -1
+    bnez t5, .Lcalynda_hdmi_settle_115_loop
     call calynda_unit_hdmi_program_hdcp_video_polarity
     ld t6, -344(s0)
     ld t5, -336(s0)
@@ -13059,13 +12940,10 @@ calynda_unit_hdmi_program_video_path_final:
     sd t4, -328(s0)
     sd t5, -336(s0)
     sd t6, -344(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_116_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_116_wait
-    li t6, 116
-    sw t6, 0(t5)
+    li t5, 200000
+.Lcalynda_hdmi_settle_116_loop:
+    addi t5, t5, -1
+    bnez t5, .Lcalynda_hdmi_settle_116_loop
     call calynda_unit_hdmi_clear_overflow
     ld t6, -344(s0)
     ld t5, -336(s0)
@@ -13080,6 +12958,7 @@ calynda_unit_hdmi_program_video_path_final:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_dw_hdmi_init_lambda54,"ax"
 .globl calynda_unit_dw_hdmi_init_lambda54
 calynda_unit_dw_hdmi_init_lambda54:
     addi sp, sp, -16
@@ -13166,6 +13045,7 @@ calynda_unit_dw_hdmi_init_lambda54:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_dw_hdmi_init_nlr55,"ax"
 .globl calynda_unit_dw_hdmi_init_nlr55
 calynda_unit_dw_hdmi_init_nlr55:
     addi sp, sp, -16
@@ -13215,6 +13095,7 @@ calynda_unit_dw_hdmi_init_nlr55:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_dw_hdmi_init_nlr56,"ax"
 .globl calynda_unit_dw_hdmi_init_nlr56
 calynda_unit_dw_hdmi_init_nlr56:
     addi sp, sp, -16
@@ -13231,631 +13112,647 @@ calynda_unit_dw_hdmi_init_nlr56:
     ld a0, -32(s0)
     li a1, 0x3000
     li a2, 4
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_offset_stride
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     mv t1, a0
     mv a0, t1
     li a1, 0x36
     li a2, 4
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_mmio_store_sized
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_rt_fence
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     li a0, 5000
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call calynda_unit_delay_us
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     mv t2, a0
     ld a0, -32(s0)
     li a1, 0x4005
     li a2, 4
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_offset_stride
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     mv t3, a0
     mv a0, t3
     li a1, 0x01
     li a2, 4
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_mmio_store_sized
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_rt_fence
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     li a0, 200
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call calynda_unit_delay_us
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     mv t4, a0
     ld a0, -32(s0)
     li a1, 0x4005
     li a2, 4
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_offset_stride
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     mv t5, a0
     mv a0, t5
     li a1, 0x00
     li a2, 4
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_mmio_store_sized
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_rt_fence
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     li a0, 10000
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call calynda_unit_delay_us
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     mv t6, a0
     ld a0, -32(s0)
     li a1, 0x4007
     li a2, 4
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_offset_stride
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     mv t0, a0
     sd t0, -40(s0)
     ld a0, -40(s0)
     li a1, 0x01
     li a2, 4
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_mmio_store_sized
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_rt_fence
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     ld a0, -32(s0)
     li a1, 0x3001
     li a2, 4
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_offset_stride
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     mv t0, a0
     sd t0, -48(s0)
     ld a0, -48(s0)
     li a1, 0x20
     li a2, 4
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_mmio_store_sized
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_rt_fence
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     li a0, 100
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call calynda_unit_delay_us
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     mv t0, a0
     sd t0, -56(s0)
     ld a0, -32(s0)
     li a1, 0x3020
     li a2, 4
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_offset_stride
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     mv t0, a0
     sd t0, -64(s0)
     ld a0, -64(s0)
     li a1, 0x69
     li a2, 4
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_mmio_store_sized
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_rt_fence
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     li a0, 100
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call calynda_unit_delay_us
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     mv t0, a0
     sd t0, -72(s0)
     ld a0, -32(s0)
     li a1, 0x3001
     li a2, 4
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_offset_stride
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     mv t0, a0
     sd t0, -80(s0)
     ld a0, -80(s0)
     li a1, 0x00
     li a2, 4
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_mmio_store_sized
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_rt_fence
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     li a0, 1000
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call calynda_unit_delay_us
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     mv t0, a0
     sd t0, -88(s0)
     ld a0, -32(s0)
     li a1, 0x0108
     li a2, 4
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_offset_stride
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     mv t0, a0
     sd t0, -96(s0)
     ld a0, -96(s0)
     li a1, 0xFF
     li a2, 4
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_mmio_store_sized
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_rt_fence
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     li a0, 0x06
     li a1, 0x0001
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call calynda_unit_hdmi_phy_i2cm_write
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     mv t0, a0
     sd t0, -104(s0)
     li a0, 0x10
     li a1, 0x2080
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call calynda_unit_hdmi_phy_i2cm_write
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     mv t0, a0
     sd t0, -112(s0)
     li a0, 0x11
     li a1, 0x020A
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call calynda_unit_hdmi_phy_i2cm_write
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     mv t0, a0
     sd t0, -120(s0)
     li a0, 0x19
     li a1, 0x0007
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call calynda_unit_hdmi_phy_i2cm_write
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     mv t0, a0
     sd t0, -128(s0)
     li a0, 0x0E
     li a1, 0x01A0
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call calynda_unit_hdmi_phy_i2cm_write
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     mv t0, a0
     sd t0, -136(s0)
     li a0, 0x09
     li a1, 0x8088
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call calynda_unit_hdmi_phy_i2cm_write
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     mv t0, a0
     sd t0, -144(s0)
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_rt_fence
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
+    li a0, 1000
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
+    call calynda_unit_delay_us
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
+    mv t0, a0
+    sd t0, -152(s0)
     ld a0, -32(s0)
     li a1, 0x3000
     li a2, 4
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_offset_stride
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     mv t0, a0
-    sd t0, -152(s0)
-    ld a0, -152(s0)
+    sd t0, -160(s0)
+    ld a0, -160(s0)
     li a1, 0x2E
     li a2, 4
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_mmio_store_sized
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
-    sd t1, -160(s0)
-    sd t2, -168(s0)
-    sd t3, -176(s0)
-    sd t4, -184(s0)
-    sd t5, -192(s0)
-    sd t6, -200(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
+    sd t1, -168(s0)
+    sd t2, -176(s0)
+    sd t3, -184(s0)
+    sd t4, -192(s0)
+    sd t5, -200(s0)
+    sd t6, -208(s0)
     call __calynda_rt_fence
-    ld t6, -200(s0)
-    ld t5, -192(s0)
-    ld t4, -184(s0)
-    ld t3, -176(s0)
-    ld t2, -168(s0)
-    ld t1, -160(s0)
+    ld t6, -208(s0)
+    ld t5, -200(s0)
+    ld t4, -192(s0)
+    ld t3, -184(s0)
+    ld t2, -176(s0)
+    ld t1, -168(s0)
     addi sp, sp, 208
     ld t0, -24(s0)
     ld s1, -32(s0)
@@ -13863,6 +13760,7 @@ calynda_unit_dw_hdmi_init_nlr56:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_dw_hdmi_init_lambda57,"ax"
 .globl calynda_unit_dw_hdmi_init_lambda57
 calynda_unit_dw_hdmi_init_lambda57:
     addi sp, sp, -16
@@ -13879,6 +13777,7 @@ calynda_unit_dw_hdmi_init_lambda57:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_dw_hdmi_init_lambda58,"ax"
 .globl calynda_unit_dw_hdmi_init_lambda58
 calynda_unit_dw_hdmi_init_lambda58:
     addi sp, sp, -16
@@ -13965,6 +13864,7 @@ calynda_unit_dw_hdmi_init_lambda58:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_dw_hdmi_init_nlr59,"ax"
 .globl calynda_unit_dw_hdmi_init_nlr59
 calynda_unit_dw_hdmi_init_nlr59:
     addi sp, sp, -16
@@ -14014,20 +13914,14 @@ calynda_unit_dw_hdmi_init_nlr59:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_dw_hdmi_init,"ax"
 .globl calynda_unit_dw_hdmi_init
 calynda_unit_dw_hdmi_init:
-li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_118_wait:
-lw t6, 0x14(t5)
-andi t6, t6, 0x20
-beqz t6, .Lcalynda_hdmi_trace_118_wait
-li t6, 118
-sw t6, 0(t5)
     addi sp, sp, -16
     sd ra, 8(sp)
     sd s0, 0(sp)
     addi s0, sp, 16
-    addi sp, sp, -576
+    addi sp, sp, -608
     sd t0, -24(s0)
     sd s1, -32(s0)
     li t0, 0xFFEF540000
@@ -14035,1323 +13929,1325 @@ sw t6, 0(t5)
     ld a0, -24(s0)
     li a1, 0x0180
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_offset_stride
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t1, a0
     mv a0, t1
     li a1, 0xFF
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_mmio_store_sized
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     ld a0, -24(s0)
     li a1, 0x0181
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_offset_stride
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t2, a0
     mv a0, t2
     li a1, 0xFF
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_mmio_store_sized
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     ld a0, -24(s0)
     li a1, 0x0182
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_offset_stride
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t3, a0
     mv a0, t3
     li a1, 0xFF
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_mmio_store_sized
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     ld a0, -24(s0)
     li a1, 0x0183
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_offset_stride
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t4, a0
     mv a0, t4
     li a1, 0xFF
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_mmio_store_sized
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     ld a0, -24(s0)
     li a1, 0x0184
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_offset_stride
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t5, a0
     mv a0, t5
     li a1, 0xFF
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_mmio_store_sized
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     ld a0, -24(s0)
     li a1, 0x0185
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_offset_stride
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t6, a0
     mv a0, t6
     li a1, 0xFF
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_mmio_store_sized
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     ld a0, -24(s0)
     li a1, 0x0186
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_offset_stride
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
     sd t0, -80(s0)
     ld a0, -80(s0)
     li a1, 0xFF
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_mmio_store_sized
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     ld a0, -24(s0)
     li a1, 0x0187
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_offset_stride
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
     sd t0, -88(s0)
     ld a0, -88(s0)
     li a1, 0xFF
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_mmio_store_sized
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     ld a0, -24(s0)
     li a1, 0x0188
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_offset_stride
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
     sd t0, -96(s0)
     ld a0, -96(s0)
     li a1, 0xFF
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_mmio_store_sized
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     ld a0, -24(s0)
     li a1, 0x01FF
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_offset_stride
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
     sd t0, -104(s0)
     ld a0, -104(s0)
     li a1, 0x03
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_mmio_store_sized
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_119_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_119_wait
-    li t6, 119
-    sw t6, 0(t5)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    li t5, 200000
+.Lcalynda_hdmi_settle_119_loop:
+    addi t5, t5, -1
+    bnez t5, .Lcalynda_hdmi_settle_119_loop
     call __calynda_rt_fence
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     ld a0, -24(s0)
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_101_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_101_wait
-    li t6, 101
-    sw t6, 0(t5)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    li t5, 200000
+.Lcalynda_hdmi_settle_101_loop:
+    addi t5, t5, -1
+    bnez t5, .Lcalynda_hdmi_settle_101_loop
     call calynda_unit_hdmi_program_video_path
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    li a0, 1000
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call calynda_unit_delay_us
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    mv t0, a0
+    sd t0, -112(s0)
     ld a0, -24(s0)
     li a1, 0x3000
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_offset_stride
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    mv t0, a0
-    sd t0, -112(s0)
-    ld a0, -112(s0)
-    li a1, 0x36
-    li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_mmio_store_sized
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_rt_fence
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    ld a0, -24(s0)
-    li a1, 0x4005
-    li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_offset_stride
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
     sd t0, -120(s0)
     ld a0, -120(s0)
-    li a1, 0x01
+    li a1, 0x36
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_mmio_store_sized
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_rt_fence
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    li a0, 200
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call calynda_unit_delay_us
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    mv t0, a0
-    sd t0, -128(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     ld a0, -24(s0)
     li a1, 0x4005
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_offset_stride
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    mv t0, a0
+    sd t0, -128(s0)
+    ld a0, -128(s0)
+    li a1, 0x01
+    li a2, 4
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_mmio_store_sized
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_rt_fence
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    li a0, 200
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call calynda_unit_delay_us
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
     sd t0, -136(s0)
-    ld a0, -136(s0)
-    li a1, 0x00
+    ld a0, -24(s0)
+    li a1, 0x4005
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_mmio_store_sized
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_rt_fence
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    li a0, 50000
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call calynda_unit_delay_us
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_offset_stride
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
     sd t0, -144(s0)
+    ld a0, -144(s0)
+    li a1, 0x00
+    li a2, 4
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_mmio_store_sized
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_rt_fence
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    li a0, 50000
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call calynda_unit_delay_us
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    mv t0, a0
+    sd t0, -152(s0)
     ld a0, -24(s0)
     li a1, 0x4007
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_offset_stride
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    mv t0, a0
-    sd t0, -152(s0)
-    ld a0, -152(s0)
-    li a1, 0x01
-    li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_mmio_store_sized
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_rt_fence
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    ld a0, -24(s0)
-    li a1, 0x3001
-    li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_offset_stride
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
     sd t0, -160(s0)
     ld a0, -160(s0)
-    li a1, 0x20
+    li a1, 0x01
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_mmio_store_sized
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_rt_fence
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    li a0, 100
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call calynda_unit_delay_us
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    mv t0, a0
-    sd t0, -168(s0)
-    ld a0, -24(s0)
-    li a1, 0x3020
-    li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_offset_stride
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    mv t0, a0
-    sd t0, -176(s0)
-    ld a0, -176(s0)
-    li a1, 0x69
-    li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_mmio_store_sized
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_rt_fence
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    li a0, 100
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call calynda_unit_delay_us
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    mv t0, a0
-    sd t0, -184(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     ld a0, -24(s0)
     li a1, 0x3001
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_offset_stride
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
-    sd t0, -192(s0)
-    ld a0, -192(s0)
-    li a1, 0x00
+    sd t0, -168(s0)
+    ld a0, -168(s0)
+    li a1, 0x20
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_mmio_store_sized
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_rt_fence
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    li a0, 1000
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    li a0, 100
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call calynda_unit_delay_us
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
-    sd t0, -200(s0)
-    ld a0, -24(s0)
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_102_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_102_wait
-    li t6, 102
-    sw t6, 0(t5)
-    call calynda_unit_hdmi_seed_phy_window
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    li a0, 1000
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call calynda_unit_delay_us
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    mv t0, a0
-    sd t0, -208(s0)
-    ld a0, -24(s0)
-    li a1, 0x0108
-    li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_offset_stride
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    mv t0, a0
-    sd t0, -216(s0)
-    ld a0, -216(s0)
-    li a1, 0xFF
-    li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_mmio_store_sized
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_rt_fence
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    sd t0, -176(s0)
     ld a0, -24(s0)
     li a1, 0x3020
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_offset_stride
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
-    sd t0, -232(s0)
-    ld a0, -232(s0)
-    li a1, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_mmio_deref_sized
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    sd t0, -184(s0)
+    ld a0, -184(s0)
+    li a1, 0x69
+    li a2, 4
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_mmio_store_sized
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_rt_fence
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    li a0, 100
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call calynda_unit_delay_us
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    mv t0, a0
+    sd t0, -192(s0)
+    ld a0, -24(s0)
+    li a1, 0x3001
+    li a2, 4
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_offset_stride
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    mv t0, a0
+    sd t0, -200(s0)
+    ld a0, -200(s0)
+    li a1, 0x00
+    li a2, 4
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_mmio_store_sized
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_rt_fence
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    li a0, 1000
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call calynda_unit_delay_us
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    mv t0, a0
+    sd t0, -208(s0)
+    ld a0, -24(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    li t5, 200000
+.Lcalynda_hdmi_settle_102_loop:
+    addi t5, t5, -1
+    bnez t5, .Lcalynda_hdmi_settle_102_loop
+    call calynda_unit_hdmi_seed_phy_window
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    li a0, 1000
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call calynda_unit_delay_us
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    mv t0, a0
+    sd t0, -216(s0)
+    ld a0, -24(s0)
+    li a1, 0x0108
+    li a2, 4
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_offset_stride
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
     sd t0, -224(s0)
-    ld t0, -224(s0)
+    ld a0, -224(s0)
+    li a1, 0xFF
+    li a2, 4
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_mmio_store_sized
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_rt_fence
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    ld a0, -24(s0)
+    li a1, 0x3020
+    li a2, 4
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_offset_stride
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    mv t0, a0
+    sd t0, -240(s0)
+    ld a0, -240(s0)
+    li a1, 4
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_mmio_deref_sized
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    mv t0, a0
+    sd t0, -232(s0)
+    ld t0, -232(s0)
     li s1, 0xFF
     and t0, t0, s1
-    sd t0, -240(s0)
-    ld s1, -240(s0)
+    sd t0, -248(s0)
+    ld s1, -248(s0)
     la t0, calynda_global_hdmi_diag0
     sd s1, 0(t0)
     ld a0, -24(s0)
     li a1, 0x3029
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_offset_stride
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    mv t0, a0
+    sd t0, -264(s0)
+    ld a0, -264(s0)
+    li a1, 4
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_mmio_deref_sized
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
     sd t0, -256(s0)
-    ld a0, -256(s0)
-    li a1, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_mmio_deref_sized
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    mv t0, a0
-    sd t0, -248(s0)
-    ld t0, -248(s0)
+    ld t0, -256(s0)
     li s1, 0xFF
     and t0, t0, s1
-    sd t0, -264(s0)
-    ld s1, -264(s0)
+    sd t0, -272(s0)
+    ld s1, -272(s0)
     la t0, calynda_global_hdmi_diag1
     sd s1, 0(t0)
     ld a0, -24(s0)
     li a1, 0x4001
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_offset_stride
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    mv t0, a0
+    sd t0, -288(s0)
+    ld a0, -288(s0)
+    li a1, 4
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_mmio_deref_sized
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
     sd t0, -280(s0)
-    ld a0, -280(s0)
-    li a1, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_mmio_deref_sized
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    mv t0, a0
-    sd t0, -272(s0)
-    ld t0, -272(s0)
+    ld t0, -280(s0)
     li s1, 0xFF
     and t0, t0, s1
-    sd t0, -288(s0)
-    ld s1, -288(s0)
+    sd t0, -296(s0)
+    ld s1, -296(s0)
     la t0, calynda_global_hdmi_diag2
     sd s1, 0(t0)
     li a0, 0x06
     li a1, 0x0001
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_103_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_103_wait
-    li t6, 103
-    sw t6, 0(t5)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    li t5, 200000
+.Lcalynda_hdmi_settle_103_loop:
+    addi t5, t5, -1
+    bnez t5, .Lcalynda_hdmi_settle_103_loop
     call calynda_unit_hdmi_phy_i2cm_write
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    mv t0, a0
-    sd t0, -296(s0)
-    li a0, 0x10
-    li a1, 0x2080
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_104_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_104_wait
-    li t6, 104
-    sw t6, 0(t5)
-    call calynda_unit_hdmi_phy_i2cm_write
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
     sd t0, -304(s0)
-    li a0, 0x11
-    li a1, 0x020A
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_105_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_105_wait
-    li t6, 105
-    sw t6, 0(t5)
+    li a0, 0x10
+    li a1, 0x2080
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    li t5, 200000
+.Lcalynda_hdmi_settle_104_loop:
+    addi t5, t5, -1
+    bnez t5, .Lcalynda_hdmi_settle_104_loop
     call calynda_unit_hdmi_phy_i2cm_write
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
     sd t0, -312(s0)
-    li a0, 0x19
-    li a1, 0x0007
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_106_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_106_wait
-    li t6, 106
-    sw t6, 0(t5)
+    li a0, 0x11
+    li a1, 0x020A
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    li t5, 200000
+.Lcalynda_hdmi_settle_105_loop:
+    addi t5, t5, -1
+    bnez t5, .Lcalynda_hdmi_settle_105_loop
     call calynda_unit_hdmi_phy_i2cm_write
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
     sd t0, -320(s0)
-    li a0, 0x0E
-    li a1, 0x01A0
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_107_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_107_wait
-    li t6, 107
-    sw t6, 0(t5)
+    li a0, 0x19
+    li a1, 0x0007
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    li t5, 200000
+.Lcalynda_hdmi_settle_106_loop:
+    addi t5, t5, -1
+    bnez t5, .Lcalynda_hdmi_settle_106_loop
     call calynda_unit_hdmi_phy_i2cm_write
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
     sd t0, -328(s0)
-    li a0, 0x09
-    li a1, 0x8088
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_108_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_108_wait
-    li t6, 108
-    sw t6, 0(t5)
+    li a0, 0x0E
+    li a1, 0x01A0
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    li t5, 200000
+.Lcalynda_hdmi_settle_107_loop:
+    addi t5, t5, -1
+    bnez t5, .Lcalynda_hdmi_settle_107_loop
     call calynda_unit_hdmi_phy_i2cm_write
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
     sd t0, -336(s0)
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    li a0, 0x09
+    li a1, 0x8088
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    li t5, 200000
+.Lcalynda_hdmi_settle_108_loop:
+    addi t5, t5, -1
+    bnez t5, .Lcalynda_hdmi_settle_108_loop
+    call calynda_unit_hdmi_phy_i2cm_write
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    mv t0, a0
+    sd t0, -344(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_rt_fence
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    li a0, 1000
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call calynda_unit_delay_us
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    mv t0, a0
+    sd t0, -352(s0)
     ld a0, -24(s0)
     li a1, 0x3000
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_offset_stride
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    mv t0, a0
-    sd t0, -344(s0)
-    ld a0, -344(s0)
-    li a1, 0x2E
-    li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_mmio_store_sized
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_rt_fence
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    li a0, 0
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_rt_cell_alloc
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    mv t0, a0
-    sd t0, -352(s0)
-    ld t0, -352(s0)
-    sd t0, -32(s0)
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_rt_nlr_push
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
     sd t0, -360(s0)
-    ld t0, -360(s0)
-    sd t0, -40(s0)
-    ld t0, -32(s0)
-    sd t0, -528(s0)
-    ld t0, -24(s0)
-    sd t0, -520(s0)
-    addi a2, s0, -528
-    la a0, calynda_closure_dw_hdmi_init_lambda54
-    li a1, 2
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_rt_closure_new
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld a0, -360(s0)
+    li a1, 0x2E
+    li a2, 4
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_mmio_store_sized
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_rt_fence
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    li a0, 0
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_rt_cell_alloc
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
     sd t0, -368(s0)
-    ld t0, -40(s0)
-    sd t0, -528(s0)
-    ld t0, -32(s0)
-    sd t0, -520(s0)
-    addi a2, s0, -528
-    la a0, calynda_closure_dw_hdmi_init_nlr55
-    li a1, 2
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_rt_closure_new
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t0, -368(s0)
+    sd t0, -32(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_rt_nlr_push
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
     sd t0, -376(s0)
-    ld a0, -368(s0)
-    ld a1, -376(s0)
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_109_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_109_wait
-    li t6, 109
-    sw t6, 0(t5)
-    call calynda_unit_while
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    ld a0, -40(s0)
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_rt_nlr_check_pop
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t0, -376(s0)
+    sd t0, -40(s0)
+    ld t0, -32(s0)
+    sd t0, -552(s0)
+    ld t0, -24(s0)
+    sd t0, -544(s0)
+    addi a2, s0, -552
+    la a0, calynda_closure_dw_hdmi_init_lambda54
+    li a1, 2
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_rt_closure_new
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
     sd t0, -384(s0)
-    ld t6, -384(s0)
+    ld t0, -40(s0)
+    sd t0, -552(s0)
+    ld t0, -32(s0)
+    sd t0, -544(s0)
+    addi a2, s0, -552
+    la a0, calynda_closure_dw_hdmi_init_nlr55
+    li a1, 2
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_rt_closure_new
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    mv t0, a0
+    sd t0, -392(s0)
+    ld a0, -384(s0)
+    ld a1, -392(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    li t5, 200000
+.Lcalynda_hdmi_settle_109_loop:
+    addi t5, t5, -1
+    bnez t5, .Lcalynda_hdmi_settle_109_loop
+    call calynda_unit_while
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    ld a0, -40(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_rt_nlr_check_pop
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    mv t0, a0
+    sd t0, -400(s0)
+    ld t6, -400(s0)
     bne t6, zero, .Lcalynda_unit_dw_hdmi_init_bb1
     j .Lcalynda_unit_dw_hdmi_init_bb2
 .Lcalynda_unit_dw_hdmi_init_bb1:
-    addi sp, sp, 576
+    addi sp, sp, 608
     ld t0, -24(s0)
     ld s1, -32(s0)
     ld s0, 0(sp)
@@ -15359,144 +15255,144 @@ sw t6, 0(t5)
     addi sp, sp, 16
     ret
 .Lcalynda_unit_dw_hdmi_init_bb2:
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_rt_nlr_push
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
-    sd t0, -392(s0)
-    ld t0, -392(s0)
+    sd t0, -408(s0)
+    ld t0, -408(s0)
     sd t0, -48(s0)
     ld a0, -24(s0)
     li a1, 0x3004
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_offset_stride
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
-    sd t0, -408(s0)
-    ld a0, -408(s0)
+    sd t0, -424(s0)
+    ld a0, -424(s0)
     li a1, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_mmio_deref_sized
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
-    sd t0, -400(s0)
-    ld t0, -400(s0)
-    li s1, 0x01
-    and t0, t0, s1
     sd t0, -416(s0)
     ld t0, -416(s0)
+    li s1, 0x01
+    and t0, t0, s1
+    sd t0, -432(s0)
+    ld t0, -432(s0)
     li s1, 0
     sub t0, t0, s1
     seqz t0, t0
-    sd t0, -424(s0)
+    sd t0, -440(s0)
     ld t0, -48(s0)
-    sd t0, -528(s0)
+    sd t0, -552(s0)
     ld t0, -24(s0)
-    sd t0, -520(s0)
-    addi a2, s0, -528
+    sd t0, -544(s0)
+    addi a2, s0, -552
     la a0, calynda_closure_dw_hdmi_init_nlr56
     li a1, 2
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_rt_closure_new
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
-    sd t0, -432(s0)
+    sd t0, -448(s0)
     li a2, 0
     la a0, calynda_closure_dw_hdmi_init_lambda57
     li a1, 0
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_rt_closure_new
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
-    sd t0, -440(s0)
-    ld a0, -424(s0)
-    ld a1, -432(s0)
-    ld a2, -440(s0)
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t0, -456(s0)
+    ld a0, -440(s0)
+    ld a1, -448(s0)
+    ld a2, -456(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call calynda_unit_if
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     ld a0, -48(s0)
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_rt_nlr_check_pop
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
-    sd t0, -448(s0)
-    ld t6, -448(s0)
+    sd t0, -464(s0)
+    ld t6, -464(s0)
     bne t6, zero, .Lcalynda_unit_dw_hdmi_init_bb3
     j .Lcalynda_unit_dw_hdmi_init_bb4
 .Lcalynda_unit_dw_hdmi_init_bb3:
-    addi sp, sp, 576
+    addi sp, sp, 608
     ld t0, -24(s0)
     ld s1, -32(s0)
     ld s0, 0(sp)
@@ -15505,127 +15401,124 @@ sw t6, 0(t5)
     ret
 .Lcalynda_unit_dw_hdmi_init_bb4:
     li a0, 0
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_rt_cell_alloc
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    mv t0, a0
-    sd t0, -456(s0)
-    ld t0, -456(s0)
-    sd t0, -56(s0)
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_rt_nlr_push
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    mv t0, a0
-    sd t0, -464(s0)
-    ld t0, -464(s0)
-    sd t0, -64(s0)
-    ld t0, -56(s0)
-    sd t0, -528(s0)
-    ld t0, -24(s0)
-    sd t0, -520(s0)
-    addi a2, s0, -528
-    la a0, calynda_closure_dw_hdmi_init_lambda58
-    li a1, 2
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_rt_closure_new
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
     sd t0, -472(s0)
-    ld t0, -64(s0)
-    sd t0, -528(s0)
-    ld t0, -56(s0)
-    sd t0, -520(s0)
-    addi a2, s0, -528
-    la a0, calynda_closure_dw_hdmi_init_nlr59
-    li a1, 2
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_rt_closure_new
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t0, -472(s0)
+    sd t0, -56(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_rt_nlr_push
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
     sd t0, -480(s0)
-    ld a0, -472(s0)
-    ld a1, -480(s0)
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_110_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_110_wait
-    li t6, 110
-    sw t6, 0(t5)
-    call calynda_unit_while
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
-    ld a0, -64(s0)
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    call __calynda_rt_nlr_check_pop
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t0, -480(s0)
+    sd t0, -64(s0)
+    ld t0, -56(s0)
+    sd t0, -552(s0)
+    ld t0, -24(s0)
+    sd t0, -544(s0)
+    addi a2, s0, -552
+    la a0, calynda_closure_dw_hdmi_init_lambda58
+    li a1, 2
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_rt_closure_new
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
     sd t0, -488(s0)
-    ld t6, -488(s0)
+    ld t0, -64(s0)
+    sd t0, -552(s0)
+    ld t0, -56(s0)
+    sd t0, -544(s0)
+    addi a2, s0, -552
+    la a0, calynda_closure_dw_hdmi_init_nlr59
+    li a1, 2
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_rt_closure_new
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    mv t0, a0
+    sd t0, -496(s0)
+    ld a0, -488(s0)
+    ld a1, -496(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    li t5, 200000
+.Lcalynda_hdmi_settle_110_loop:
+    addi t5, t5, -1
+    bnez t5, .Lcalynda_hdmi_settle_110_loop
+    call calynda_unit_while
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    ld a0, -64(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call __calynda_rt_nlr_check_pop
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    mv t0, a0
+    sd t0, -504(s0)
+    ld t6, -504(s0)
     bne t6, zero, .Lcalynda_unit_dw_hdmi_init_bb5
     j .Lcalynda_unit_dw_hdmi_init_bb6
 .Lcalynda_unit_dw_hdmi_init_bb5:
-    addi sp, sp, 576
+    addi sp, sp, 608
     ld t0, -24(s0)
     ld s1, -32(s0)
     ld s0, 0(sp)
@@ -15636,75 +15529,89 @@ sw t6, 0(t5)
     ld a0, -24(s0)
     li a1, 0x3004
     li a2, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_offset_stride
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
-    sd t0, -504(s0)
-    ld a0, -504(s0)
+    sd t0, -520(s0)
+    ld a0, -520(s0)
     li a1, 4
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
     call __calynda_mmio_deref_sized
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     mv t0, a0
-    sd t0, -496(s0)
-    ld t0, -496(s0)
-    li s1, 0xFF
-    and t0, t0, s1
     sd t0, -512(s0)
     ld t0, -512(s0)
+    li s1, 0xFF
+    and t0, t0, s1
+    sd t0, -528(s0)
+    ld t0, -528(s0)
     sd t0, -72(s0)
+    li a0, 5000
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    call calynda_unit_delay_us
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
+    mv t0, a0
+    sd t0, -536(s0)
     ld a0, -24(s0)
-    sd t1, -536(s0)
-    sd t2, -544(s0)
-    sd t3, -552(s0)
-    sd t4, -560(s0)
-    sd t5, -568(s0)
-    sd t6, -576(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_111_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_111_wait
-    li t6, 111
-    sw t6, 0(t5)
+    sd t1, -560(s0)
+    sd t2, -568(s0)
+    sd t3, -576(s0)
+    sd t4, -584(s0)
+    sd t5, -592(s0)
+    sd t6, -600(s0)
+    li t5, 200000
+.Lcalynda_hdmi_settle_111_loop:
+    addi t5, t5, -1
+    bnez t5, .Lcalynda_hdmi_settle_111_loop
     call calynda_unit_hdmi_program_video_path_final
-    ld t6, -576(s0)
-    ld t5, -568(s0)
-    ld t4, -560(s0)
-    ld t3, -552(s0)
-    ld t2, -544(s0)
-    ld t1, -536(s0)
+    ld t6, -600(s0)
+    ld t5, -592(s0)
+    ld t4, -584(s0)
+    ld t3, -576(s0)
+    ld t2, -568(s0)
+    ld t1, -560(s0)
     ld s1, -72(s0)
     la t0, calynda_global_hdmi_diag1
     sd s1, 0(t0)
-    addi sp, sp, 576
+    addi sp, sp, 608
     ld t0, -24(s0)
     ld s1, -32(s0)
     ld s0, 0(sp)
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_dc8200_init,"ax"
 .globl calynda_unit_dc8200_init
 calynda_unit_dc8200_init:
     addi sp, sp, -16
@@ -17253,8 +17160,578 @@ calynda_unit_dc8200_init:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_scratch_mark,"ax"
 .globl calynda_unit_scratch_mark
 calynda_unit_scratch_mark:
+    addi sp, sp, -16
+    sd ra, 8(sp)
+    call __calynda_rt_scratch_mark
+    li a0, 0
+    ld ra, 8(sp)
+    addi sp, sp, 16
+    ret
+.section .text.calynda_unit_hold_scanout,"ax"
+.globl calynda_unit_hold_scanout
+calynda_unit_hold_scanout:
+
+1:
+    nop
+    j 1b
+.section .text.calynda_unit_screen_demo_step_axis_nlr60,"ax"
+.globl calynda_unit_screen_demo_step_axis_nlr60
+calynda_unit_screen_demo_step_axis_nlr60:
+    addi sp, sp, -16
+    sd ra, 8(sp)
+    sd s0, 0(sp)
+    addi s0, sp, 16
+    addi sp, sp, -48
+    sd t0, -24(s0)
+    sd s1, -32(s0)
+    ld t0, 0(s11)
+    sd t0, -24(s0)
+    ld t0, 8(s11)
+    sd t0, -32(s0)
+    ld a0, -32(s0)
+    sd t1, -40(s0)
+    sd t2, -48(s0)
+    call __calynda_rt_cell_read
+    ld t2, -48(s0)
+    ld t1, -40(s0)
+    mv t1, a0
+    li t0, 0
+    sub t2, t0, t1
+    ld a0, -32(s0)
+    mv a1, t2
+    sd t1, -40(s0)
+    sd t2, -48(s0)
+    call __calynda_rt_cell_write
+    ld t2, -48(s0)
+    ld t1, -40(s0)
+    addi sp, sp, 48
+    ld t0, -24(s0)
+    ld s1, -32(s0)
+    ld s0, 0(sp)
+    ld ra, 8(sp)
+    addi sp, sp, 16
+    ret
+.section .text.calynda_unit_screen_demo_step_axis_lambda61,"ax"
+.globl calynda_unit_screen_demo_step_axis_lambda61
+calynda_unit_screen_demo_step_axis_lambda61:
+    addi sp, sp, -16
+    sd ra, 8(sp)
+    sd s0, 0(sp)
+    addi s0, sp, 16
+    addi sp, sp, -16
+    sd t0, -24(s0)
+    sd s1, -32(s0)
+    addi sp, sp, 16
+    ld t0, -24(s0)
+    ld s1, -32(s0)
+    ld s0, 0(sp)
+    ld ra, 8(sp)
+    addi sp, sp, 16
+    ret
+.section .text.calynda_unit_screen_demo_step_axis,"ax"
+.globl calynda_unit_screen_demo_step_axis
+calynda_unit_screen_demo_step_axis:
+    addi sp, sp, -16
+    sd ra, 8(sp)
+    sd s0, 0(sp)
+    addi s0, sp, 16
+    addi sp, sp, -288
+    sd t0, -24(s0)
+    sd s1, -32(s0)
+    sd a0, -24(s0)
+    sd a1, -32(s0)
+    sd a2, -40(s0)
+    ld t6, -40(s0)
+    bne t6, zero, .Lcalynda_unit_screen_demo_step_axis_bb1
+    j .Lcalynda_unit_screen_demo_step_axis_bb2
+.Lcalynda_unit_screen_demo_step_axis_bb1:
+    ld a0, -24(s0)
+    sd t1, -240(s0)
+    sd t2, -248(s0)
+    sd t3, -256(s0)
+    sd t4, -264(s0)
+    sd t5, -272(s0)
+    sd t6, -280(s0)
+    call calynda_unit_screen_object_x
+    ld t6, -280(s0)
+    ld t5, -272(s0)
+    ld t4, -264(s0)
+    ld t3, -256(s0)
+    ld t2, -248(s0)
+    ld t1, -240(s0)
+    mv t1, a0
+    sd t1, -56(s0)
+    j .Lcalynda_unit_screen_demo_step_axis_bb3
+.Lcalynda_unit_screen_demo_step_axis_bb2:
+    ld a0, -24(s0)
+    sd t1, -240(s0)
+    sd t2, -248(s0)
+    sd t3, -256(s0)
+    sd t4, -264(s0)
+    sd t5, -272(s0)
+    sd t6, -280(s0)
+    call calynda_unit_screen_object_y
+    ld t6, -280(s0)
+    ld t5, -272(s0)
+    ld t4, -264(s0)
+    ld t3, -256(s0)
+    ld t2, -248(s0)
+    ld t1, -240(s0)
+    mv t2, a0
+    sd t2, -56(s0)
+    j .Lcalynda_unit_screen_demo_step_axis_bb3
+.Lcalynda_unit_screen_demo_step_axis_bb3:
+    ld t0, -56(s0)
+    sd t0, -48(s0)
+    ld t6, -40(s0)
+    bne t6, zero, .Lcalynda_unit_screen_demo_step_axis_bb4
+    j .Lcalynda_unit_screen_demo_step_axis_bb5
+.Lcalynda_unit_screen_demo_step_axis_bb4:
+    ld a0, -24(s0)
+    sd t1, -240(s0)
+    sd t2, -248(s0)
+    sd t3, -256(s0)
+    sd t4, -264(s0)
+    sd t5, -272(s0)
+    sd t6, -280(s0)
+    call calynda_unit_screen_object_vx
+    ld t6, -280(s0)
+    ld t5, -272(s0)
+    ld t4, -264(s0)
+    ld t3, -256(s0)
+    ld t2, -248(s0)
+    ld t1, -240(s0)
+    mv t3, a0
+    sd t3, -72(s0)
+    j .Lcalynda_unit_screen_demo_step_axis_bb6
+.Lcalynda_unit_screen_demo_step_axis_bb5:
+    ld a0, -24(s0)
+    sd t1, -240(s0)
+    sd t2, -248(s0)
+    sd t3, -256(s0)
+    sd t4, -264(s0)
+    sd t5, -272(s0)
+    sd t6, -280(s0)
+    call calynda_unit_screen_object_vy
+    ld t6, -280(s0)
+    ld t5, -272(s0)
+    ld t4, -264(s0)
+    ld t3, -256(s0)
+    ld t2, -248(s0)
+    ld t1, -240(s0)
+    mv t4, a0
+    sd t4, -72(s0)
+    j .Lcalynda_unit_screen_demo_step_axis_bb6
+.Lcalynda_unit_screen_demo_step_axis_bb6:
+    ld a0, -72(s0)
+    sd t1, -240(s0)
+    sd t2, -248(s0)
+    sd t3, -256(s0)
+    sd t4, -264(s0)
+    sd t5, -272(s0)
+    sd t6, -280(s0)
+    call __calynda_rt_cell_alloc
+    ld t6, -280(s0)
+    ld t5, -272(s0)
+    ld t4, -264(s0)
+    ld t3, -256(s0)
+    ld t2, -248(s0)
+    ld t1, -240(s0)
+    mv t5, a0
+    sd t5, -64(s0)
+    ld a0, -64(s0)
+    sd t1, -240(s0)
+    sd t2, -248(s0)
+    sd t3, -256(s0)
+    sd t4, -264(s0)
+    sd t5, -272(s0)
+    sd t6, -280(s0)
+    call __calynda_rt_cell_read
+    ld t6, -280(s0)
+    ld t5, -272(s0)
+    ld t4, -264(s0)
+    ld t3, -256(s0)
+    ld t2, -248(s0)
+    ld t1, -240(s0)
+    mv t6, a0
+    ld t0, -48(s0)
+    add t0, t0, t6
+    sd t0, -112(s0)
+    ld t0, -112(s0)
+    sd t0, -80(s0)
+    sd t1, -240(s0)
+    sd t2, -248(s0)
+    sd t3, -256(s0)
+    sd t4, -264(s0)
+    sd t5, -272(s0)
+    sd t6, -280(s0)
+    call __calynda_rt_nlr_push
+    ld t6, -280(s0)
+    ld t5, -272(s0)
+    ld t4, -264(s0)
+    ld t3, -256(s0)
+    ld t2, -248(s0)
+    ld t1, -240(s0)
+    mv t0, a0
+    sd t0, -120(s0)
+    ld t0, -120(s0)
+    sd t0, -88(s0)
+    ld t0, -80(s0)
+    li s1, 0
+    slt t0, t0, s1
+    sd t0, -128(s0)
+    ld t6, -128(s0)
+    bne t6, zero, .Lcalynda_unit_screen_demo_step_axis_bb7
+    j .Lcalynda_unit_screen_demo_step_axis_bb8
+.Lcalynda_unit_screen_demo_step_axis_bb7:
+    li t0, 1
+    sd t0, -96(s0)
+    j .Lcalynda_unit_screen_demo_step_axis_bb9
+.Lcalynda_unit_screen_demo_step_axis_bb8:
+    ld t0, -32(s0)
+    ld s1, -80(s0)
+    slt t0, t0, s1
+    sd t0, -136(s0)
+    ld t0, -136(s0)
+    sd t0, -96(s0)
+    j .Lcalynda_unit_screen_demo_step_axis_bb9
+.Lcalynda_unit_screen_demo_step_axis_bb9:
+    ld t0, -88(s0)
+    sd t0, -232(s0)
+    ld t0, -64(s0)
+    sd t0, -224(s0)
+    addi a2, s0, -232
+    la a0, calynda_closure_screen_demo_step_axis_nlr60
+    li a1, 2
+    sd t1, -240(s0)
+    sd t2, -248(s0)
+    sd t3, -256(s0)
+    sd t4, -264(s0)
+    sd t5, -272(s0)
+    sd t6, -280(s0)
+    call __calynda_rt_closure_new
+    ld t6, -280(s0)
+    ld t5, -272(s0)
+    ld t4, -264(s0)
+    ld t3, -256(s0)
+    ld t2, -248(s0)
+    ld t1, -240(s0)
+    mv t0, a0
+    sd t0, -144(s0)
+    li a2, 0
+    la a0, calynda_closure_screen_demo_step_axis_lambda61
+    li a1, 0
+    sd t1, -240(s0)
+    sd t2, -248(s0)
+    sd t3, -256(s0)
+    sd t4, -264(s0)
+    sd t5, -272(s0)
+    sd t6, -280(s0)
+    call __calynda_rt_closure_new
+    ld t6, -280(s0)
+    ld t5, -272(s0)
+    ld t4, -264(s0)
+    ld t3, -256(s0)
+    ld t2, -248(s0)
+    ld t1, -240(s0)
+    mv t0, a0
+    sd t0, -152(s0)
+    ld a0, -96(s0)
+    ld a1, -144(s0)
+    ld a2, -152(s0)
+    sd t1, -240(s0)
+    sd t2, -248(s0)
+    sd t3, -256(s0)
+    sd t4, -264(s0)
+    sd t5, -272(s0)
+    sd t6, -280(s0)
+    call calynda_unit_if
+    ld t6, -280(s0)
+    ld t5, -272(s0)
+    ld t4, -264(s0)
+    ld t3, -256(s0)
+    ld t2, -248(s0)
+    ld t1, -240(s0)
+    ld a0, -88(s0)
+    sd t1, -240(s0)
+    sd t2, -248(s0)
+    sd t3, -256(s0)
+    sd t4, -264(s0)
+    sd t5, -272(s0)
+    sd t6, -280(s0)
+    call __calynda_rt_nlr_check_pop
+    ld t6, -280(s0)
+    ld t5, -272(s0)
+    ld t4, -264(s0)
+    ld t3, -256(s0)
+    ld t2, -248(s0)
+    ld t1, -240(s0)
+    mv t0, a0
+    sd t0, -160(s0)
+    ld t6, -160(s0)
+    bne t6, zero, .Lcalynda_unit_screen_demo_step_axis_bb10
+    j .Lcalynda_unit_screen_demo_step_axis_bb11
+.Lcalynda_unit_screen_demo_step_axis_bb10:
+    ld a0, -88(s0)
+    sd t1, -240(s0)
+    sd t2, -248(s0)
+    sd t3, -256(s0)
+    sd t4, -264(s0)
+    sd t5, -272(s0)
+    sd t6, -280(s0)
+    call __calynda_rt_nlr_get_value
+    ld t6, -280(s0)
+    ld t5, -272(s0)
+    ld t4, -264(s0)
+    ld t3, -256(s0)
+    ld t2, -248(s0)
+    ld t1, -240(s0)
+    mv t0, a0
+    sd t0, -168(s0)
+    ld a0, -168(s0)
+    addi sp, sp, 288
+    ld t0, -24(s0)
+    ld s1, -32(s0)
+    ld s0, 0(sp)
+    ld ra, 8(sp)
+    addi sp, sp, 16
+    ret
+.Lcalynda_unit_screen_demo_step_axis_bb11:
+    ld t6, -40(s0)
+    bne t6, zero, .Lcalynda_unit_screen_demo_step_axis_bb12
+    j .Lcalynda_unit_screen_demo_step_axis_bb13
+.Lcalynda_unit_screen_demo_step_axis_bb12:
+    ld a0, -64(s0)
+    sd t1, -240(s0)
+    sd t2, -248(s0)
+    sd t3, -256(s0)
+    sd t4, -264(s0)
+    sd t5, -272(s0)
+    sd t6, -280(s0)
+    call __calynda_rt_cell_read
+    ld t6, -280(s0)
+    ld t5, -272(s0)
+    ld t4, -264(s0)
+    ld t3, -256(s0)
+    ld t2, -248(s0)
+    ld t1, -240(s0)
+    mv t0, a0
+    sd t0, -184(s0)
+    ld a0, -24(s0)
+    sd t1, -240(s0)
+    sd t2, -248(s0)
+    sd t3, -256(s0)
+    sd t4, -264(s0)
+    sd t5, -272(s0)
+    sd t6, -280(s0)
+    call calynda_unit_screen_object_vy
+    ld t6, -280(s0)
+    ld t5, -272(s0)
+    ld t4, -264(s0)
+    ld t3, -256(s0)
+    ld t2, -248(s0)
+    ld t1, -240(s0)
+    mv t0, a0
+    sd t0, -192(s0)
+    ld a0, -24(s0)
+    ld a1, -184(s0)
+    ld a2, -192(s0)
+    sd t1, -240(s0)
+    sd t2, -248(s0)
+    sd t3, -256(s0)
+    sd t4, -264(s0)
+    sd t5, -272(s0)
+    sd t6, -280(s0)
+    call calynda_unit_screen_object_set_velocity
+    ld t6, -280(s0)
+    ld t5, -272(s0)
+    ld t4, -264(s0)
+    ld t3, -256(s0)
+    ld t2, -248(s0)
+    ld t1, -240(s0)
+    mv t0, a0
+    sd t0, -176(s0)
+    ld t0, -176(s0)
+    sd t0, -104(s0)
+    j .Lcalynda_unit_screen_demo_step_axis_bb14
+.Lcalynda_unit_screen_demo_step_axis_bb13:
+    ld a0, -24(s0)
+    sd t1, -240(s0)
+    sd t2, -248(s0)
+    sd t3, -256(s0)
+    sd t4, -264(s0)
+    sd t5, -272(s0)
+    sd t6, -280(s0)
+    call calynda_unit_screen_object_vx
+    ld t6, -280(s0)
+    ld t5, -272(s0)
+    ld t4, -264(s0)
+    ld t3, -256(s0)
+    ld t2, -248(s0)
+    ld t1, -240(s0)
+    mv t0, a0
+    sd t0, -208(s0)
+    ld a0, -64(s0)
+    sd t1, -240(s0)
+    sd t2, -248(s0)
+    sd t3, -256(s0)
+    sd t4, -264(s0)
+    sd t5, -272(s0)
+    sd t6, -280(s0)
+    call __calynda_rt_cell_read
+    ld t6, -280(s0)
+    ld t5, -272(s0)
+    ld t4, -264(s0)
+    ld t3, -256(s0)
+    ld t2, -248(s0)
+    ld t1, -240(s0)
+    mv t0, a0
+    sd t0, -216(s0)
+    ld a0, -24(s0)
+    ld a1, -208(s0)
+    ld a2, -216(s0)
+    sd t1, -240(s0)
+    sd t2, -248(s0)
+    sd t3, -256(s0)
+    sd t4, -264(s0)
+    sd t5, -272(s0)
+    sd t6, -280(s0)
+    call calynda_unit_screen_object_set_velocity
+    ld t6, -280(s0)
+    ld t5, -272(s0)
+    ld t4, -264(s0)
+    ld t3, -256(s0)
+    ld t2, -248(s0)
+    ld t1, -240(s0)
+    mv t0, a0
+    sd t0, -200(s0)
+    ld t0, -200(s0)
+    sd t0, -104(s0)
+    j .Lcalynda_unit_screen_demo_step_axis_bb14
+.Lcalynda_unit_screen_demo_step_axis_bb14:
+    ld a0, -104(s0)
+    addi sp, sp, 288
+    ld t0, -24(s0)
+    ld s1, -32(s0)
+    ld s0, 0(sp)
+    ld ra, 8(sp)
+    addi sp, sp, 16
+    ret
+.section .text.calynda_unit_screen_demo_step_bounds,"ax"
+.globl calynda_unit_screen_demo_step_bounds
+calynda_unit_screen_demo_step_bounds:
+    addi sp, sp, -16
+    sd ra, 8(sp)
+    sd s0, 0(sp)
+    addi s0, sp, 16
+    addi sp, sp, -112
+    sd t0, -24(s0)
+    sd s1, -32(s0)
+    sd a0, -24(s0)
+    ld a0, -24(s0)
+    sd t1, -64(s0)
+    sd t2, -72(s0)
+    sd t3, -80(s0)
+    sd t4, -88(s0)
+    sd t5, -96(s0)
+    sd t6, -104(s0)
+    call calynda_unit_screen_object_width
+    ld t6, -104(s0)
+    ld t5, -96(s0)
+    ld t4, -88(s0)
+    ld t3, -80(s0)
+    ld t2, -72(s0)
+    ld t1, -64(s0)
+    mv t1, a0
+    la t2, calynda_global_FB_WIDTH
+    ld t2, 0(t2)
+    sub t2, t2, t1
+    sd t2, -32(s0)
+    ld a0, -24(s0)
+    sd t1, -64(s0)
+    sd t2, -72(s0)
+    sd t3, -80(s0)
+    sd t4, -88(s0)
+    sd t5, -96(s0)
+    sd t6, -104(s0)
+    call calynda_unit_screen_object_height
+    ld t6, -104(s0)
+    ld t5, -96(s0)
+    ld t4, -88(s0)
+    ld t3, -80(s0)
+    ld t2, -72(s0)
+    ld t1, -64(s0)
+    mv t3, a0
+    la t4, calynda_global_FB_HEIGHT
+    ld t4, 0(t4)
+    sub t4, t4, t3
+    sd t4, -40(s0)
+    ld a0, -24(s0)
+    ld a1, -32(s0)
+    li a2, 1
+    sd t1, -64(s0)
+    sd t2, -72(s0)
+    sd t3, -80(s0)
+    sd t4, -88(s0)
+    sd t5, -96(s0)
+    sd t6, -104(s0)
+    call calynda_unit_screen_demo_step_axis
+    ld t6, -104(s0)
+    ld t5, -96(s0)
+    ld t4, -88(s0)
+    ld t3, -80(s0)
+    ld t2, -72(s0)
+    ld t1, -64(s0)
+    mv t5, a0
+    sd t5, -48(s0)
+    ld a0, -48(s0)
+    ld a1, -40(s0)
+    li a2, 0
+    sd t1, -64(s0)
+    sd t2, -72(s0)
+    sd t3, -80(s0)
+    sd t4, -88(s0)
+    sd t5, -96(s0)
+    sd t6, -104(s0)
+    call calynda_unit_screen_demo_step_axis
+    ld t6, -104(s0)
+    ld t5, -96(s0)
+    ld t4, -88(s0)
+    ld t3, -80(s0)
+    ld t2, -72(s0)
+    ld t1, -64(s0)
+    mv t6, a0
+    sd t6, -48(s0)
+    ld a0, -48(s0)
+    sd t1, -64(s0)
+    sd t2, -72(s0)
+    sd t3, -80(s0)
+    sd t4, -88(s0)
+    sd t5, -96(s0)
+    sd t6, -104(s0)
+    call calynda_unit_screen_step_object
+    ld t6, -104(s0)
+    ld t5, -96(s0)
+    ld t4, -88(s0)
+    ld t3, -80(s0)
+    ld t2, -72(s0)
+    ld t1, -64(s0)
+    mv t0, a0
+    sd t0, -56(s0)
+    ld a0, -56(s0)
+    addi sp, sp, 112
+    ld t0, -24(s0)
+    ld s1, -32(s0)
+    ld s0, 0(sp)
+    ld ra, 8(sp)
+    addi sp, sp, 16
+    ret
+.section .text.calynda_unit_screen_demo_frame,"ax"
+.globl calynda_unit_screen_demo_frame
+calynda_unit_screen_demo_frame:
     addi sp, sp, -16
     sd ra, 8(sp)
     sd s0, 0(sp)
@@ -17264,24 +17741,30 @@ calynda_unit_scratch_mark:
     sd s1, -32(s0)
     sd a0, -24(s0)
     sd a1, -32(s0)
-    li t0, 0x05000000
-    sd t0, -40(s0)
-    ld a0, -40(s0)
-    ld a1, -24(s0)
-    li a2, 4
-    sd t1, -48(s0)
-    call __calynda_offset_stride
-    ld t1, -48(s0)
+    li a0, 0x10
+    li a1, 0x14
+    li a2, 0x1C
+    sd t1, -40(s0)
+    call calynda_unit_RGB
+    ld t1, -40(s0)
     mv t1, a0
     mv a0, t1
-    ld a1, -32(s0)
-    li a2, 4
-    sd t1, -48(s0)
-    call __calynda_mmio_store_sized
-    ld t1, -48(s0)
-    sd t1, -48(s0)
-    call __calynda_rt_fence
-    ld t1, -48(s0)
+    sd t1, -40(s0)
+    call calynda_unit_fb_fill
+    ld t1, -40(s0)
+    ld a0, -24(s0)
+    sd t1, -40(s0)
+    call calynda_unit_screen_draw_object
+    ld t1, -40(s0)
+    ld a0, -32(s0)
+    sd t1, -40(s0)
+    call calynda_unit_screen_draw_object
+    ld t1, -40(s0)
+    li a0, 0x04200000
+    li a1, 0x007E9000
+    sd t1, -40(s0)
+    call calynda_unit_thead_dcache_clean_range
+    ld t1, -40(s0)
     addi sp, sp, 48
     ld t0, -24(s0)
     ld s1, -32(s0)
@@ -17289,182 +17772,589 @@ calynda_unit_scratch_mark:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
-.globl calynda_unit_hold_scanout
-calynda_unit_hold_scanout:
-
-1:
-    nop
-    j 1b
-.globl calynda_unit_hdmi_hello_world
-calynda_unit_hdmi_hello_world:
+.section .text.calynda_unit_screen_demo_hold,"ax"
+.globl calynda_unit_screen_demo_hold
+calynda_unit_screen_demo_hold:
+    addi sp, sp, -16
+    sd ra, 8(sp)
+    call __calynda_rt_screen_demo_hold
+    li a0, 0
+    ld ra, 8(sp)
+    addi sp, sp, 16
+    ret
+.section .text.calynda_unit_hdmi_screen_demo,"ax"
+.globl calynda_unit_hdmi_screen_demo
+calynda_unit_hdmi_screen_demo:
     addi sp, sp, -16
     sd ra, 8(sp)
     sd s0, 0(sp)
     addi s0, sp, 16
-    addi sp, sp, -32
+    addi sp, sp, -128
     sd t0, -24(s0)
     sd s1, -32(s0)
-    li a0, 0
-    li a1, 0xAA000001
-    sd t1, -24(s0)
-    sd t2, -32(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_48_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_48_wait
-    li t6, 48
-    sw t6, 0(t5)
-    call calynda_unit_scratch_mark
-    ld t2, -32(s0)
-    ld t1, -24(s0)
-    sd t1, -24(s0)
-    sd t2, -32(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_49_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_49_wait
-    li t6, 49
-    sw t6, 0(t5)
-    call calynda_unit_vosys_clk_enable
-    ld t2, -32(s0)
-    ld t1, -24(s0)
-    li a0, 1
-    li a1, 0xAA000002
-    sd t1, -24(s0)
-    sd t2, -32(s0)
-    call calynda_unit_scratch_mark
-    ld t2, -32(s0)
-    ld t1, -24(s0)
-    li a0, 500
-    sd t1, -24(s0)
-    sd t2, -32(s0)
-    call calynda_unit_delay_us
-    ld t2, -32(s0)
-    ld t1, -24(s0)
+    li a0, 0x0F
+    li a1, 0x62
+    li a2, 0xFE
+    sd t1, -80(s0)
+    sd t2, -88(s0)
+    sd t3, -96(s0)
+    sd t4, -104(s0)
+    sd t5, -112(s0)
+    sd t6, -120(s0)
+    call calynda_unit_RGB
+    ld t6, -120(s0)
+    ld t5, -112(s0)
+    ld t4, -104(s0)
+    ld t3, -96(s0)
+    ld t2, -88(s0)
+    ld t1, -80(s0)
+    mv t2, a0
+    li a0, 120
+    li a1, 96
+    li a2, 144
+    li a3, 96
+    li a4, 9
+    li a5, 6
+    mv a6, t2
+    sd t1, -80(s0)
+    sd t2, -88(s0)
+    sd t3, -96(s0)
+    sd t4, -104(s0)
+    sd t5, -112(s0)
+    sd t6, -120(s0)
+    call calynda_unit_screen_make_rect
+    ld t6, -120(s0)
+    ld t5, -112(s0)
+    ld t4, -104(s0)
+    ld t3, -96(s0)
+    ld t2, -88(s0)
+    ld t1, -80(s0)
     mv t1, a0
     sd t1, -24(s0)
-    sd t2, -32(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_50_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_50_wait
-    li t6, 50
-    sw t6, 0(t5)
+    li t4, 7
+    neg t4, t4
+    li t5, 5
+    neg t5, t5
+    li a0, 0xDA
+    li a1, 0x1E
+    li a2, 0x28
+    sd t1, -80(s0)
+    sd t2, -88(s0)
+    sd t3, -96(s0)
+    sd t4, -104(s0)
+    sd t5, -112(s0)
+    sd t6, -120(s0)
+    call calynda_unit_RGB
+    ld t6, -120(s0)
+    ld t5, -112(s0)
+    ld t4, -104(s0)
+    ld t3, -96(s0)
+    ld t2, -88(s0)
+    ld t1, -80(s0)
+    mv t6, a0
+    li a0, 1440
+    li a1, 720
+    li a2, 168
+    li a3, 72
+    mv a4, t4
+    mv a5, t5
+    mv a6, t6
+    sd t1, -80(s0)
+    sd t2, -88(s0)
+    sd t3, -96(s0)
+    sd t4, -104(s0)
+    sd t5, -112(s0)
+    sd t6, -120(s0)
+    call calynda_unit_screen_make_rect
+    ld t6, -120(s0)
+    ld t5, -112(s0)
+    ld t4, -104(s0)
+    ld t3, -96(s0)
+    ld t2, -88(s0)
+    ld t1, -80(s0)
+    mv t3, a0
+    sd t3, -32(s0)
+    sd t1, -80(s0)
+    sd t2, -88(s0)
+    sd t3, -96(s0)
+    sd t4, -104(s0)
+    sd t5, -112(s0)
+    sd t6, -120(s0)
+    call calynda_unit_vosys_clk_enable
+    ld t6, -120(s0)
+    ld t5, -112(s0)
+    ld t4, -104(s0)
+    ld t3, -96(s0)
+    ld t2, -88(s0)
+    ld t1, -80(s0)
+    li a0, 500
+    sd t1, -80(s0)
+    sd t2, -88(s0)
+    sd t3, -96(s0)
+    sd t4, -104(s0)
+    sd t5, -112(s0)
+    sd t6, -120(s0)
+    call calynda_unit_delay_us
+    ld t6, -120(s0)
+    ld t5, -112(s0)
+    ld t4, -104(s0)
+    ld t3, -96(s0)
+    ld t2, -88(s0)
+    ld t1, -80(s0)
+    mv t0, a0
+    sd t0, -40(s0)
+    sd t1, -80(s0)
+    sd t2, -88(s0)
+    sd t3, -96(s0)
+    sd t4, -104(s0)
+    sd t5, -112(s0)
+    sd t6, -120(s0)
     call calynda_unit_dpu0_pll_configure_1080p60
-    ld t2, -32(s0)
-    ld t1, -24(s0)
-    sd t1, -24(s0)
-    sd t2, -32(s0)
+    ld t6, -120(s0)
+    ld t5, -112(s0)
+    ld t4, -104(s0)
+    ld t3, -96(s0)
+    ld t2, -88(s0)
+    ld t1, -80(s0)
+    sd t1, -80(s0)
+    sd t2, -88(s0)
+    sd t3, -96(s0)
+    sd t4, -104(s0)
+    sd t5, -112(s0)
+    sd t6, -120(s0)
     call calynda_unit_dpu1_pll_configure_1080p60
-    ld t2, -32(s0)
-    ld t1, -24(s0)
-    li a0, 2
-    li a1, 0xAA000003
-    sd t1, -24(s0)
-    sd t2, -32(s0)
-    call calynda_unit_scratch_mark
-    ld t2, -32(s0)
-    ld t1, -24(s0)
-    sd t1, -24(s0)
-    sd t2, -32(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_51_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_51_wait
-    li t6, 51
-    sw t6, 0(t5)
-    call calynda_unit_fb_layout_probe
-    ld t2, -32(s0)
-    ld t1, -24(s0)
-    sd t1, -24(s0)
-    sd t2, -32(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_52_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_52_wait
-    li t6, 52
-    sw t6, 0(t5)
-    call __calynda_rt_fence
-    ld t2, -32(s0)
-    ld t1, -24(s0)
-    li a0, 0x04200000
-    li a1, 0x007E9000
-    sd t1, -24(s0)
-    sd t2, -32(s0)
-    call calynda_unit_thead_dcache_clean_range
-    ld t2, -32(s0)
-    ld t1, -24(s0)
-    li a0, 3
-    li a1, 0xAA000004
-    sd t1, -24(s0)
-    sd t2, -32(s0)
-    call calynda_unit_scratch_mark
-    ld t2, -32(s0)
-    ld t1, -24(s0)
-    sd t1, -24(s0)
-    sd t2, -32(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_53_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_53_wait
-    li t6, 53
-    sw t6, 0(t5)
+    ld t6, -120(s0)
+    ld t5, -112(s0)
+    ld t4, -104(s0)
+    ld t3, -96(s0)
+    ld t2, -88(s0)
+    ld t1, -80(s0)
+    la a0, calynda_global_HDMI_PLL_SETTLE_DELAY_US
+    ld a0, 0(a0)
+    sd t1, -80(s0)
+    sd t2, -88(s0)
+    sd t3, -96(s0)
+    sd t4, -104(s0)
+    sd t5, -112(s0)
+    sd t6, -120(s0)
+    call calynda_unit_delay_us
+    ld t6, -120(s0)
+    ld t5, -112(s0)
+    ld t4, -104(s0)
+    ld t3, -96(s0)
+    ld t2, -88(s0)
+    ld t1, -80(s0)
+    mv t0, a0
+    sd t0, -48(s0)
+    ld a0, -24(s0)
+    ld a1, -32(s0)
+    sd t1, -80(s0)
+    sd t2, -88(s0)
+    sd t3, -96(s0)
+    sd t4, -104(s0)
+    sd t5, -112(s0)
+    sd t6, -120(s0)
+    call calynda_unit_screen_demo_frame
+    ld t6, -120(s0)
+    ld t5, -112(s0)
+    ld t4, -104(s0)
+    ld t3, -96(s0)
+    ld t2, -88(s0)
+    ld t1, -80(s0)
+    sd t1, -80(s0)
+    sd t2, -88(s0)
+    sd t3, -96(s0)
+    sd t4, -104(s0)
+    sd t5, -112(s0)
+    sd t6, -120(s0)
     call calynda_unit_dw_hdmi_init
-    ld t2, -32(s0)
-    ld t1, -24(s0)
-    li a0, 7
-    li a1, 0xAA000005
-    sd t1, -24(s0)
-    sd t2, -32(s0)
-    call calynda_unit_scratch_mark
-    ld t2, -32(s0)
-    ld t1, -24(s0)
-    sd t1, -24(s0)
-    sd t2, -32(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_54_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_54_wait
-    li t6, 54
-    sw t6, 0(t5)
+    ld t6, -120(s0)
+    ld t5, -112(s0)
+    ld t4, -104(s0)
+    ld t3, -96(s0)
+    ld t2, -88(s0)
+    ld t1, -80(s0)
+    la a0, calynda_global_HDMI_POST_PHY_SETTLE_DELAY_US
+    ld a0, 0(a0)
+    sd t1, -80(s0)
+    sd t2, -88(s0)
+    sd t3, -96(s0)
+    sd t4, -104(s0)
+    sd t5, -112(s0)
+    sd t6, -120(s0)
+    call calynda_unit_delay_us
+    ld t6, -120(s0)
+    ld t5, -112(s0)
+    ld t4, -104(s0)
+    ld t3, -96(s0)
+    ld t2, -88(s0)
+    ld t1, -80(s0)
+    mv t0, a0
+    sd t0, -56(s0)
+    sd t1, -80(s0)
+    sd t2, -88(s0)
+    sd t3, -96(s0)
+    sd t4, -104(s0)
+    sd t5, -112(s0)
+    sd t6, -120(s0)
     call calynda_unit_dc8200_init
-    ld t2, -32(s0)
-    ld t1, -24(s0)
-    li a0, 8
-    li a1, 0xAA000006
-    sd t1, -24(s0)
-    sd t2, -32(s0)
-    call calynda_unit_scratch_mark
-    ld t2, -32(s0)
-    ld t1, -24(s0)
-    sd t1, -24(s0)
-    sd t2, -32(s0)
-    li t5, 0xFFE7014000
-.Lcalynda_hdmi_trace_55_wait:
-    lw t6, 0x14(t5)
-    andi t6, t6, 0x20
-    beqz t6, .Lcalynda_hdmi_trace_55_wait
-    li t6, 55
-    sw t6, 0(t5)
-    call calynda_unit_hold_scanout
-    ld t2, -32(s0)
-    ld t1, -24(s0)
-    mv t2, a0
-    mv a0, t2
-    addi sp, sp, 32
+    ld t6, -120(s0)
+    ld t5, -112(s0)
+    ld t4, -104(s0)
+    ld t3, -96(s0)
+    ld t2, -88(s0)
+    ld t1, -80(s0)
+    la a0, calynda_global_HDMI_POST_SCANOUT_ENABLE_DELAY_US
+    ld a0, 0(a0)
+    sd t1, -80(s0)
+    sd t2, -88(s0)
+    sd t3, -96(s0)
+    sd t4, -104(s0)
+    sd t5, -112(s0)
+    sd t6, -120(s0)
+    call calynda_unit_delay_us
+    ld t6, -120(s0)
+    ld t5, -112(s0)
+    ld t4, -104(s0)
+    ld t3, -96(s0)
+    ld t2, -88(s0)
+    ld t1, -80(s0)
+    mv t0, a0
+    sd t0, -64(s0)
+    ld a0, -24(s0)
+    ld a1, -32(s0)
+    sd t1, -80(s0)
+    sd t2, -88(s0)
+    sd t3, -96(s0)
+    sd t4, -104(s0)
+    sd t5, -112(s0)
+    sd t6, -120(s0)
+    call calynda_unit_screen_demo_hold
+    ld t6, -120(s0)
+    ld t5, -112(s0)
+    ld t4, -104(s0)
+    ld t3, -96(s0)
+    ld t2, -88(s0)
+    ld t1, -80(s0)
+    mv t0, a0
+    sd t0, -72(s0)
+    ld a0, -72(s0)
+    addi sp, sp, 128
     ld t0, -24(s0)
     ld s1, -32(s0)
     ld s0, 0(sp)
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_hdmi_hello_world,"ax"
+.globl calynda_unit_hdmi_hello_world
+calynda_unit_hdmi_hello_world:
+    addi sp, sp, -16
+    sd ra, 8(sp)
+    sd s0, 0(sp)
+    addi s0, sp, 16
+    addi sp, sp, -112
+    sd t0, -24(s0)
+    sd s1, -32(s0)
+    li a0, 0xFF
+    li a1, 0xFF
+    li a2, 0xFF
+    sd t1, -64(s0)
+    sd t2, -72(s0)
+    sd t3, -80(s0)
+    sd t4, -88(s0)
+    sd t5, -96(s0)
+    sd t6, -104(s0)
+    call calynda_unit_RGB
+    ld t6, -104(s0)
+    ld t5, -96(s0)
+    ld t4, -88(s0)
+    ld t3, -80(s0)
+    ld t2, -72(s0)
+    ld t1, -64(s0)
+    mv t2, a0
+    li a0, 96
+    li a1, 72
+    li a2, 0
+    li a3, 0
+    mv a4, t2
+    la a5, .Lstr_obj_1
+    sd t1, -64(s0)
+    sd t2, -72(s0)
+    sd t3, -80(s0)
+    sd t4, -88(s0)
+    sd t5, -96(s0)
+    sd t6, -104(s0)
+    call calynda_unit_screen_make_text
+    ld t6, -104(s0)
+    ld t5, -96(s0)
+    ld t4, -88(s0)
+    ld t3, -80(s0)
+    ld t2, -72(s0)
+    ld t1, -64(s0)
+    mv t1, a0
+    sd t1, -24(s0)
+    li a0, 0x6F
+    li a1, 0xD3
+    li a2, 0xFF
+    sd t1, -64(s0)
+    sd t2, -72(s0)
+    sd t3, -80(s0)
+    sd t4, -88(s0)
+    sd t5, -96(s0)
+    sd t6, -104(s0)
+    call calynda_unit_RGB
+    ld t6, -104(s0)
+    ld t5, -96(s0)
+    ld t4, -88(s0)
+    ld t3, -80(s0)
+    ld t2, -72(s0)
+    ld t1, -64(s0)
+    mv t4, a0
+    li a0, 96
+    li a1, 120
+    li a2, 0
+    li a3, 0
+    mv a4, t4
+    la a5, .Lstr_obj_2
+    sd t1, -64(s0)
+    sd t2, -72(s0)
+    sd t3, -80(s0)
+    sd t4, -88(s0)
+    sd t5, -96(s0)
+    sd t6, -104(s0)
+    call calynda_unit_screen_make_text
+    ld t6, -104(s0)
+    ld t5, -96(s0)
+    ld t4, -88(s0)
+    ld t3, -80(s0)
+    ld t2, -72(s0)
+    ld t1, -64(s0)
+    mv t3, a0
+    sd t3, -32(s0)
+    sd t1, -64(s0)
+    sd t2, -72(s0)
+    sd t3, -80(s0)
+    sd t4, -88(s0)
+    sd t5, -96(s0)
+    sd t6, -104(s0)
+    call calynda_unit_vosys_clk_enable
+    ld t6, -104(s0)
+    ld t5, -96(s0)
+    ld t4, -88(s0)
+    ld t3, -80(s0)
+    ld t2, -72(s0)
+    ld t1, -64(s0)
+    li a0, 500
+    sd t1, -64(s0)
+    sd t2, -72(s0)
+    sd t3, -80(s0)
+    sd t4, -88(s0)
+    sd t5, -96(s0)
+    sd t6, -104(s0)
+    call calynda_unit_delay_us
+    ld t6, -104(s0)
+    ld t5, -96(s0)
+    ld t4, -88(s0)
+    ld t3, -80(s0)
+    ld t2, -72(s0)
+    ld t1, -64(s0)
+    mv t5, a0
+    sd t1, -64(s0)
+    sd t2, -72(s0)
+    sd t3, -80(s0)
+    sd t4, -88(s0)
+    sd t5, -96(s0)
+    sd t6, -104(s0)
+    call calynda_unit_dpu0_pll_configure_1080p60
+    ld t6, -104(s0)
+    ld t5, -96(s0)
+    ld t4, -88(s0)
+    ld t3, -80(s0)
+    ld t2, -72(s0)
+    ld t1, -64(s0)
+    sd t1, -64(s0)
+    sd t2, -72(s0)
+    sd t3, -80(s0)
+    sd t4, -88(s0)
+    sd t5, -96(s0)
+    sd t6, -104(s0)
+    call calynda_unit_dpu1_pll_configure_1080p60
+    ld t6, -104(s0)
+    ld t5, -96(s0)
+    ld t4, -88(s0)
+    ld t3, -80(s0)
+    ld t2, -72(s0)
+    ld t1, -64(s0)
+    la a0, calynda_global_HDMI_PLL_SETTLE_DELAY_US
+    ld a0, 0(a0)
+    sd t1, -64(s0)
+    sd t2, -72(s0)
+    sd t3, -80(s0)
+    sd t4, -88(s0)
+    sd t5, -96(s0)
+    sd t6, -104(s0)
+    call calynda_unit_delay_us
+    ld t6, -104(s0)
+    ld t5, -96(s0)
+    ld t4, -88(s0)
+    ld t3, -80(s0)
+    ld t2, -72(s0)
+    ld t1, -64(s0)
+    mv t6, a0
+    sd t1, -64(s0)
+    sd t2, -72(s0)
+    sd t3, -80(s0)
+    sd t4, -88(s0)
+    sd t5, -96(s0)
+    sd t6, -104(s0)
+    call calynda_unit_fb_layout_probe
+    ld t6, -104(s0)
+    ld t5, -96(s0)
+    ld t4, -88(s0)
+    ld t3, -80(s0)
+    ld t2, -72(s0)
+    ld t1, -64(s0)
+    ld a0, -24(s0)
+    sd t1, -64(s0)
+    sd t2, -72(s0)
+    sd t3, -80(s0)
+    sd t4, -88(s0)
+    sd t5, -96(s0)
+    sd t6, -104(s0)
+    call calynda_unit_screen_draw_object
+    ld t6, -104(s0)
+    ld t5, -96(s0)
+    ld t4, -88(s0)
+    ld t3, -80(s0)
+    ld t2, -72(s0)
+    ld t1, -64(s0)
+    ld a0, -32(s0)
+    sd t1, -64(s0)
+    sd t2, -72(s0)
+    sd t3, -80(s0)
+    sd t4, -88(s0)
+    sd t5, -96(s0)
+    sd t6, -104(s0)
+    call calynda_unit_screen_draw_object
+    ld t6, -104(s0)
+    ld t5, -96(s0)
+    ld t4, -88(s0)
+    ld t3, -80(s0)
+    ld t2, -72(s0)
+    ld t1, -64(s0)
+    sd t1, -64(s0)
+    sd t2, -72(s0)
+    sd t3, -80(s0)
+    sd t4, -88(s0)
+    sd t5, -96(s0)
+    sd t6, -104(s0)
+    call __calynda_rt_fence
+    ld t6, -104(s0)
+    ld t5, -96(s0)
+    ld t4, -88(s0)
+    ld t3, -80(s0)
+    ld t2, -72(s0)
+    ld t1, -64(s0)
+    li a0, 0x04200000
+    li a1, 0x007E9000
+    sd t1, -64(s0)
+    sd t2, -72(s0)
+    sd t3, -80(s0)
+    sd t4, -88(s0)
+    sd t5, -96(s0)
+    sd t6, -104(s0)
+    call calynda_unit_thead_dcache_clean_range
+    ld t6, -104(s0)
+    ld t5, -96(s0)
+    ld t4, -88(s0)
+    ld t3, -80(s0)
+    ld t2, -72(s0)
+    ld t1, -64(s0)
+    sd t1, -64(s0)
+    sd t2, -72(s0)
+    sd t3, -80(s0)
+    sd t4, -88(s0)
+    sd t5, -96(s0)
+    sd t6, -104(s0)
+    call calynda_unit_dw_hdmi_init
+    ld t6, -104(s0)
+    ld t5, -96(s0)
+    ld t4, -88(s0)
+    ld t3, -80(s0)
+    ld t2, -72(s0)
+    ld t1, -64(s0)
+    la a0, calynda_global_HDMI_POST_PHY_SETTLE_DELAY_US
+    ld a0, 0(a0)
+    sd t1, -64(s0)
+    sd t2, -72(s0)
+    sd t3, -80(s0)
+    sd t4, -88(s0)
+    sd t5, -96(s0)
+    sd t6, -104(s0)
+    call calynda_unit_delay_us
+    ld t6, -104(s0)
+    ld t5, -96(s0)
+    ld t4, -88(s0)
+    ld t3, -80(s0)
+    ld t2, -72(s0)
+    ld t1, -64(s0)
+    mv t0, a0
+    sd t0, -40(s0)
+    sd t1, -64(s0)
+    sd t2, -72(s0)
+    sd t3, -80(s0)
+    sd t4, -88(s0)
+    sd t5, -96(s0)
+    sd t6, -104(s0)
+    call calynda_unit_dc8200_init
+    ld t6, -104(s0)
+    ld t5, -96(s0)
+    ld t4, -88(s0)
+    ld t3, -80(s0)
+    ld t2, -72(s0)
+    ld t1, -64(s0)
+    la a0, calynda_global_HDMI_POST_SCANOUT_ENABLE_DELAY_US
+    ld a0, 0(a0)
+    sd t1, -64(s0)
+    sd t2, -72(s0)
+    sd t3, -80(s0)
+    sd t4, -88(s0)
+    sd t5, -96(s0)
+    sd t6, -104(s0)
+    call calynda_unit_delay_us
+    ld t6, -104(s0)
+    ld t5, -96(s0)
+    ld t4, -88(s0)
+    ld t3, -80(s0)
+    ld t2, -72(s0)
+    ld t1, -64(s0)
+    mv t0, a0
+    sd t0, -48(s0)
+    sd t1, -64(s0)
+    sd t2, -72(s0)
+    sd t3, -80(s0)
+    sd t4, -88(s0)
+    sd t5, -96(s0)
+    sd t6, -104(s0)
+    call calynda_unit_hold_scanout
+    ld t6, -104(s0)
+    ld t5, -96(s0)
+    ld t4, -88(s0)
+    ld t3, -80(s0)
+    ld t2, -72(s0)
+    ld t1, -64(s0)
+    mv t0, a0
+    sd t0, -56(s0)
+    ld a0, -56(s0)
+    addi sp, sp, 112
+    ld t0, -24(s0)
+    ld s1, -32(s0)
+    ld s0, 0(sp)
+    ld ra, 8(sp)
+    addi sp, sp, 16
+    ret
+.section .text.calynda_unit_run,"ax"
 .globl calynda_unit_run
 calynda_unit_run:
     addi sp, sp, -16
@@ -17486,6 +18376,7 @@ calynda_unit_run:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit___mir_module_init,"ax"
 .globl calynda_unit___mir_module_init
 calynda_unit___mir_module_init:
     addi sp, sp, -16
@@ -17516,6 +18407,18 @@ calynda_unit___mir_module_init:
     li s1, 32
     la t0, calynda_global_THEAD_CMO_STRIDE
     sd s1, 0(t0)
+    li s1, 0
+    la t0, calynda_global_SCREEN_OBJECT_KIND_RECT
+    sd s1, 0(t0)
+    li s1, 1
+    la t0, calynda_global_SCREEN_OBJECT_KIND_TEXT
+    sd s1, 0(t0)
+    li s1, 24
+    la t0, calynda_global_SCREEN_TEXT_CHAR_ADVANCE
+    sd s1, 0(t0)
+    li s1, 32
+    la t0, calynda_global_SCREEN_TEXT_HEIGHT
+    sd s1, 0(t0)
     li s1, 0xFFEF010000
     la t0, calynda_global_AP_CLKGEN_BASE
     sd s1, 0(t0)
@@ -17540,6 +18443,15 @@ calynda_unit___mir_module_init:
     li s1, 0
     la t0, calynda_global_hdmi_diag2
     sd s1, 0(t0)
+    li s1, 5000
+    la t0, calynda_global_HDMI_PLL_SETTLE_DELAY_US
+    sd s1, 0(t0)
+    li s1, 20000
+    la t0, calynda_global_HDMI_POST_PHY_SETTLE_DELAY_US
+    sd s1, 0(t0)
+    li s1, 50000
+    la t0, calynda_global_HDMI_POST_SCANOUT_ENABLE_DELAY_US
+    sd s1, 0(t0)
     addi sp, sp, 16
     ld t0, -24(s0)
     ld s1, -32(s0)
@@ -17547,6 +18459,7 @@ calynda_unit___mir_module_init:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text.calynda_unit_boot,"ax"
 .globl calynda_unit_boot
 calynda_unit_boot:
     addi sp, sp, -16
@@ -17571,6 +18484,7 @@ calynda_unit_boot:
     ld ra, 8(sp)
     addi sp, sp, 16
     ret
+.section .text._start,"ax"
 .globl _start
 _start:
     li s0, 0
@@ -17579,6 +18493,7 @@ _start:
     call calynda_unit_boot
 1:
     j 1b
+.section .text.calynda_closure_while_nlr0,"ax"
 .globl calynda_closure_while_nlr0
 calynda_closure_while_nlr0:
     addi sp, sp, -32
@@ -17594,6 +18509,7 @@ calynda_closure_while_nlr0:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_while_lambda1,"ax"
 .globl calynda_closure_while_lambda1
 calynda_closure_while_lambda1:
     addi sp, sp, -32
@@ -17609,6 +18525,7 @@ calynda_closure_while_lambda1:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_rect_span_lambda2,"ax"
 .globl calynda_closure_fb_rect_span_lambda2
 calynda_closure_fb_rect_span_lambda2:
     addi sp, sp, -32
@@ -17624,6 +18541,7 @@ calynda_closure_fb_rect_span_lambda2:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_rect_span_nlr3,"ax"
 .globl calynda_closure_fb_rect_span_nlr3
 calynda_closure_fb_rect_span_nlr3:
     addi sp, sp, -32
@@ -17639,6 +18557,7 @@ calynda_closure_fb_rect_span_nlr3:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_rect_lambda4,"ax"
 .globl calynda_closure_fb_rect_lambda4
 calynda_closure_fb_rect_lambda4:
     addi sp, sp, -32
@@ -17654,6 +18573,7 @@ calynda_closure_fb_rect_lambda4:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_rect_nlr5,"ax"
 .globl calynda_closure_fb_rect_nlr5
 calynda_closure_fb_rect_nlr5:
     addi sp, sp, -32
@@ -17669,6 +18589,7 @@ calynda_closure_fb_rect_nlr5:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_thead_dcache_clean_range_lambda6,"ax"
 .globl calynda_closure_thead_dcache_clean_range_lambda6
 calynda_closure_thead_dcache_clean_range_lambda6:
     addi sp, sp, -32
@@ -17684,6 +18605,7 @@ calynda_closure_thead_dcache_clean_range_lambda6:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_thead_dcache_clean_range_nlr7,"ax"
 .globl calynda_closure_thead_dcache_clean_range_nlr7
 calynda_closure_thead_dcache_clean_range_nlr7:
     addi sp, sp, -32
@@ -17699,6 +18621,7 @@ calynda_closure_thead_dcache_clean_range_nlr7:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_probe_letter_nlr8,"ax"
 .globl calynda_closure_fb_draw_probe_letter_nlr8
 calynda_closure_fb_draw_probe_letter_nlr8:
     addi sp, sp, -32
@@ -17714,6 +18637,7 @@ calynda_closure_fb_draw_probe_letter_nlr8:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_probe_letter_lambda9,"ax"
 .globl calynda_closure_fb_draw_probe_letter_lambda9
 calynda_closure_fb_draw_probe_letter_lambda9:
     addi sp, sp, -32
@@ -17729,6 +18653,7 @@ calynda_closure_fb_draw_probe_letter_lambda9:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_probe_letter_nlr10,"ax"
 .globl calynda_closure_fb_draw_probe_letter_nlr10
 calynda_closure_fb_draw_probe_letter_nlr10:
     addi sp, sp, -32
@@ -17744,6 +18669,7 @@ calynda_closure_fb_draw_probe_letter_nlr10:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_probe_letter_lambda11,"ax"
 .globl calynda_closure_fb_draw_probe_letter_lambda11
 calynda_closure_fb_draw_probe_letter_lambda11:
     addi sp, sp, -32
@@ -17759,6 +18685,7 @@ calynda_closure_fb_draw_probe_letter_lambda11:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_probe_letter_nlr12,"ax"
 .globl calynda_closure_fb_draw_probe_letter_nlr12
 calynda_closure_fb_draw_probe_letter_nlr12:
     addi sp, sp, -32
@@ -17774,6 +18701,7 @@ calynda_closure_fb_draw_probe_letter_nlr12:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_probe_letter_lambda13,"ax"
 .globl calynda_closure_fb_draw_probe_letter_lambda13
 calynda_closure_fb_draw_probe_letter_lambda13:
     addi sp, sp, -32
@@ -17789,6 +18717,7 @@ calynda_closure_fb_draw_probe_letter_lambda13:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_probe_letter_nlr14,"ax"
 .globl calynda_closure_fb_draw_probe_letter_nlr14
 calynda_closure_fb_draw_probe_letter_nlr14:
     addi sp, sp, -32
@@ -17804,6 +18733,7 @@ calynda_closure_fb_draw_probe_letter_nlr14:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_probe_letter_lambda15,"ax"
 .globl calynda_closure_fb_draw_probe_letter_lambda15
 calynda_closure_fb_draw_probe_letter_lambda15:
     addi sp, sp, -32
@@ -17819,6 +18749,7 @@ calynda_closure_fb_draw_probe_letter_lambda15:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_probe_letter_nlr16,"ax"
 .globl calynda_closure_fb_draw_probe_letter_nlr16
 calynda_closure_fb_draw_probe_letter_nlr16:
     addi sp, sp, -32
@@ -17834,6 +18765,7 @@ calynda_closure_fb_draw_probe_letter_nlr16:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_probe_letter_lambda17,"ax"
 .globl calynda_closure_fb_draw_probe_letter_lambda17
 calynda_closure_fb_draw_probe_letter_lambda17:
     addi sp, sp, -32
@@ -17849,6 +18781,7 @@ calynda_closure_fb_draw_probe_letter_lambda17:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_probe_letter_nlr18,"ax"
 .globl calynda_closure_fb_draw_probe_letter_nlr18
 calynda_closure_fb_draw_probe_letter_nlr18:
     addi sp, sp, -32
@@ -17864,6 +18797,7 @@ calynda_closure_fb_draw_probe_letter_nlr18:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_probe_letter_lambda19,"ax"
 .globl calynda_closure_fb_draw_probe_letter_lambda19
 calynda_closure_fb_draw_probe_letter_lambda19:
     addi sp, sp, -32
@@ -17879,6 +18813,7 @@ calynda_closure_fb_draw_probe_letter_lambda19:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_probe_letter_nlr20,"ax"
 .globl calynda_closure_fb_draw_probe_letter_nlr20
 calynda_closure_fb_draw_probe_letter_nlr20:
     addi sp, sp, -32
@@ -17894,6 +18829,7 @@ calynda_closure_fb_draw_probe_letter_nlr20:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_probe_letter_lambda21,"ax"
 .globl calynda_closure_fb_draw_probe_letter_lambda21
 calynda_closure_fb_draw_probe_letter_lambda21:
     addi sp, sp, -32
@@ -17909,6 +18845,7 @@ calynda_closure_fb_draw_probe_letter_lambda21:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_probe_letter_nlr22,"ax"
 .globl calynda_closure_fb_draw_probe_letter_nlr22
 calynda_closure_fb_draw_probe_letter_nlr22:
     addi sp, sp, -32
@@ -17924,6 +18861,7 @@ calynda_closure_fb_draw_probe_letter_nlr22:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_probe_letter_lambda23,"ax"
 .globl calynda_closure_fb_draw_probe_letter_lambda23
 calynda_closure_fb_draw_probe_letter_lambda23:
     addi sp, sp, -32
@@ -17939,6 +18877,7 @@ calynda_closure_fb_draw_probe_letter_lambda23:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_probe_digit_nlr24,"ax"
 .globl calynda_closure_fb_draw_probe_digit_nlr24
 calynda_closure_fb_draw_probe_digit_nlr24:
     addi sp, sp, -32
@@ -17954,6 +18893,7 @@ calynda_closure_fb_draw_probe_digit_nlr24:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_probe_digit_lambda25,"ax"
 .globl calynda_closure_fb_draw_probe_digit_lambda25
 calynda_closure_fb_draw_probe_digit_lambda25:
     addi sp, sp, -32
@@ -17969,6 +18909,7 @@ calynda_closure_fb_draw_probe_digit_lambda25:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_probe_digit_nlr26,"ax"
 .globl calynda_closure_fb_draw_probe_digit_nlr26
 calynda_closure_fb_draw_probe_digit_nlr26:
     addi sp, sp, -32
@@ -17984,6 +18925,7 @@ calynda_closure_fb_draw_probe_digit_nlr26:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_probe_digit_lambda27,"ax"
 .globl calynda_closure_fb_draw_probe_digit_lambda27
 calynda_closure_fb_draw_probe_digit_lambda27:
     addi sp, sp, -32
@@ -17999,6 +18941,7 @@ calynda_closure_fb_draw_probe_digit_lambda27:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_probe_digit_nlr28,"ax"
 .globl calynda_closure_fb_draw_probe_digit_nlr28
 calynda_closure_fb_draw_probe_digit_nlr28:
     addi sp, sp, -32
@@ -18014,6 +18957,7 @@ calynda_closure_fb_draw_probe_digit_nlr28:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_probe_digit_lambda29,"ax"
 .globl calynda_closure_fb_draw_probe_digit_lambda29
 calynda_closure_fb_draw_probe_digit_lambda29:
     addi sp, sp, -32
@@ -18029,6 +18973,7 @@ calynda_closure_fb_draw_probe_digit_lambda29:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_probe_digit_nlr30,"ax"
 .globl calynda_closure_fb_draw_probe_digit_nlr30
 calynda_closure_fb_draw_probe_digit_nlr30:
     addi sp, sp, -32
@@ -18044,6 +18989,7 @@ calynda_closure_fb_draw_probe_digit_nlr30:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_probe_digit_lambda31,"ax"
 .globl calynda_closure_fb_draw_probe_digit_lambda31
 calynda_closure_fb_draw_probe_digit_lambda31:
     addi sp, sp, -32
@@ -18059,6 +19005,7 @@ calynda_closure_fb_draw_probe_digit_lambda31:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_row_markers_lambda32,"ax"
 .globl calynda_closure_fb_draw_row_markers_lambda32
 calynda_closure_fb_draw_row_markers_lambda32:
     addi sp, sp, -32
@@ -18074,6 +19021,7 @@ calynda_closure_fb_draw_row_markers_lambda32:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_row_markers_nlr33,"ax"
 .globl calynda_closure_fb_draw_row_markers_nlr33
 calynda_closure_fb_draw_row_markers_nlr33:
     addi sp, sp, -32
@@ -18089,6 +19037,7 @@ calynda_closure_fb_draw_row_markers_nlr33:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_col_markers_lambda34,"ax"
 .globl calynda_closure_fb_draw_col_markers_lambda34
 calynda_closure_fb_draw_col_markers_lambda34:
     addi sp, sp, -32
@@ -18104,6 +19053,7 @@ calynda_closure_fb_draw_col_markers_lambda34:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_draw_col_markers_nlr35,"ax"
 .globl calynda_closure_fb_draw_col_markers_nlr35
 calynda_closure_fb_draw_col_markers_nlr35:
     addi sp, sp, -32
@@ -18119,6 +19069,7 @@ calynda_closure_fb_draw_col_markers_nlr35:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_layout_probe_row_lambda36,"ax"
 .globl calynda_closure_fb_layout_probe_row_lambda36
 calynda_closure_fb_layout_probe_row_lambda36:
     addi sp, sp, -32
@@ -18134,6 +19085,7 @@ calynda_closure_fb_layout_probe_row_lambda36:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_layout_probe_row_nlr37,"ax"
 .globl calynda_closure_fb_layout_probe_row_nlr37
 calynda_closure_fb_layout_probe_row_nlr37:
     addi sp, sp, -32
@@ -18149,6 +19101,7 @@ calynda_closure_fb_layout_probe_row_nlr37:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_layout_probe_lambda38,"ax"
 .globl calynda_closure_fb_layout_probe_lambda38
 calynda_closure_fb_layout_probe_lambda38:
     addi sp, sp, -32
@@ -18164,6 +19117,7 @@ calynda_closure_fb_layout_probe_lambda38:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_fb_layout_probe_nlr39,"ax"
 .globl calynda_closure_fb_layout_probe_nlr39
 calynda_closure_fb_layout_probe_nlr39:
     addi sp, sp, -32
@@ -18179,6 +19133,7 @@ calynda_closure_fb_layout_probe_nlr39:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_dpu0_pll_configure_1080p60_lambda40,"ax"
 .globl calynda_closure_dpu0_pll_configure_1080p60_lambda40
 calynda_closure_dpu0_pll_configure_1080p60_lambda40:
     addi sp, sp, -32
@@ -18194,6 +19149,7 @@ calynda_closure_dpu0_pll_configure_1080p60_lambda40:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_dpu0_pll_configure_1080p60_nlr41,"ax"
 .globl calynda_closure_dpu0_pll_configure_1080p60_nlr41
 calynda_closure_dpu0_pll_configure_1080p60_nlr41:
     addi sp, sp, -32
@@ -18209,6 +19165,7 @@ calynda_closure_dpu0_pll_configure_1080p60_nlr41:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_dpu1_pll_configure_1080p60_lambda42,"ax"
 .globl calynda_closure_dpu1_pll_configure_1080p60_lambda42
 calynda_closure_dpu1_pll_configure_1080p60_lambda42:
     addi sp, sp, -32
@@ -18224,6 +19181,7 @@ calynda_closure_dpu1_pll_configure_1080p60_lambda42:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_dpu1_pll_configure_1080p60_nlr43,"ax"
 .globl calynda_closure_dpu1_pll_configure_1080p60_nlr43
 calynda_closure_dpu1_pll_configure_1080p60_nlr43:
     addi sp, sp, -32
@@ -18239,6 +19197,7 @@ calynda_closure_dpu1_pll_configure_1080p60_nlr43:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_forRange_lambda44,"ax"
 .globl calynda_closure_forRange_lambda44
 calynda_closure_forRange_lambda44:
     addi sp, sp, -32
@@ -18254,6 +19213,7 @@ calynda_closure_forRange_lambda44:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_hdmi_phy_i2cm_write_once_lambda45,"ax"
 .globl calynda_closure_hdmi_phy_i2cm_write_once_lambda45
 calynda_closure_hdmi_phy_i2cm_write_once_lambda45:
     addi sp, sp, -32
@@ -18269,6 +19229,7 @@ calynda_closure_hdmi_phy_i2cm_write_once_lambda45:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_hdmi_phy_i2cm_write_once_nlr46_nlr47,"ax"
 .globl calynda_closure_hdmi_phy_i2cm_write_once_nlr46_nlr47
 calynda_closure_hdmi_phy_i2cm_write_once_nlr46_nlr47:
     addi sp, sp, -32
@@ -18284,6 +19245,7 @@ calynda_closure_hdmi_phy_i2cm_write_once_nlr46_nlr47:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_hdmi_phy_i2cm_write_once_nlr46_lambda48,"ax"
 .globl calynda_closure_hdmi_phy_i2cm_write_once_nlr46_lambda48
 calynda_closure_hdmi_phy_i2cm_write_once_nlr46_lambda48:
     addi sp, sp, -32
@@ -18299,6 +19261,7 @@ calynda_closure_hdmi_phy_i2cm_write_once_nlr46_lambda48:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_hdmi_phy_i2cm_write_once_nlr46,"ax"
 .globl calynda_closure_hdmi_phy_i2cm_write_once_nlr46
 calynda_closure_hdmi_phy_i2cm_write_once_nlr46:
     addi sp, sp, -32
@@ -18314,6 +19277,7 @@ calynda_closure_hdmi_phy_i2cm_write_once_nlr46:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_hdmi_phy_i2cm_write_attempt_nlr49,"ax"
 .globl calynda_closure_hdmi_phy_i2cm_write_attempt_nlr49
 calynda_closure_hdmi_phy_i2cm_write_attempt_nlr49:
     addi sp, sp, -32
@@ -18329,6 +19293,7 @@ calynda_closure_hdmi_phy_i2cm_write_attempt_nlr49:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_hdmi_phy_i2cm_write_attempt_lambda50,"ax"
 .globl calynda_closure_hdmi_phy_i2cm_write_attempt_lambda50
 calynda_closure_hdmi_phy_i2cm_write_attempt_lambda50:
     addi sp, sp, -32
@@ -18344,6 +19309,7 @@ calynda_closure_hdmi_phy_i2cm_write_attempt_lambda50:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_hdmi_program_identity_csc_lambda51_lambda52,"ax"
 .globl calynda_closure_hdmi_program_identity_csc_lambda51_lambda52
 calynda_closure_hdmi_program_identity_csc_lambda51_lambda52:
     addi sp, sp, -32
@@ -18360,6 +19326,7 @@ calynda_closure_hdmi_program_identity_csc_lambda51_lambda52:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_hdmi_program_identity_csc_lambda51,"ax"
 .globl calynda_closure_hdmi_program_identity_csc_lambda51
 calynda_closure_hdmi_program_identity_csc_lambda51:
     addi sp, sp, -32
@@ -18376,6 +19343,7 @@ calynda_closure_hdmi_program_identity_csc_lambda51:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_hdmi_clear_overflow_lambda53,"ax"
 .globl calynda_closure_hdmi_clear_overflow_lambda53
 calynda_closure_hdmi_clear_overflow_lambda53:
     addi sp, sp, -32
@@ -18392,6 +19360,7 @@ calynda_closure_hdmi_clear_overflow_lambda53:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_dw_hdmi_init_lambda54,"ax"
 .globl calynda_closure_dw_hdmi_init_lambda54
 calynda_closure_dw_hdmi_init_lambda54:
     addi sp, sp, -32
@@ -18407,6 +19376,7 @@ calynda_closure_dw_hdmi_init_lambda54:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_dw_hdmi_init_nlr55,"ax"
 .globl calynda_closure_dw_hdmi_init_nlr55
 calynda_closure_dw_hdmi_init_nlr55:
     addi sp, sp, -32
@@ -18422,6 +19392,7 @@ calynda_closure_dw_hdmi_init_nlr55:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_dw_hdmi_init_nlr56,"ax"
 .globl calynda_closure_dw_hdmi_init_nlr56
 calynda_closure_dw_hdmi_init_nlr56:
     addi sp, sp, -32
@@ -18437,6 +19408,7 @@ calynda_closure_dw_hdmi_init_nlr56:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_dw_hdmi_init_lambda57,"ax"
 .globl calynda_closure_dw_hdmi_init_lambda57
 calynda_closure_dw_hdmi_init_lambda57:
     addi sp, sp, -32
@@ -18452,6 +19424,7 @@ calynda_closure_dw_hdmi_init_lambda57:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_dw_hdmi_init_lambda58,"ax"
 .globl calynda_closure_dw_hdmi_init_lambda58
 calynda_closure_dw_hdmi_init_lambda58:
     addi sp, sp, -32
@@ -18467,6 +19440,7 @@ calynda_closure_dw_hdmi_init_lambda58:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_dw_hdmi_init_nlr59,"ax"
 .globl calynda_closure_dw_hdmi_init_nlr59
 calynda_closure_dw_hdmi_init_nlr59:
     addi sp, sp, -32
@@ -18482,7 +19456,41 @@ calynda_closure_dw_hdmi_init_nlr59:
     ld ra, 24(sp)
     addi sp, sp, 32
     ret
+.section .text.calynda_closure_screen_demo_step_axis_nlr60,"ax"
+.globl calynda_closure_screen_demo_step_axis_nlr60
+calynda_closure_screen_demo_step_axis_nlr60:
+    addi sp, sp, -32
+    sd ra, 24(sp)
+    sd s0, 16(sp)
+    addi s0, sp, 32
+    sd s11, 8(sp)
+    mv s11, a0
+    mv t0, a2
+    call calynda_unit_screen_demo_step_axis_nlr60
+    ld s11, 8(sp)
+    ld s0, 16(sp)
+    ld ra, 24(sp)
+    addi sp, sp, 32
+    ret
+.section .text.calynda_closure_screen_demo_step_axis_lambda61,"ax"
+.globl calynda_closure_screen_demo_step_axis_lambda61
+calynda_closure_screen_demo_step_axis_lambda61:
+    addi sp, sp, -32
+    sd ra, 24(sp)
+    sd s0, 16(sp)
+    addi s0, sp, 32
+    sd s11, 8(sp)
+    mv s11, a0
+    mv t0, a2
+    call calynda_unit_screen_demo_step_axis_lambda61
+    ld s11, 8(sp)
+    ld s0, 16(sp)
+    ld ra, 24(sp)
+    addi sp, sp, 32
+    ret
 .section .rodata
+.Lsym_0:
+    .byte 108, 101, 110, 103, 116, 104, 0
     .balign 8
 .Larr_elems_0:
     .quad 16777215
@@ -18576,6 +19584,24 @@ calynda_closure_dw_hdmi_init_nlr59:
     .quad 3
     .quad .Larr_elems_6
 .data
+    .balign 8
+.Lstr_obj_1:
+    .long 1129077060
+    .long 0
+    .quad 0
+    .quad 11
+    .quad .Lstr_bytes_1
+.Lstr_bytes_1:
+    .byte 66, 65, 82, 78, 69, 71, 65, 84, 32, 79, 83, 0
+    .balign 8
+.Lstr_obj_2:
+    .long 1129077060
+    .long 0
+    .quad 0
+    .quad 10
+    .quad .Lstr_bytes_2
+.Lstr_bytes_2:
+    .byte 72, 68, 77, 73, 32, 82, 69, 65, 68, 89, 0
 .globl calynda_global_PROBE_COLS
 calynda_global_PROBE_COLS:
     .quad .Larr_obj_0
@@ -18597,6 +19623,15 @@ calynda_global_FB_HEIGHT:
 .globl calynda_global_THEAD_CMO_STRIDE
 calynda_global_THEAD_CMO_STRIDE:
     .quad 0
+.globl calynda_global_SCREEN_OBJECT_KIND_RECT
+calynda_global_SCREEN_OBJECT_KIND_RECT:
+    .quad 0
+.globl calynda_global_SCREEN_TEXT_CHAR_ADVANCE
+calynda_global_SCREEN_TEXT_CHAR_ADVANCE:
+    .quad 0
+.globl calynda_global_SCREEN_TEXT_HEIGHT
+calynda_global_SCREEN_TEXT_HEIGHT:
+    .quad 0
 .globl calynda_global_hdmi_diag0
 calynda_global_hdmi_diag0:
     .quad 0
@@ -18605,6 +19640,15 @@ calynda_global_hdmi_diag1:
     .quad 0
 .globl calynda_global_hdmi_diag2
 calynda_global_hdmi_diag2:
+    .quad 0
+.globl calynda_global_HDMI_PLL_SETTLE_DELAY_US
+calynda_global_HDMI_PLL_SETTLE_DELAY_US:
+    .quad 0
+.globl calynda_global_HDMI_POST_PHY_SETTLE_DELAY_US
+calynda_global_HDMI_POST_PHY_SETTLE_DELAY_US:
+    .quad 0
+.globl calynda_global_HDMI_POST_SCANOUT_ENABLE_DELAY_US
+calynda_global_HDMI_POST_SCANOUT_ENABLE_DELAY_US:
     .quad 0
 .globl calynda_global_FB_PHYS_ADDR
 calynda_global_FB_PHYS_ADDR:
@@ -18617,6 +19661,9 @@ calynda_global_FB_STRIDE_BYTES:
     .quad 0
 .globl calynda_global_FB_SIZE_BYTES
 calynda_global_FB_SIZE_BYTES:
+    .quad 0
+.globl calynda_global_SCREEN_OBJECT_KIND_TEXT
+calynda_global_SCREEN_OBJECT_KIND_TEXT:
     .quad 0
 .globl calynda_global_AP_CLKGEN_BASE
 calynda_global_AP_CLKGEN_BASE:

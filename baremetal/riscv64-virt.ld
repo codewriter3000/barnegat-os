@@ -29,6 +29,7 @@ SECTIONS
     {
         __bss_start = .;
         *(.bss .bss.*)
+        *(.sbss .sbss.*)
         *(COMMON)
         __bss_end = .;
     } > ram

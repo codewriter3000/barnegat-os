@@ -1,0 +1,182 @@
+
+Discarded input sections
+
+ .text          0x0000000000000000        0x0 build/start-virt.o
+ .data          0x0000000000000000        0x0 build/start-virt.o
+ .bss           0x0000000000000000        0x0 build/start-virt.o
+ .text          0x0000000000000000        0x0 build/runtime_boot-virt.o
+ .data          0x0000000000000000        0x0 build/runtime_boot-virt.o
+ .bss           0x0000000000000000        0x0 build/runtime_boot-virt.o
+ .text.frt_as_object
+                0x0000000000000000       0x14 build/runtime_boot-virt.o
+ .text.frt_array_count
+                0x0000000000000000       0x24 build/runtime_boot-virt.o
+ .text.frt_alloc_bytes
+                0x0000000000000000       0x48 build/runtime_boot-virt.o
+ .text.frt_copy_words
+                0x0000000000000000       0x3c build/runtime_boot-virt.o
+ .text.frt_array_elements
+                0x0000000000000000       0x24 build/runtime_boot-virt.o
+ .text.__calynda_rt_debug_word
+                0x0000000000000000        0x2 build/runtime_boot-virt.o
+ .text.__calynda_rt_debug_pair
+                0x0000000000000000        0x2 build/runtime_boot-virt.o
+ .text.__calynda_rt_debug_object
+                0x0000000000000000        0x2 build/runtime_boot-virt.o
+ .text.__calynda_rt_scratch_mark
+                0x0000000000000000        0x2 build/runtime_boot-virt.o
+ .text.__calynda_rt_cache_clean_range
+                0x0000000000000000        0x2 build/runtime_boot-virt.o
+ .text.__calynda_rt_fb_border
+                0x0000000000000000        0x2 build/runtime_boot-virt.o
+ .text.__calynda_rt_fb_draw_row_markers
+                0x0000000000000000        0x2 build/runtime_boot-virt.o
+ .text.__calynda_rt_fb_draw_col_markers
+                0x0000000000000000        0x2 build/runtime_boot-virt.o
+ .text.__calynda_rt_draw_probe_label
+                0x0000000000000000        0x2 build/runtime_boot-virt.o
+ .text.__calynda_rt_member_load
+                0x0000000000000000       0x86 build/runtime_boot-virt.o
+ .text.__calynda_rt_index_load
+                0x0000000000000000       0x5c build/runtime_boot-virt.o
+ .text.__calynda_rt_array_literal
+                0x0000000000000000       0x44 build/runtime_boot-virt.o
+ .text.__calynda_rt_array_car
+                0x0000000000000000       0x3a build/runtime_boot-virt.o
+ .text.__calynda_rt_array_cdr
+                0x0000000000000000       0x7e build/runtime_boot-virt.o
+ .text.__calynda_rt_string_cdr
+                0x0000000000000000       0x80 build/runtime_boot-virt.o
+ .text.__calynda_rt_store_index
+                0x0000000000000000       0x66 build/runtime_boot-virt.o
+ .text.__calynda_rt_closure_new
+                0x0000000000000000       0x4a build/runtime_boot-virt.o
+ .text.__calynda_rt_call_callable
+                0x0000000000000000       0x2c build/runtime_boot-virt.o
+ .text.calynda_rt_callable_dispatch
+                0x0000000000000000        0xe build/runtime_boot-virt.o
+ .text.__calynda_rt_cell_alloc
+                0x0000000000000000       0x1c build/runtime_boot-virt.o
+ .text.__calynda_rt_cell_read
+                0x0000000000000000        0x4 build/runtime_boot-virt.o
+ .text.__calynda_rt_cell_write
+                0x0000000000000000        0x6 build/runtime_boot-virt.o
+ .text.__calynda_rt_nlr_push
+                0x0000000000000000       0x32 build/runtime_boot-virt.o
+ .text.__calynda_rt_nlr_invoke
+                0x0000000000000000        0xc build/runtime_boot-virt.o
+ .text.__calynda_rt_nlr_check_pop
+                0x0000000000000000       0x28 build/runtime_boot-virt.o
+ .text.__calynda_rt_nlr_get_value
+                0x0000000000000000        0xa build/runtime_boot-virt.o
+ .text.__calynda_deref
+                0x0000000000000000       0x24 build/runtime_boot-virt.o
+ .text.__calynda_deref_sized
+                0x0000000000000000       0x2a build/runtime_boot-virt.o
+ .text.__calynda_mmio_deref
+                0x0000000000000000        0x4 build/runtime_boot-virt.o
+ .text.__calynda_mmio_deref_sized
+                0x0000000000000000       0x66 build/runtime_boot-virt.o
+ .text.__calynda_addr
+                0x0000000000000000        0x2 build/runtime_boot-virt.o
+ .text.__calynda_offset
+                0x0000000000000000        0x6 build/runtime_boot-virt.o
+ .text.__calynda_offset_stride
+                0x0000000000000000        0x8 build/runtime_boot-virt.o
+ .text.__calynda_store
+                0x0000000000000000       0x22 build/runtime_boot-virt.o
+ .text.__calynda_mmio_store
+                0x0000000000000000        0x4 build/runtime_boot-virt.o
+ .text.__calynda_store_sized
+                0x0000000000000000       0x28 build/runtime_boot-virt.o
+ .text.__calynda_mmio_store_sized
+                0x0000000000000000       0x60 build/runtime_boot-virt.o
+ .text.__calynda_rt_fence
+                0x0000000000000000        0x6 build/runtime_boot-virt.o
+ .text.__calynda_rt_cache_clean
+                0x0000000000000000        0x6 build/runtime_boot-virt.o
+ .text.__calynda_rt_cache_final
+                0x0000000000000000        0x6 build/runtime_boot-virt.o
+ .sdata.BOOT_NLR_DEPTH
+                0x0000000000000000        0x4 build/runtime_boot-virt.o
+ .bss.BOOT_NLR_SLOTS
+                0x0000000000000000      0x400 build/runtime_boot-virt.o
+ .sbss.BOOT_HEAP_USED
+                0x0000000000000000        0x8 build/runtime_boot-virt.o
+ .bss.BOOT_HEAP
+                0x0000000000000000    0x10000 build/runtime_boot-virt.o
+ .srodata.cst8  0x0000000000000000        0x8 build/runtime_boot-virt.o
+ .comment       0x0000000000000000       0x20 build/runtime_boot-virt.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 build/runtime_boot-virt.o
+ .text          0x0000000000000000        0x0 build/uart_hello-virt.o
+ .data          0x0000000000000000        0x0 build/uart_hello-virt.o
+ .bss           0x0000000000000000        0x0 build/uart_hello-virt.o
+ .text.calynda_unit_boot
+                0x0000000000000000       0x38 build/uart_hello-virt.o
+ .text._start   0x0000000000000000       0x10 build/uart_hello-virt.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 build/uart_hello-virt.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+ram              0x0000000080000000 0x0000000008000000 xrw
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+                0x0000000080000000                . = ORIGIN (ram)
+
+.text           0x0000000080000000       0xfa
+ *(.text.start)
+ .text.start    0x0000000080000000       0x8e build/start-virt.o
+                0x0000000080000000                _start_baremetal
+                0x0000000080000076                __calynda_rt_boot_probe
+ *(.text .text.*)
+ .text.__calynda_rt_boot_probe_c
+                0x000000008000008e       0x12 build/runtime_boot-virt.o
+                0x000000008000008e                __calynda_rt_boot_probe_c
+ .text.calynda_unit_hdmi_hello_world
+                0x00000000800000a0       0x26 build/uart_hello-virt.o
+                0x00000000800000a0                calynda_unit_hdmi_hello_world
+ .text.calynda_unit_run
+                0x00000000800000c6       0x34 build/uart_hello-virt.o
+                0x00000000800000c6                calynda_unit_run
+
+.rela.dyn       0x0000000080000100        0x0
+ .rela.text.start
+                0x0000000080000100        0x0 build/start-virt.o
+
+.rodata
+ *(.rodata .rodata.*)
+
+.data
+ *(.data .data.*)
+
+.bss            0x0000000080000100        0x0
+                0x0000000080000100                __bss_start = .
+ *(.bss .bss.*)
+ *(COMMON)
+                0x0000000080000100                __bss_end = .
+                0x0000000080000100                . = ALIGN (0x10)
+                0x0000000080000100                __stack_bottom = .
+                0x0000000080010100                . = (. + 0x10000)
+                0x0000000080010100                __stack_top = .
+
+/DISCARD/
+ *(.note.GNU-stack)
+ *(.comment)
+LOAD build/start-virt.o
+LOAD build/runtime_boot-virt.o
+LOAD build/uart_hello-virt.o
+OUTPUT(build/uart_hello-virt.elf elf64-littleriscv)
+
+.riscv.attributes
+                0x0000000000000000       0x57
+ .riscv.attributes
+                0x0000000000000000       0x55 build/start-virt.o
+ .riscv.attributes
+                0x0000000000000055       0x53 build/runtime_boot-virt.o
+ .riscv.attributes
+                0x00000000000000a8       0x51 build/uart_hello-virt.o

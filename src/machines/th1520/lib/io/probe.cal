@@ -1,0 +1,214 @@
+package app;
+
+import lib.loop_while;
+import lib.io.screen;
+
+static final int32[8] PROBE_COLS = [
+    0x00FFFFFF,
+    0x00FFFF00,
+    0x0000FFFF,
+    0x0000FF00,
+    0x00FF00FF,
+    0x00FF4040,
+    0x003060FF,
+    0x00808080
+];
+
+void fb_draw_char_top = (int32 px, int32 py, uint32 color) -> {
+    fb_rect(px, py, px + 27, py + 3, color);
+    exit;
+};
+
+void fb_draw_char_middle = (int32 px, int32 py, uint32 color) -> {
+    fb_rect(px, py + 14, px + 17, py + 17, color);
+    exit;
+};
+
+void fb_draw_char_bottom = (int32 px, int32 py, uint32 color) -> {
+    fb_rect(px, py + 28, px + 27, py + 31, color);
+    exit;
+};
+
+void fb_draw_char_left = (int32 px, int32 py, uint32 color) -> {
+    fb_rect(px, py, px + 3, py + 31, color);
+    exit;
+};
+
+void fb_draw_char_left_lower = (int32 px, int32 py, uint32 color) -> {
+    fb_rect(px, py + 16, px + 3, py + 31, color);
+    exit;
+};
+
+void fb_draw_char_right = (int32 px, int32 py, uint32 color) -> {
+    fb_rect(px + 24, py, px + 27, py + 31, color);
+    exit;
+};
+
+void fb_draw_char_right_upper = (int32 px, int32 py, uint32 color) -> {
+    fb_rect(px + 24, py, px + 27, py + 17, color);
+    exit;
+};
+
+void fb_draw_char_right_lower = (int32 px, int32 py, uint32 color) -> {
+    fb_rect(px + 24, py + 14, px + 27, py + 31, color);
+    exit;
+};
+
+void fb_draw_char_center = (int32 px, int32 py, uint32 color) -> {
+    fb_rect(px + 12, py, px + 15, py + 31, color);
+    exit;
+};
+
+void fb_draw_probe_letter = (int32 px, int32 py, int32 col, uint32 color) -> {
+    if(col == 0, () -> {
+        fb_draw_char_left(px, py, color);
+        fb_draw_char_right(px, py, color);
+        fb_draw_char_top(px, py, color);
+        fb_draw_char_middle(px, py, color);
+    });
+    if(col == 1, () -> {
+        fb_draw_char_left(px, py, color);
+        fb_draw_char_right(px, py, color);
+        fb_draw_char_top(px, py, color);
+        fb_draw_char_middle(px, py, color);
+        fb_draw_char_bottom(px, py, color);
+    });
+    if(col == 2, () -> {
+        fb_draw_char_left(px, py, color);
+        fb_draw_char_top(px, py, color);
+        fb_draw_char_bottom(px, py, color);
+    });
+    if(col == 3, () -> {
+        fb_draw_char_left(px, py, color);
+        fb_draw_char_right(px, py, color);
+        fb_draw_char_top(px, py, color);
+        fb_draw_char_bottom(px, py, color);
+    });
+    if(col == 4, () -> {
+        fb_draw_char_left(px, py, color);
+        fb_draw_char_top(px, py, color);
+        fb_draw_char_middle(px, py, color);
+        fb_draw_char_bottom(px, py, color);
+    });
+    if(col == 5, () -> {
+        fb_draw_char_left(px, py, color);
+        fb_draw_char_top(px, py, color);
+        fb_draw_char_middle(px, py, color);
+    });
+    if(col == 6, () -> {
+        fb_draw_char_left(px, py, color);
+        fb_draw_char_top(px, py, color);
+        fb_draw_char_middle(px, py, color);
+        fb_draw_char_bottom(px, py, color);
+        fb_draw_char_right_lower(px, py, color);
+    });
+    if(col == 7, () -> {
+        fb_draw_char_left(px, py, color);
+        fb_draw_char_right(px, py, color);
+        fb_draw_char_middle(px, py, color);
+    });
+    exit;
+};
+
+void fb_draw_probe_digit = (int32 px, int32 py, int32 row, uint32 color) -> {
+    if(row == 0, () -> {
+        fb_draw_char_left(px, py, color);
+        fb_draw_char_right(px, py, color);
+        fb_draw_char_top(px, py, color);
+        fb_draw_char_bottom(px, py, color);
+    });
+    if(row == 1, () -> {
+        fb_draw_char_center(px, py, color);
+        fb_draw_char_bottom(px, py, color);
+    });
+    if(row == 2, () -> {
+        fb_draw_char_top(px, py, color);
+        fb_draw_char_middle(px, py, color);
+        fb_draw_char_bottom(px, py, color);
+        fb_draw_char_right_upper(px, py, color);
+        fb_draw_char_left_lower(px, py, color);
+    });
+    if(row == 3, () -> {
+        fb_draw_char_top(px, py, color);
+        fb_draw_char_middle(px, py, color);
+        fb_draw_char_bottom(px, py, color);
+        fb_draw_char_right(px, py, color);
+    });
+    exit;
+};
+
+void fb_draw_probe_label = (int32 px, int32 py, int32 col, int32 row, uint32 color) -> {
+    fb_draw_probe_letter(px, py, col, color);
+    fb_draw_probe_digit(px + 32, py, row, color);
+    exit;
+};
+
+void fb_draw_row_markers = (int32 x0, int32 x1, int32 y0, int32 row) -> {
+    int32 marker = 0;
+    int32 marker_count = row + 1;
+
+    while(() -> marker < marker_count, () -> {
+        fb_rect(x0 + 18, y0 + 18 + marker * 16, x1 - 18, y0 + 25 + marker * 16, RGB(0, 0, 0));
+        marker = marker + 1;
+    });
+
+    exit;
+};
+
+void fb_draw_col_markers = (int32 x0, int32 y0, int32 y1, int32 col) -> {
+    int32 marker = 0;
+    int32 marker_count = col + 1;
+
+    while(() -> marker < marker_count, () -> {
+        fb_rect(x0 + 18 + marker * 16, y0 + 72, x0 + 25 + marker * 16, y1 - 18, RGB(0, 0, 0));
+        marker = marker + 1;
+    });
+
+    exit;
+};
+
+void fb_draw_probe_cell = (int32 row, int32 col, int32 cols, int32 rows, int32 cell_w, int32 cell_h) -> {
+    int32 x0 = col * cell_w;
+    int32 y0 = row * cell_h;
+    int32 x1 = col == cols - 1 ? (FB_WIDTH - 1) : ((col + 1) * cell_w - 1);
+    int32 y1 = row == rows - 1 ? (FB_HEIGHT - 1) : ((row + 1) * cell_h - 1);
+    int32 label_px = x0 + (cell_w - 64) / 2;
+    int32 label_py = y0 + (cell_h - 32) / 2;
+
+    fb_rect(x0 + 4, y0 + 4, x1 - 4, y1 - 4, uint32(PROBE_COLS[col]));
+    fb_border(x0, y0, x1, y1, RGB(0xFF, 0xFF, 0xFF), 2);
+    fb_draw_row_markers(x0, x1, y0, row);
+    fb_draw_col_markers(x0, y0, y1, col);
+    fb_rect(label_px - 10, label_py - 10, label_px + 73, label_py + 41, RGB(0, 0, 0));
+    fb_draw_probe_label(label_px, label_py, col, row, RGB(0xFF, 0xFF, 0xFF));
+    exit;
+};
+
+void fb_layout_probe_row = (int32 row, int32 cols, int32 rows, int32 cell_w, int32 cell_h) -> {
+    int32 col = 0;
+
+    while(() -> col < cols, () -> {
+        fb_draw_probe_cell(row, col, cols, rows, cell_w, cell_h);
+        col = col + 1;
+    });
+
+    exit;
+};
+
+void fb_layout_probe = () -> {
+    int32 cols = 8;
+    int32 rows = 4;
+    int32 cell_w = FB_WIDTH / cols;
+    int32 cell_h = FB_HEIGHT / rows;
+    int32 row = 0;
+
+    fb_fill(RGB(0x10, 0x10, 0x10));
+    fb_border(0, 0, FB_WIDTH - 1, FB_HEIGHT - 1, RGB(0xFF, 0xFF, 0xFF), 4);
+
+    while(() -> row < rows, () -> {
+        fb_layout_probe_row(row, cols, rows, cell_w, cell_h);
+        row = row + 1;
+    });
+
+    exit;
+};

@@ -1,0 +1,17 @@
+// merged from src/uart_hello.cal
+package app;
+
+
+// merged from src/lib/io/hdmi.cal
+
+int32 hdmi_hello_world = () -> {
+    return 0;
+};
+
+
+int32 run = manual() -> {
+    return hdmi_hello_world();
+};
+
+boot -> run();
+
